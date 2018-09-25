@@ -1,5 +1,6 @@
 package com.lamblin.core.model
 
+/** Defines the status codes supported. */
 enum class StatusCode(val code: Int) {
     OK(200),
     CREATED(201),

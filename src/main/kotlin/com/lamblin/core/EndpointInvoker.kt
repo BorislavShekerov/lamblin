@@ -31,7 +31,7 @@ internal class EndpointInvoker(
 
         try {
             val controller = controllerRegistry.controllerForClass(controllerClass)
-                    ?: IllegalStateException("Controller not found for class [ ${controllerClass.qualifiedName}]")
+                    ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.qualifiedName}]")
 
             return invokeControllerMethod(handlerMethod, request, method, parameters, controller)
         } catch (e: IllegalAccessException) {
@@ -56,7 +56,7 @@ internal class EndpointInvoker(
             return (if (parameters.isEmpty())
                 method.call()
             else
-                method.call(requestToParamValueMapper
+                method.call(*requestToParamValueMapper
                                     .mapRequestParamsToValues(request, handlerMethod))) as HttpResponse<*>
         } catch (e: InvocationTargetException) {
             LOGGER.error("Exception occurred while executing handler.")

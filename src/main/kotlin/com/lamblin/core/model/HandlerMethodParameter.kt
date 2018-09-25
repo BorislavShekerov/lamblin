@@ -46,6 +46,7 @@ data class HandlerMethodParameter(
                 param: QueryParam
         ): HandlerMethodParameter = HandlerMethodParameter(
                 annotationMappedName = param.value,
+                required = param.required,
                 name = name,
                 type = type)
 

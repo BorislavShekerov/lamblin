@@ -85,9 +85,9 @@ class HandlerMethodComparator : Comparator<HandlerMethod>, Serializable {
     /**
      * Compares two handler methods following the rules
      * - shorter paths take precedence
-     *  If mathod paths have the same length
+     *  If method paths have the same length
      *  -the method with i.e less path params takes precedence
-     * - the method with more mandatory path param takes precedence
+     * - the method with more mandatory query param takes precedence
      */
     override fun compare(o1: HandlerMethod, o2: HandlerMethod): Int {
         val o1PathSections = o1.path.split("/")
@@ -114,12 +114,13 @@ class HandlerMethodComparator : Comparator<HandlerMethod>, Serializable {
     }
 
     // The method with more mandatory query params will take precedence
-    private fun compareMandatoryQueryParams(o1: HandlerMethod, o2: HandlerMethod): Int =
-            (o2.paramNameToParam.values.stream()
-                    .filter { it.required }
-                    .count()
-                    - o1.paramNameToParam.values
-                    .filter { it.required }
-                    .count())
-                    .toInt()
+    private fun compareMandatoryQueryParams(o1: HandlerMethod, o2: HandlerMethod): Int {
+        return (o2.paramNameToParam.values.stream()
+                .filter { it.required }
+                .count()
+                - o1.paramNameToParam.values
+                .filter { it.required }
+                .count())
+                .toInt()
+    }
 }
