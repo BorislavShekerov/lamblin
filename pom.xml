@@ -14,7 +14,6 @@
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <main.class>com.lamblin.core.FrontController</main.class>
 
-
         <aws-lambda-java-events.version>2.2.2</aws-lambda-java-events.version>
         <aws-lambda-java-sdk.version>1.11.405</aws-lambda-java-sdk.version>
         <jackson-databind.version>2.9.6</jackson-databind.version>
@@ -26,6 +25,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
 
         <!-- AWS SDK Dependencies -->
         <dependency>
@@ -160,6 +164,10 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                        <configuration>
+                            <config>detekt.yml</config>
+                            <configResource>detekt.yml</configResource>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

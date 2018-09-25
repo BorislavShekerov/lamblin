@@ -24,11 +24,12 @@ internal class RequestHandler(
                 controllerRegistry))
 
         internal fun withSlackAlerting(controllerRegistry: ControllerRegistry,
-                                       slackDispatcherLambda: String) = RequestHandler(
-                EndpointInvoker(
-                        RequestToParamValueMapper.instance(),
-                        controllerRegistry),
-                SlackAlertDispatcher(slackDispatcherLambda))
+                                       slackDispatcherLambda: String) =
+                RequestHandler(
+                        EndpointInvoker(
+                                RequestToParamValueMapper.instance(),
+                                controllerRegistry),
+                        SlackAlertDispatcher(slackDispatcherLambda))
     }
 
     /**
@@ -37,6 +38,7 @@ internal class RequestHandler(
      */
     fun handle(request: APIGatewayProxyRequestEvent,
                httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>): APIGatewayProxyResponseEvent {
+
         return try {
             LOGGER.debug("Handling request to [{}]", request.path)
 
@@ -56,7 +58,9 @@ internal class RequestHandler(
     }
 
     private fun handlerRequest(request: APIGatewayProxyRequestEvent,
-                               httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>): APIGatewayProxyResponseEvent {
+                               httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
+    ): APIGatewayProxyResponseEvent {
+
         val handlersForHttpMethod = httpMethodToHandlers[HttpMethod.valueOf(request.httpMethod)]
                 ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
 
@@ -65,22 +69,17 @@ internal class RequestHandler(
                 .find { it.matches(request.path, request.queryStringParameters) }
                 ?: throw IllegalArgumentException(
                         "Handler not found for [${request.path}] and method [{${request.httpMethod}}]")
-        LOGGER.debug(
-                "Handler method [{}] in [{}] selected",
-                requestHandlerMethod.httpMethod.name,
-                requestHandlerMethod.controllerClass.qualifiedName)
 
-        try {
-            val response = endpointInvoker.invoke(requestHandlerMethod, request)
+        LOGGER.debug("Handler method [{}] in [{}] selected",
+                     requestHandlerMethod.httpMethod.name,
+                     requestHandlerMethod.controllerClass.qualifiedName)
 
-            return APIGatewayProxyResponseEvent().apply {
-                withStatusCode(response.statusCode.code)
-                withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
-                withBody(OBJECT_MAPPER.writeValueAsString(response.body))
-            }
-        } catch (e: JsonProcessingException) {
-            throw RuntimeException("Unable to serialize body to JSON.", e)
+        val response = endpointInvoker.invoke(requestHandlerMethod, request)
+
+        return APIGatewayProxyResponseEvent().apply {
+            withStatusCode(response.statusCode.code)
+            withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
+            withBody(OBJECT_MAPPER.writeValueAsString(response.body))
         }
-
     }
 }

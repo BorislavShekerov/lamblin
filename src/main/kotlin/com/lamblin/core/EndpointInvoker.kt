@@ -35,9 +35,11 @@ internal class EndpointInvoker(
 
             return invokeControllerMethod(handlerMethod, request, method, parameters, controller)
         } catch (e: IllegalAccessException) {
-            throw RuntimeException("Handler methods should have a public accessor modifier.", e)
+            LOGGER.error("Handler methods should have a public accessor modifier.", e)
+            throw e
         } catch (e: InvocationTargetException) {
-            throw RuntimeException("Exception while executing method.", e)
+            LOGGER.error("Exception while executing method.", e)
+            throw e
         }
 
     }
@@ -54,10 +56,11 @@ internal class EndpointInvoker(
             return (if (parameters.isEmpty())
                 method.call()
             else
-                method.call(requestToParamValueMapper.mapRequestParamsToValues(request, handlerMethod))) as HttpResponse<*>
-        } catch (e: RuntimeException) {
+                method.call(requestToParamValueMapper
+                                    .mapRequestParamsToValues(request, handlerMethod))) as HttpResponse<*>
+        } catch (e: InvocationTargetException) {
             LOGGER.error("Exception occurred while executing handler.")
-            return HttpResponse.apiError(e.message!!)
+            throw e
         }
     }
 
