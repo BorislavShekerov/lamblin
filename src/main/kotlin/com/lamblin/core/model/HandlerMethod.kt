@@ -26,9 +26,6 @@ data class HandlerMethod(
 
     companion object {
 
-        /** Extracts out the path param name from the capture format name. */
-        fun extractPathParamName(pathParam: String) = pathParam.slice(1 until pathParam.length)
-
         /** Checks if a url path section has the capture format "{param}", i.e. surrounded by "{" and "}". */
         fun isPathParamSection(pathSection: String) = pathSection.startsWith("{")
 
@@ -37,7 +34,7 @@ data class HandlerMethod(
     /**
      * Tries to match the details in a request to the handler method.
      *
-     * Returns true if the path of the request to be handled matches the path that the handler method is responsible for.
+     * Returns true if the path of the request to be handled matches that of the handler method.
      * Path parameters are ignored in the check, meaning that any string is regarded as a valid request path parameter.
      *
      * @param requestPath the request path to check

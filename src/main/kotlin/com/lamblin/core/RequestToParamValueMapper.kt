@@ -92,7 +92,9 @@ internal class RequestToParamValueMapper private constructor(
             if (HttpMethod.POST.name == request.httpMethod && parameters.isNotEmpty() && request.body.isNotEmpty()) {
                 LOGGER.debug("Attempting to deserialize request body")
 
-                val requestBodyParameter = parameters.find { it.annotations.any { annotation -> annotation is RequestBody } }
+                val requestBodyParameter = parameters.find {
+                    it.annotations.any { annotation -> annotation is RequestBody }
+                }
 
                 paramToValue + (requestBodyParameter?.let {
                     mapOf(it.name!! to bodyJsonToParamDeserializer.deserializeBodyJsonForParameter(it, request.body))
