@@ -2,6 +2,7 @@ package com.lamblin.core.model
 
 import org.slf4j.LoggerFactory
 import java.io.Serializable
+import java.lang.reflect.Method
 import java.util.Comparator
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
@@ -19,10 +20,10 @@ data class HandlerMethod(
         val paramNameToParam: Map<String, HandlerMethodParameter> = mapOf(),
 
         /** The reference to the actual method to be invoked. */
-        val method: KCallable<Any?>,
+        val method: Method,
 
         /** The reference to the method container class. */
-        val controllerClass: KClass<out Any>) {
+        val controllerClass: Class<out Any>) {
 
     companion object {
 

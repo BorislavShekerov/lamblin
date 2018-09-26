@@ -72,7 +72,7 @@ internal class RequestHandler(
 
         LOGGER.debug("Handler method [{}] in [{}] selected",
                      requestHandlerMethod.httpMethod.name,
-                     requestHandlerMethod.controllerClass.qualifiedName)
+                     requestHandlerMethod.controllerClass.canonicalName)
 
         val response = endpointInvoker.invoke(requestHandlerMethod, request)
 

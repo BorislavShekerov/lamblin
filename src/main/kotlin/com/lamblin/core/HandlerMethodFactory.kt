@@ -9,18 +9,19 @@ import com.lamblin.core.model.HttpMethod.POST
 import com.lamblin.core.model.HttpMethod.PUT
 import com.lamblin.core.model.annotation.Endpoint
 import org.slf4j.LoggerFactory
+import java.lang.reflect.Method
 import kotlin.reflect.KCallable
-import kotlin.reflect.KClass
-
-private val LOGGER = LoggerFactory.getLogger(HandlerMethodFactory::class.java)
 
 internal interface HandlerMethodFactory {
-    fun method(method: KCallable<Any?>, controllerClass: KClass<out Any>): HandlerMethod
+    fun method(method: Method, controllerClass: Class<out Any>): HandlerMethod
 
     companion object {
         internal fun default() = DefaultHandlerMethodFactory
     }
 }
+
+private val LOGGER = LoggerFactory.getLogger(DefaultHandlerMethodFactory::class.java)
+
 /**
  * Defines the mechanism for creating [HandlerMethod] instances after inspecting
  * the details(annotations) of a [KCallable].
@@ -28,7 +29,7 @@ internal interface HandlerMethodFactory {
 internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
 
     /** Creates a [HandlerMethod] instance using the details(annotations and parameters) of the input [KCallable]. */
-    override fun method(method: KCallable<Any?>, controllerClass: KClass<out Any>): HandlerMethod {
+    override fun method(method: Method, controllerClass: Class<out Any>): HandlerMethod {
         val endpointAnnotation = method.annotations.find { it is Endpoint } as? Endpoint
 
         return when (endpointAnnotation?.method) {
@@ -41,18 +42,18 @@ internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
     }
 
     private fun createHandlerMethod(
-            requestMethod: HttpMethod,
+            httpMethod: HttpMethod,
             path: String,
-            method: KCallable<Any?>,
-            controllerClass: KClass<out Any>): HandlerMethod {
+            method: Method,
+            controllerClass: Class<out Any>): HandlerMethod {
 
         val paramNameToParam = method.parameters.asSequence()
                 .filter { !it.annotations.isEmpty() }
                 .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.javaClass , it.annotations[0]) }
                 .toMap()
 
-        LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.qualifiedName, method.name)
+        LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.canonicalName, method.name)
 
-        return HandlerMethod(path, requestMethod, paramNameToParam, method, controllerClass)
+        return HandlerMethod(path, httpMethod, paramNameToParam, method, controllerClass)
     }
 }

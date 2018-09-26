@@ -7,7 +7,6 @@ import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.annotation.Endpoint
 import org.slf4j.LoggerFactory
-import kotlin.reflect.KClass
 
 val OBJECT_MAPPER = ObjectMapper().apply { registerModule(JavaTimeModule()) }
 private val LOGGER = LoggerFactory.getLogger(FrontController::class.java)
@@ -65,16 +64,16 @@ class FrontController private constructor(
 
     // TODO Refactor
     private fun createHttpMethodToHandlerMethodMap(
-            controllerClass: KClass<out Any>): Map<HttpMethod, Set<HandlerMethod>> {
+            controllerClass: Class<out Any>): Map<HttpMethod, Set<HandlerMethod>> {
 
-        LOGGER.debug("Creating handlers for [{}]", controllerClass.qualifiedName)
+        LOGGER.debug("Creating handlers for [{}]", controllerClass.canonicalName)
         var httpMethodToHandlerMethods: Map<HttpMethod, Set<HandlerMethod>> = mapOf()
 
-        val controllerEndpoints = controllerClass.members
+        val controllerEndpoints = controllerClass.declaredMethods
                 .filter { it.annotations.any { it is Endpoint } }
 
         for (controllerEndpoint in controllerEndpoints) {
-            LOGGER.debug("Processing method [{}] for [{}]", controllerEndpoint.name, controllerClass.qualifiedName)
+            LOGGER.debug("Processing method [{}] for [{}]", controllerEndpoint.name, controllerClass.canonicalName)
 
             val handlerMethod = handlerMethodFactory.method(controllerEndpoint, controllerClass)
 

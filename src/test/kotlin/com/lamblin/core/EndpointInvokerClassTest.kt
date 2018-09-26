@@ -9,17 +9,21 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.lang.reflect.Method
 import kotlin.reflect.KCallable
 
 class EndpointInvokerClassTest {
 
     private val method: KCallable<HttpResponse<String>> = mockk(relaxed = true)
 
+    private val controllerClassMock: Class<out Any> = mockk()
+    private val methodMock: Method = mockk()
+
     private val handlerMethod = HandlerMethod(
-            "/path",
-            HttpMethod.GET,
-            method = method,
-            controllerClass = EndpointInvokerClassTest::class)
+        "/path",
+        HttpMethod.GET,
+        method = methodMock,
+        controllerClass = controllerClassMock)
     private val requestToParamValueMapper: RequestToParamValueMapper = mockk(relaxed = true)
     private val controllerRegistry: ControllerRegistry = mockk(relaxed = true)
 
@@ -27,7 +31,7 @@ class EndpointInvokerClassTest {
 
     @Test
     fun `should throw IllegalStateException if controller for class not found`() {
-        every { controllerRegistry.controllerForClass(EndpointInvokerClassTest::class) } returns null
+        every { controllerRegistry.controllerForClass(EndpointInvokerClassTest::class.java) } returns null
 
         assertThrows<IllegalStateException> { endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent()) }
     }
@@ -35,7 +39,7 @@ class EndpointInvokerClassTest {
     @Test
     fun `should call method with no parameters if the method does not have any parameters`() {
         every { method.parameters } returns listOf()
-        every { controllerRegistry.controllerForClass(EndpointInvokerClassTest::class) } returns EndpointInvokerClassTest()
+        every { controllerRegistry.controllerForClass(EndpointInvokerClassTest::class.java) } returns EndpointInvokerClassTest()
         every { method.call() } returns HttpResponse()
 
         endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent())
@@ -45,8 +49,7 @@ class EndpointInvokerClassTest {
 
     @Test
     fun `should call method with required parameters`() {
-
-        every { controllerRegistry.controllerForClass(EndpointInvokerClassTest::class) } returns EndpointInvokerClassTest()
+        every { controllerRegistry.controllerForClass(EndpointInvokerClassTest::class.java) } returns EndpointInvokerClassTest()
         every { method.parameters } returns listOf(mockk())
 
         val request = APIGatewayProxyRequestEvent()

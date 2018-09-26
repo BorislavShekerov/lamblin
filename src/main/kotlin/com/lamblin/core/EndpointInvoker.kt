@@ -5,8 +5,8 @@ import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpResponse
 import org.slf4j.LoggerFactory
 import java.lang.reflect.InvocationTargetException
-import kotlin.reflect.KCallable
-import kotlin.reflect.KParameter
+import java.lang.reflect.Method
+import java.lang.reflect.Parameter
 
 private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
 
@@ -31,7 +31,7 @@ internal class EndpointInvoker(
 
         try {
             val controller = controllerRegistry.controllerForClass(controllerClass)
-                    ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.qualifiedName}]")
+                    ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.canonicalName}]")
 
             return invokeControllerMethod(handlerMethod, request, method, parameters, controller)
         } catch (e: IllegalAccessException) {
@@ -48,15 +48,15 @@ internal class EndpointInvoker(
     private fun invokeControllerMethod(
             handlerMethod: HandlerMethod,
             request: APIGatewayProxyRequestEvent,
-            method: KCallable<*>,
-            parameters: List<KParameter>,
+            method: Method,
+            parameters: Array<Parameter>,
             controller: Any): HttpResponse<*> {
 
         try {
             return (if (parameters.isEmpty())
-                method.call()
+                method.invoke(controller)
             else
-                method.call(*requestToParamValueMapper
+                method.invoke(controller, *requestToParamValueMapper
                                     .mapRequestParamsToValues(request, handlerMethod))) as HttpResponse<*>
         } catch (e: InvocationTargetException) {
             LOGGER.error("Exception occurred while executing handler.")

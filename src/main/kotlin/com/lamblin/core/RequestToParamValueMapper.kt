@@ -7,7 +7,7 @@ import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.annotation.RequestBody
 import org.slf4j.LoggerFactory
-import kotlin.reflect.KParameter
+import java.lang.reflect.Parameter
 
 private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
 
@@ -86,7 +86,7 @@ internal class RequestToParamValueMapper private constructor(
     // Attempts to deserialize the body JSON into an object, if the request is POST and request body is present
     private fun addRequestBodyToParams(
             request: APIGatewayProxyRequestEvent,
-            parameters: List<KParameter>,
+            parameters: Array<Parameter>,
             paramToValue: Map<String, Any>): Map<String, Any> =
 
             if (HttpMethod.POST.name == request.httpMethod && parameters.isNotEmpty() && request.body.isNotEmpty()) {

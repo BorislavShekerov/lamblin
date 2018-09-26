@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.lamblin.core.exception.RequestPayloadParseException
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import kotlin.reflect.KParameter
+import java.lang.reflect.Parameter
 
 private val LOGGER = LoggerFactory.getLogger(BodyJsonToParamDeserializer::class.java)
 
 internal interface BodyJsonToParamDeserializer {
-    fun deserializeBodyJsonForParameter(parameter: KParameter, bodyJson: String): Any
+    fun deserializeBodyJsonForParameter(parameter: Parameter, bodyJson: String): Any
 }
 
 /**
@@ -21,7 +21,7 @@ internal object DefaultBodyJsonToParamDeserializer : BodyJsonToParamDeserializer
     /**
      * Attempts to deserialize the JSON into a variable, using the parameter to define the target variable type.
      */
-    override fun deserializeBodyJsonForParameter(parameter: KParameter, bodyJson: String): Any {
+    override fun deserializeBodyJsonForParameter(parameter: Parameter, bodyJson: String): Any {
         val lastParamType = parameter.type
 
         try {
