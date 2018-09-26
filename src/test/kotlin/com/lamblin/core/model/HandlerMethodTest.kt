@@ -1,6 +1,5 @@
 package com.lamblin.core.model
 
-import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,19 +14,9 @@ class HandlerMethodTest {
         assertThat(result).isTrue()
     }
 
-    private fun createHandlerMethod(path: String) = HandlerMethod(
-            path,
-            HttpMethod.GET,
-            method = HandlerMethodTest::class.java.declaredMethods.first(),
-            controllerClass = HandlerMethodTest::class.java)
-
     @Test
     fun `should not match when request path longer than the handler method path`() {
-        val handlerMethod = HandlerMethod(
-                "/path",
-                HttpMethod.GET,
-                method = HandlerMethodTest::class.java.declaredMethods.first(),
-                controllerClass = HandlerMethodTest::class.java)
+        val handlerMethod = createHandlerMethod("/path")
 
         val result = handlerMethod.matches("/path/subpath", mapOf())
 
@@ -36,11 +25,7 @@ class HandlerMethodTest {
 
     @Test
     fun `should not match when request path differs the handler method path`() {
-        val handlerMethod = HandlerMethod(
-                "/path",
-                HttpMethod.GET,
-                method = HandlerMethodTest::class.java.declaredMethods.first(),
-                controllerClass = HandlerMethodTest::class.java)
+        val handlerMethod = createHandlerMethod("/path")
 
         val result = handlerMethod.matches("/fail-2", mapOf())
 
@@ -49,11 +34,7 @@ class HandlerMethodTest {
 
     @Test
     fun `should not match when same length but different paths`() {
-        val handlerMethod = HandlerMethod(
-                "/path",
-                HttpMethod.GET,
-                method = HandlerMethodTest::class.java.declaredMethods.first(),
-                controllerClass = HandlerMethodTest::class.java)
+        val handlerMethod = createHandlerMethod("/path")
 
         val result = handlerMethod.matches("/fail", mapOf())
 
@@ -62,15 +43,12 @@ class HandlerMethodTest {
 
     @Test
     fun `should match when path param used, path param in the end`() {
-        val handlerMethod = HandlerMethod(
+        val handlerMethod = createHandlerMethod(
                 "/path/{param}",
-                HttpMethod.GET,
                 mapOf("param" to HandlerMethodParameter(
                         annotationMappedName = "param",
                         name = "param",
-                        type = String::class.java)),
-                method = HandlerMethodTest::class.java.declaredMethods.first(),
-                controllerClass = HandlerMethodTest::class.java)
+                        type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo", mapOf())
 
@@ -79,15 +57,12 @@ class HandlerMethodTest {
 
     @Test
     fun `should match when path param used, path param in the middle`() {
-        val handlerMethod = HandlerMethod(
+        val handlerMethod = createHandlerMethod(
                 "/path/{param}/remaining",
-                HttpMethod.GET,
                 mapOf("param" to HandlerMethodParameter(
                         annotationMappedName = "param",
                         name = "param",
-                        type = String::class.java)),
-                mockk(relaxed = true),
-                mockk(relaxed = true))
+                        type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -96,32 +71,24 @@ class HandlerMethodTest {
 
     @Test
     fun `should not match when paths match but required query param not present`() {
-        val handlerMethod = createHandlerMethod()
+        val handlerMethod = createHandlerMethod(
+                "/path/{param}/remaining",
+                mapOf(
+                        "param" to HandlerMethodParameter(
+                                annotationMappedName = "param",
+                                name = "param",
+                                type = String::class.java),
+                        "query" to HandlerMethodParameter(name = "query", required = true, type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
         assertThat(result).isFalse()
     }
 
-    private fun createHandlerMethod(): HandlerMethod {
-        return HandlerMethod(
-            "/path/{param}/remaining",
-            HttpMethod.GET,
-            mapOf(
-                "param" to HandlerMethodParameter(
-                    annotationMappedName = "param",
-                    name = "param",
-                    type = String::class.java),
-                "query" to HandlerMethodParameter(name = "query", required = true, type = String::class.java)),
-            method = HandlerMethodTest::class.java.declaredMethods.first(),
-            controllerClass = HandlerMethodTest::class.java)
-    }
-
     @Test
     fun `should match when paths match, required query param not present but a default value present`() {
-        val handlerMethod = HandlerMethod(
+        val handlerMethod = createHandlerMethod(
                 "/path/{param}/remaining",
-                HttpMethod.GET,
                 mapOf(
                         "param" to HandlerMethodParameter(
                                 annotationMappedName = "param",
@@ -131,9 +98,7 @@ class HandlerMethodTest {
                                 name = "query",
                                 required = true,
                                 type = String::class.java,
-                                defaultValue = "test")),
-                method = HandlerMethodTest::class.java.declaredMethods.first(),
-                controllerClass = HandlerMethodTest::class.java)
+                                defaultValue = "test")))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -142,17 +107,14 @@ class HandlerMethodTest {
 
     @Test
     fun `should match when paths match and non-required query param not present`() {
-        val handlerMethod = HandlerMethod(
+        val handlerMethod = createHandlerMethod(
                 "/path/{param}/remaining",
-                HttpMethod.GET,
                 mapOf(
                         "param" to HandlerMethodParameter(
                                 annotationMappedName = "param",
                                 name = "param",
                                 type = String::class.java),
-                        "query" to HandlerMethodParameter(name = "query", required = false, type = String::class.java)),
-                method = HandlerMethodTest::class.java.declaredMethods.first(),
-                controllerClass = HandlerMethodTest::class.java)
+                        "query" to HandlerMethodParameter(name = "query", required = false, type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -161,9 +123,8 @@ class HandlerMethodTest {
 
     @Test
     fun `should match when paths match and required query param present`() {
-        val handlerMethod = HandlerMethod(
+        val handlerMethod = createHandlerMethod(
                 "/path/{param}/remaining",
-                HttpMethod.GET,
                 mapOf(
                         "param" to HandlerMethodParameter(
                                 annotationMappedName = "param",
@@ -173,13 +134,18 @@ class HandlerMethodTest {
                                 annotationMappedName = "query",
                                 name = "query",
                                 required = true,
-                                type = String::class.java)),
-                method = HandlerMethodTest::class.java.declaredMethods.first(),
-                controllerClass = HandlerMethodTest::class.java)
+                                type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf("query" to "test"))
 
         assertThat(result).isTrue()
     }
+
+    private fun createHandlerMethod(path: String, paramMap: Map<String, HandlerMethodParameter> = mapOf()) = HandlerMethod(
+            path,
+            HttpMethod.GET,
+            paramMap,
+            method = HandlerMethodTest::class.java.declaredMethods.first(),
+            controllerClass = HandlerMethodTest::class.java)
 
 }

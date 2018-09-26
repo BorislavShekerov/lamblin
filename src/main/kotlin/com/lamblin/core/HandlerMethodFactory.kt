@@ -3,6 +3,7 @@ package com.lamblin.core
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.HttpMethod.DELETE
 import com.lamblin.core.model.HttpMethod.GET
 import com.lamblin.core.model.HttpMethod.PATCH
 import com.lamblin.core.model.HttpMethod.POST
@@ -37,6 +38,7 @@ internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
             GET -> createHandlerMethod(GET, endpointAnnotation.path, method, controllerClass)
             PUT -> createHandlerMethod(PUT, endpointAnnotation.path, method, controllerClass)
             PATCH -> createHandlerMethod(PATCH, endpointAnnotation.path, method, controllerClass)
+            DELETE -> createHandlerMethod(DELETE, endpointAnnotation.path, method, controllerClass)
             else -> throw IllegalArgumentException("Http Method ${endpointAnnotation?.method} not supported.")
         }
     }
@@ -49,7 +51,7 @@ internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
 
         val paramNameToParam = method.parameters.asSequence()
                 .filter { !it.annotations.isEmpty() }
-                .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.javaClass , it.annotations[0]) }
+                .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.type , it.annotations[0]) }
                 .toMap()
 
         LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.canonicalName, method.name)

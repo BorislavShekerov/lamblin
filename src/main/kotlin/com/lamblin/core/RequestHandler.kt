@@ -23,9 +23,9 @@ internal class RequestHandler(
                 RequestToParamValueMapper.instance(),
                 controllerRegistry))
 
-        internal fun withSlackAlerting(controllerRegistry: ControllerRegistry,
-                                       slackDispatcherLambda: String) =
-                RequestHandler(
+        internal fun withAlerting(
+                controllerRegistry: ControllerRegistry,
+                slackDispatcherLambda: String) = RequestHandler(
                         EndpointInvoker(
                                 RequestToParamValueMapper.instance(),
                                 controllerRegistry),
