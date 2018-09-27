@@ -14,7 +14,7 @@ private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
  * Responsible for invoking a [HandlerMethod] using the details in a [APIGatewayProxyRequestEvent].
  */
 internal class EndpointInvoker(
-        private val requestToParamValueMapper: RequestToParamValueMapper,
+        private val paramValueExtractor: ParamValueExtractor,
         private val controllerRegistry: ControllerRegistry) {
 
     /**
@@ -56,8 +56,8 @@ internal class EndpointInvoker(
             return (if (parameters.isEmpty())
                 method.invoke(controller)
             else
-                method.invoke(controller, *requestToParamValueMapper
-                                    .mapRequestParamsToValues(request, handlerMethod))) as HttpResponse<*>
+                method.invoke(controller, *paramValueExtractor
+                                    .extractParamValuesFromRequest(request, handlerMethod))) as HttpResponse<*>
         } catch (e: InvocationTargetException) {
             LOGGER.error("Exception occurred while executing handler.")
             throw e

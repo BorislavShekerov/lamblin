@@ -1,21 +1,20 @@
 package com.lamblin.core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.annotation.Endpoint
 import org.slf4j.LoggerFactory
+import java.io.InputStream
+import java.io.OutputStream
 
-val OBJECT_MAPPER = ObjectMapper().apply { registerModule(JavaTimeModule()) }
 private val LOGGER = LoggerFactory.getLogger(FrontController::class.java)
 
 /**
  * Defines the controller responsible for delegating the requests to the endpoint controllers.
  */
 class FrontController internal constructor(
-        private val requestHandler: RequestHandler,
+        private val requestHandler: RequestHandlerAdapter,
         private val handlerMethodFactory: HandlerMethodFactory,
         private val controllerRegistry: ControllerRegistry) {
 
@@ -28,7 +27,7 @@ class FrontController internal constructor(
             val controllerRegistry = ControllerRegistry(setOf(controllers))
 
             return FrontController(
-                    RequestHandler.instance(controllerRegistry = controllerRegistry),
+                    RequestHandlerAdapter(RequestHandler.instance(controllerRegistry = controllerRegistry)),
                     HandlerMethodFactory.default(),
                     controllerRegistry)
         }
@@ -59,8 +58,9 @@ class FrontController internal constructor(
      * Attempts to handle an [APIGatewayProxyRequestEvent] by first looking for
      * a suitable [HandlerMethod] and then delegating the execution to it.
      */
-    fun handlerRequest(request: APIGatewayProxyRequestEvent) = requestHandler.handle(request, httpMethodToHandlers)
-
+    fun handlerRequest(input: InputStream, output: OutputStream) {
+        requestHandler.handlerRequest(input, output, httpMethodToHandlers)
+    }
 }
 
 

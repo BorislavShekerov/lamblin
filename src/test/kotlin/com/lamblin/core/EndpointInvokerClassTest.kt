@@ -13,10 +13,10 @@ import java.lang.reflect.Method
 
 class EndpointInvokerClassTest {
 
-    private val requestToParamValueMapper: RequestToParamValueMapper = mockk(relaxed = true)
+    private val mParamValueExtractor: ParamValueExtractor = mockk(relaxed = true)
     private val controllerRegistry: ControllerRegistry = mockk(relaxed = true)
 
-    private val endpointInvoker = EndpointInvoker(requestToParamValueMapper, controllerRegistry)
+    private val endpointInvoker = EndpointInvoker(mParamValueExtractor, controllerRegistry)
 
     @Test
     fun `should throw IllegalStateException if controller for class not found`() {
@@ -46,7 +46,7 @@ class EndpointInvokerClassTest {
 
         val request = APIGatewayProxyRequestEvent()
         val argument = "arg"
-        every { requestToParamValueMapper.mapRequestParamsToValues(request, handlerMethod) } returns arrayOf(argument)
+        every { mParamValueExtractor.extractParamValuesFromRequest(request, handlerMethod) } returns arrayOf(argument)
 
         val result = endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent())
 
