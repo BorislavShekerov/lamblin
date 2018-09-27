@@ -19,17 +19,9 @@ internal class RequestHandler(
         private val alertDispatcher: AlertDispatcher? = null) {
 
     companion object {
-        internal fun noAlertingInstance(controllerRegistry: ControllerRegistry) = RequestHandler(EndpointInvoker(
+        internal fun instance(controllerRegistry: ControllerRegistry) = RequestHandler(EndpointInvoker(
                 RequestToParamValueMapper.instance(),
                 controllerRegistry))
-
-        internal fun withAlerting(
-                controllerRegistry: ControllerRegistry,
-                slackDispatcherLambda: String) = RequestHandler(
-                        EndpointInvoker(
-                                RequestToParamValueMapper.instance(),
-                                controllerRegistry),
-                        SlackAlertDispatcher(slackDispatcherLambda))
     }
 
     /**
