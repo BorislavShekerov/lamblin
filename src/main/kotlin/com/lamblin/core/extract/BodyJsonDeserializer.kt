@@ -1,7 +1,7 @@
-package com.lamblin.core
+package com.lamblin.core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.lamblin.core.OBJECT_MAPPER
 import com.lamblin.core.exception.RequestPayloadParseException
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
@@ -37,6 +37,7 @@ internal object DefaultBodyJsonDeserializer : BodyJsonDeserializer {
 
         return HttpMethod.POST === handlerMethod.httpMethod
                 && handlerMethod.method.parameters.isNotEmpty()
+                && handlerMethod.method.parameters.any { parameter -> parameter.annotations.any { it is RequestBody } }
                 && request.body.isNotEmpty()
     }
 
@@ -55,7 +56,7 @@ internal object DefaultBodyJsonDeserializer : BodyJsonDeserializer {
 
         try {
             LOGGER.debug("Deserializing [{}] into [{}]", bodyJson, parameter.type)
-            return OBJECT_MAPPER.readValue(bodyJson, lastParamType.javaClass)
+            return OBJECT_MAPPER.readValue(bodyJson, lastParamType)
         } catch (e: IOException) {
             throw RequestPayloadParseException("Unable to parse request body JSON $bodyJson", e)
         }

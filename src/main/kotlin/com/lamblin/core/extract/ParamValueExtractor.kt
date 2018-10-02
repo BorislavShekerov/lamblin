@@ -1,22 +1,36 @@
-package com.lamblin.core
+package com.lamblin.core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.lamblin.core.EndpointInvoker
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethod.Companion.isPathParamSection
 import com.lamblin.core.model.HandlerMethodParameter
 import org.slf4j.LoggerFactory
+import java.lang.reflect.Parameter
 
 private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
 
+internal interface ParamValueExtractor {
+    fun extractParamValuesFromRequest(
+            request: APIGatewayProxyRequestEvent,
+            methodPath: String,
+            paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any>
+}
 /**
  * Defines the mechanism which assigns a value to each parameter of the [HandlerMethod]
  * using the details in the [APIGatewayProxyRequestEvent] for the request being served.
  */
-internal class ParamValueExtractor private constructor(
-        private val bodyJsonDeserializer: BodyJsonDeserializer) {
+internal class ParamValueExtractorComposite internal constructor(
+        private val extractors: List<ParamValueExtractor>) {
+
+    //TODO Refactor to use Composite Pattern
 
     companion object {
-        fun instance() = ParamValueExtractor(DefaultBodyJsonDeserializer)
+        fun instance(): ParamValueExtractorComposite = ParamValueExtractorComposite(
+                listOf(
+                        PathParamValueExtractor(DefaultBodyJsonDeserializer),
+                        QueryParamValueExtractor(DefaultBodyJsonDeserializer),
+                        RequestBodyParamValueExtractor(DefaultBodyJsonDeserializer)))
     }
 
     // Creates a list of param objects to be passed in when invoking the method

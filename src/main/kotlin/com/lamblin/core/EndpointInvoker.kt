@@ -1,6 +1,7 @@
 package com.lamblin.core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.lamblin.core.extract.ParamValueExtractor
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpResponse
 import org.slf4j.LoggerFactory

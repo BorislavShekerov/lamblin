@@ -2,6 +2,7 @@ package com.lamblin.core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.fasterxml.jackson.core.JsonParseException
+import com.lamblin.core.exception.EventDeserializationException
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import java.io.InputStream
@@ -28,7 +29,7 @@ internal class RequestHandlerAdapter internal constructor(private val requestHan
 
             output.write(OBJECT_MAPPER.writeValueAsBytes(response))
         } catch (e: JsonParseException) {
-            throw RuntimeException("Unable to deserialize event into APIGatewayProxyRequestEvent please make sure lambda was triggered by an API Gateway event", e)
+            throw EventDeserializationException("Unable to deserialize event into APIGatewayProxyRequestEvent please make sure lambda was triggered by an API Gateway event", e)
         }
     }
 

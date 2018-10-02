@@ -2,6 +2,7 @@ package com.lamblin.core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
+import com.lamblin.core.extract.ParamValueExtractor
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodComparator
 import com.lamblin.core.model.HttpMethod
