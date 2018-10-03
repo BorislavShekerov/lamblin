@@ -1,5 +1,6 @@
 package com.lamblin.core
 
+import com.lamblin.core.handler.HandlerMethodFactory
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.annotation.Endpoint

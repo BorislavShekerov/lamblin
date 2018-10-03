@@ -1,8 +1,11 @@
-package com.lamblin.core
+package com.lamblin.core.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
-import com.lamblin.core.extract.ParamValueExtractor
+import com.lamblin.core.ControllerRegistry
+import com.lamblin.core.EndpointInvoker
+import com.lamblin.core.OBJECT_MAPPER
+import com.lamblin.core.extract.EndpointParamValueInjectorComposite
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodComparator
 import com.lamblin.core.model.HttpMethod
@@ -14,9 +17,10 @@ private val LOGGER = LoggerFactory.getLogger(RequestHandler::class.java)
 internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
 
     companion object {
-        internal fun instance(controllerRegistry: ControllerRegistry) = RequestHandler(EndpointInvoker(
-                ParamValueExtractor.instance(),
-                controllerRegistry))
+        internal fun instance(controllerRegistry: ControllerRegistry) = RequestHandler(
+                EndpointInvoker(
+                        EndpointParamValueInjectorComposite.instance(),
+                        controllerRegistry))
     }
 
     /**
@@ -58,18 +62,18 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
 
         val response = endpointInvoker.invoke(requestHandlerMethod, request)
 
-        if (response.statusCode === StatusCode.OK) {
-            return APIGatewayProxyResponseEvent().apply {
+        return if (response.statusCode === StatusCode.OK) {
+            APIGatewayProxyResponseEvent().apply {
                 withStatusCode(response.statusCode.code)
                 withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
 
                 response.body?.let { withBody(OBJECT_MAPPER.writeValueAsString(response.body)) }
             }
-        }
-
-        return APIGatewayProxyResponseEvent().apply {
-            withStatusCode(response.statusCode.code)
-            withHeaders(response.headers)
+        } else {
+            APIGatewayProxyResponseEvent().apply {
+                withStatusCode(response.statusCode.code)
+                withHeaders(response.headers)
+            }
         }
     }
 }

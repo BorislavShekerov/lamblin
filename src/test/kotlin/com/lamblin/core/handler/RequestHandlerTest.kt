@@ -1,6 +1,7 @@
-package com.lamblin.core
+package com.lamblin.core.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.lamblin.core.EndpointInvoker
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
@@ -21,7 +22,7 @@ class RequestHandlerTest {
 
     @BeforeEach
     fun setUp() {
-        clearMocks(apiGatewayProxyRequestEvent)
+        clearMocks(endpointInvoker, apiGatewayProxyRequestEvent)
 
         every { apiGatewayProxyRequestEvent.httpMethod } returns "GET"
     }
@@ -74,7 +75,8 @@ class RequestHandlerTest {
 
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
-        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse(body = Result(true))
+        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse(body = Result(
+                true))
 
         val response = requestHandler.handle(
                 apiGatewayProxyRequestEvent,

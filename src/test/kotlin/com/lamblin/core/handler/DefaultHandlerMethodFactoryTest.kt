@@ -1,4 +1,4 @@
-package com.lamblin.core
+package com.lamblin.core.handler
 
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
@@ -21,7 +21,7 @@ class DefaultHandlerMethodFactoryTest {
     fun `method has no endpoint annotation`() {
         assertThrows<IllegalArgumentException> {
             DefaultHandlerMethodFactory.method(
-                    TestController::class.java.declaredMethods.first(),
+                    TestController::class.java.declaredMethods.find { it.name === "testEndpointNoAnnotation" }!!,
                     TestController::class.java)
         }
     }
@@ -29,7 +29,7 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create GET method handler when endpoint method GET and no params`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[1],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointGetAnnotationNoParams" }!!,
                 HttpMethod.GET,
                 path = "path")
     }
@@ -37,7 +37,7 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create GET method handler when endpoint method GET with path param`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[2],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointGetQueryParams" }!!,
                 HttpMethod.GET,
                 path = "path/$PATH_PARAM_NAME",
                 paramNameToParam = mapOf("arg0" to HandlerMethodParameter(
@@ -49,7 +49,7 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create GET method handler when endpoint method GET with query param`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[3],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointGetPathParams" }!!,
                 HttpMethod.GET,
                 paramNameToParam = mapOf("arg0" to HandlerMethodParameter(
                         annotationMappedName = QUERY_PARAM_NAME,
@@ -61,7 +61,7 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create GET method handler when endpoint method GET with query and path params`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[4],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointGetQueryAndPathParams" }!!,
                 HttpMethod.GET,
                 path = "path/$PATH_PARAM_NAME",
                 paramNameToParam = mapOf(
@@ -79,17 +79,17 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create POST method handler when endpoint method POST without body`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[5],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointPostNoBody" }!!,
                 HttpMethod.POST)
     }
 
     @Test
     fun `should create POST method handler when endpoint method POST with request body`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[6],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointPostWithBody" }!!,
                 HttpMethod.POST,
                 path = "path",
-                paramNameToParam = mapOf("arg0" to HandlerMethodParameter(
+                paramNameToParam = mapOf("arg0" to HandlerMethodParameter.requestBodyParam(
                         name = "arg0",
                         type = Any::class.java)))
     }
@@ -97,17 +97,17 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create PATCH method handler when endpoint method PATCH without body`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[7],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointPatchNoBody" }!!,
                 HttpMethod.PATCH)
     }
 
     @Test
     fun `should create PATCH method handler when endpoint method PATCH with request body`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[8],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointPatchWithBody" }!!,
                 HttpMethod.PATCH,
                 path = "path",
-                paramNameToParam = mapOf("arg0" to HandlerMethodParameter(
+                paramNameToParam = mapOf("arg0" to HandlerMethodParameter.requestBodyParam(
                         name = "arg0",
                         type = Any::class.java)))
     }
@@ -115,7 +115,7 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create DELETE method handler when endpoint method DELETE`() {
         verifyCorrectMethodHandlerCreated(
-                TestController::class.java.declaredMethods[9],
+                TestController::class.java.declaredMethods.find { it.name === "testEndpointDelete" }!!,
                 HttpMethod.DELETE)
     }
 
@@ -128,14 +128,15 @@ class DefaultHandlerMethodFactoryTest {
                 endpointMethod,
                 TestController::class.java)
 
-        assertThat(handlerMethod.controllerClass).isEqualTo(TestController::class.java)
+        assertThat(handlerMethod.controllerClass).isEqualTo(
+                TestController::class.java)
         assertThat(handlerMethod.method).isEqualTo(endpointMethod)
         assertThat(handlerMethod.httpMethod).isEqualTo(httpMethod)
         assertThat(handlerMethod.path).isEqualTo(path)
         assertThat(handlerMethod.paramNameToParam).isEqualTo(paramNameToParam)
     }
 
-    class TestController {
+    private class TestController {
 
         fun testEndpointNoAnnotation(): HttpResponse<Void> {
             return HttpResponse()
@@ -147,21 +148,21 @@ class DefaultHandlerMethodFactoryTest {
         }
 
         @Endpoint(path = "path/$PATH_PARAM_NAME", method = HttpMethod.GET)
-        fun testEndpointGetQueryParams(@PathParam(PATH_PARAM_NAME) pathParam: String): HttpResponse<Void> {
-            return HttpResponse()
+        fun testEndpointGetQueryParams(@PathParam(PATH_PARAM_NAME) pathParam: String): HttpResponse<String> {
+            return HttpResponse.ok(pathParam)
         }
 
         @Endpoint(path = "path", method = HttpMethod.GET)
-        fun testEndpointGetPathParams(@QueryParam(QUERY_PARAM_NAME) queryParam: String): HttpResponse<Void> {
-            return HttpResponse()
+        fun testEndpointGetPathParams(@QueryParam(QUERY_PARAM_NAME) queryParam: String): HttpResponse<String> {
+            return HttpResponse.ok(queryParam)
         }
 
         @Endpoint(path = "path/$PATH_PARAM_NAME", method = HttpMethod.GET)
         fun testEndpointGetQueryAndPathParams(
                 @PathParam(PATH_PARAM_NAME) pathParam: String,
-                @QueryParam(QUERY_PARAM_NAME) queryParam: String): HttpResponse<Void> {
+                @QueryParam(QUERY_PARAM_NAME) queryParam: String): HttpResponse<String> {
 
-            return HttpResponse()
+            return HttpResponse.ok(pathParam + queryParam)
         }
 
         @Endpoint(path = "path", method = HttpMethod.POST)
@@ -170,8 +171,8 @@ class DefaultHandlerMethodFactoryTest {
         }
 
         @Endpoint(path = "path", method = HttpMethod.POST)
-        fun testEndpointPostWithBody(@RequestBody body: Any): HttpResponse<Void> {
-            return HttpResponse()
+        fun testEndpointPostWithBody(@RequestBody body: Any): HttpResponse<String> {
+            return HttpResponse.ok(body.toString())
         }
 
         @Endpoint(path = "path", method = HttpMethod.PATCH)
@@ -180,8 +181,8 @@ class DefaultHandlerMethodFactoryTest {
         }
 
         @Endpoint(path = "path", method = HttpMethod.PATCH)
-        fun testEndpointPatchWithBody(@RequestBody body: Any): HttpResponse<Void> {
-            return HttpResponse()
+        fun testEndpointPatchWithBody(@RequestBody body: Any): HttpResponse<String> {
+            return HttpResponse.ok(body.toString())
         }
 
         @Endpoint(path = "path", method = HttpMethod.DELETE)

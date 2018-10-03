@@ -5,33 +5,28 @@ import com.lamblin.core.OBJECT_MAPPER
 import com.lamblin.core.exception.RequestPayloadParseException
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.REQUEST_BODY_MAPPED_NAME
 import com.lamblin.core.model.annotation.RequestBody
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.lang.reflect.Parameter
 
-private val LOGGER = LoggerFactory.getLogger(BodyJsonDeserializer::class.java)
+private val LOGGER = LoggerFactory.getLogger(RequestBodyEndpointParamValueInjector::class.java)
 
-internal interface BodyJsonDeserializer {
+/** Defines a mechanism for deciding the values of request body (i.e. parameters annotated with [RequestBody]). */
+object RequestBodyEndpointParamValueInjector : EndpointParamValueInjector {
 
-    /**
-     * Attempts to deserialize the JSON into a variable, using the parameter to define the target variable type.
-     */
-    fun deserializeBodyJson(parameters: Array<Parameter>, bodyJson: String): Pair<String, Any>
+    override fun injectParamValues(
+            request: APIGatewayProxyRequestEvent,
+            handlerMethod: HandlerMethod,
+            paramAnnotationMappedNameToParam: Map<String, Parameter>) =
 
-    /**
-     * Checks if the request body(if present) can be desiralized into a parameter defined in the [HandlerMethod]
-     */
-    fun canDeserializeRequestBody(handlerMethod: HandlerMethod, request: APIGatewayProxyRequestEvent): Boolean
-}
+            if (canDeserializeRequestBody(handlerMethod, request)) {
+                mapOf(deserializeBodyJson(paramAnnotationMappedNameToParam.values, request.body))
+            } else mapOf()
 
-/**
- * The mechanism responsible for deserializing a JSON string
- * into a variable of type defined by a given endpoint parameter.
- */
-internal object DefaultBodyJsonDeserializer : BodyJsonDeserializer {
 
-    override fun canDeserializeRequestBody(
+    private fun canDeserializeRequestBody(
             handlerMethod: HandlerMethod,
             request: APIGatewayProxyRequestEvent): Boolean {
 
@@ -41,13 +36,13 @@ internal object DefaultBodyJsonDeserializer : BodyJsonDeserializer {
                 && request.body.isNotEmpty()
     }
 
-    override fun deserializeBodyJson(parameters: Array<Parameter>, bodyJson: String): Pair<String, Any> {
+    private fun deserializeBodyJson(parameters: Iterable<Parameter>, bodyJson: String): Pair<String, Any> {
         LOGGER.debug("Attempting to deserialize request body")
 
         return parameters.find {
             it.annotations.any { annotation -> annotation is RequestBody }
         }?.let {
-            it.name!! to deserializeBody(it, bodyJson)
+            REQUEST_BODY_MAPPED_NAME to deserializeBody(it, bodyJson)
         } ?: throw IllegalStateException("Attempting to deserialize non-existent body param")
     }
 

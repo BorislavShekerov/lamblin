@@ -1,7 +1,7 @@
 package com.lamblin.core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.lamblin.core.extract.ParamValueExtractor
+import com.lamblin.core.extract.EndpointParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpResponse
 import org.slf4j.LoggerFactory
@@ -15,7 +15,7 @@ private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
  * Responsible for invoking a [HandlerMethod] using the details in a [APIGatewayProxyRequestEvent].
  */
 internal class EndpointInvoker(
-        private val paramValueExtractor: ParamValueExtractor,
+        private val endpointParamValueInjector: EndpointParamValueInjector,
         private val controllerRegistry: ControllerRegistry) {
 
     /**
@@ -54,15 +54,32 @@ internal class EndpointInvoker(
             controller: Any): HttpResponse<*> {
 
         try {
-            return (if (parameters.isEmpty())
-                method.invoke(controller)
-            else
-                method.invoke(controller, *paramValueExtractor
-                                    .extractParamValuesFromRequest(request, handlerMethod))) as HttpResponse<*>
+            return if (parameters.isEmpty())
+                method.invoke(controller) as HttpResponse<*>
+            else {
+                val paramValues = endpointParamValueInjector
+                        .injectParamValues(request,
+                                           handlerMethod,
+                                           handlerMethod.annotationMappedNameToParam()).values.toTypedArray()
+
+                method.invoke(controller, *paramValues) as HttpResponse<*>
+            }
         } catch (e: InvocationTargetException) {
             LOGGER.error("Exception occurred while executing handler.")
             throw e
         }
     }
 
+}
+
+fun HandlerMethod.annotationMappedNameToParam(): Map<String, Parameter> {
+    val nameToParam = method.parameters
+            .map { it.name to it }
+            .toMap()
+
+    return this.paramNameToParam.values
+            .map {
+                it.annotationMappedName to (nameToParam[it.name] ?: throw IllegalStateException(
+                        "Param not found for name ${it.name}"))
+            }.toMap()
 }

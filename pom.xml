@@ -184,6 +184,7 @@
                         <configuration>
                             <config>detekt.yml</config>
                             <configResource>detekt.yml</configResource>
+                            <baseline>baseline.xml</baseline>
                         </configuration>
                     </execution>
                 </executions>

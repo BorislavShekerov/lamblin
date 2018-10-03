@@ -1,11 +1,14 @@
-package com.lamblin.core
+package com.lamblin.core.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
+import com.lamblin.core.OBJECT_MAPPER
 import com.lamblin.core.exception.EventDeserializationException
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.ByteArrayInputStream
@@ -16,6 +19,11 @@ class RequestHandlerAdapterTest {
     private val requestHandler: RequestHandler = mockk()
 
     private val requestHandlerAdapter = RequestHandlerAdapter(requestHandler)
+
+    @BeforeEach
+    fun setUp() {
+        clearMocks(requestHandler)
+    }
 
     @Test
     fun `should throw EventDeserializationException when event cannot be deserialzied into APIGatewayProxyRequestEvent`() {

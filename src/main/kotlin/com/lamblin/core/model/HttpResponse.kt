@@ -8,6 +8,7 @@ data class HttpResponse<T>(
 
     companion object {
         fun apiError(message: String) = HttpResponse(statusCode = StatusCode.API_ERROR, body = ApiError(message))
+        fun <T> ok(body: T) = HttpResponse(body = body)
     }
 }
 

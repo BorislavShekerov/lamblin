@@ -78,7 +78,11 @@ class HandlerMethodTest {
                                 annotationMappedName = "param",
                                 name = "param",
                                 type = String::class.java),
-                        "query" to HandlerMethodParameter(name = "query", required = true, type = String::class.java)))
+                        "query" to HandlerMethodParameter(
+                                annotationMappedName = "query",
+                                name = "query",
+                                required = true,
+                                type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -95,6 +99,7 @@ class HandlerMethodTest {
                                 name = "param",
                                 type = String::class.java),
                         "query" to HandlerMethodParameter(
+                                annotationMappedName = "query",
                                 name = "query",
                                 required = true,
                                 type = String::class.java,
@@ -114,7 +119,11 @@ class HandlerMethodTest {
                                 annotationMappedName = "param",
                                 name = "param",
                                 type = String::class.java),
-                        "query" to HandlerMethodParameter(name = "query", required = false, type = String::class.java)))
+                        "query" to HandlerMethodParameter(
+                                annotationMappedName = "query",
+                                name = "query",
+                                required = false,
+                                type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -141,7 +150,8 @@ class HandlerMethodTest {
         assertThat(result).isTrue()
     }
 
-    private fun createHandlerMethod(path: String, paramMap: Map<String, HandlerMethodParameter> = mapOf()) = HandlerMethod(
+    private fun createHandlerMethod(path: String,
+                                    paramMap: Map<String, HandlerMethodParameter> = mapOf()) = HandlerMethod(
             path,
             HttpMethod.GET,
             paramMap,

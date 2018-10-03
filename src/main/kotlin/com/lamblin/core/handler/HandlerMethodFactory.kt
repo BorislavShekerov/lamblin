@@ -1,4 +1,4 @@
-package com.lamblin.core
+package com.lamblin.core.handler
 
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
@@ -34,11 +34,21 @@ internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
         val endpointAnnotation = method.annotations.find { it is Endpoint } as? Endpoint
 
         return when (endpointAnnotation?.method) {
-            POST -> createHandlerMethod(POST, endpointAnnotation.path, method, controllerClass)
-            GET -> createHandlerMethod(GET, endpointAnnotation.path, method, controllerClass)
-            PUT -> createHandlerMethod(PUT, endpointAnnotation.path, method, controllerClass)
-            PATCH -> createHandlerMethod(PATCH, endpointAnnotation.path, method, controllerClass)
-            DELETE -> createHandlerMethod(DELETE, endpointAnnotation.path, method, controllerClass)
+            POST -> createHandlerMethod(POST,
+                                                                                             endpointAnnotation.path,
+                                                                                             method, controllerClass)
+            GET -> createHandlerMethod(GET,
+                                                                                            endpointAnnotation.path,
+                                                                                            method, controllerClass)
+            PUT -> createHandlerMethod(PUT,
+                                                                                            endpointAnnotation.path,
+                                                                                            method, controllerClass)
+            PATCH -> createHandlerMethod(PATCH,
+                                                                                              endpointAnnotation.path,
+                                                                                              method, controllerClass)
+            DELETE -> createHandlerMethod(DELETE,
+                                                                                               endpointAnnotation.path,
+                                                                                               method, controllerClass)
             else -> throw IllegalArgumentException("Http Method ${endpointAnnotation?.method} not supported.")
         }
     }

@@ -4,10 +4,12 @@ import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
 
+internal const val REQUEST_BODY_MAPPED_NAME = "REQUEST_BODY"
+
 /** Defines an endpoint method parameter. */
 data class HandlerMethodParameter(
         /** The name of the target request parameter (i.e. query or path parameter name). */
-        val annotationMappedName: String? = null,
+        val annotationMappedName: String,
 
         /** The actual name of the parameter as defined in the endpoint argument list. */
         val name: String,
@@ -24,13 +26,16 @@ data class HandlerMethodParameter(
     companion object {
 
         /** Creates a parameter which is neither a query nor a path param. */
-        private fun simpleParam(
+        fun requestBodyParam(
                 name: String,
                 type: Class<*>
-        ): HandlerMethodParameter = HandlerMethodParameter(name = name, type = type)
+        ): HandlerMethodParameter = HandlerMethodParameter(
+                annotationMappedName = REQUEST_BODY_MAPPED_NAME,
+                name = name,
+                type = type)
 
         /** Creates a parameter targeting a path parameter. */
-        private fun pathParam(
+        fun pathParam(
                 name: String,
                 type: Class<*>,
                 param: PathParam
@@ -40,7 +45,7 @@ data class HandlerMethodParameter(
                 type = type)
 
         /** Creates a parameter targeting a query parameter. */
-        private fun queryParam(
+        fun queryParam(
                 name: String,
                 type: Class<*>,
                 param: QueryParam
@@ -58,7 +63,7 @@ data class HandlerMethodParameter(
 
             is PathParam -> pathParam(name, type, annotation)
             is QueryParam -> queryParam(name, type, annotation)
-            is RequestBody -> simpleParam(name, type)
+            is RequestBody -> requestBodyParam(name, type)
             else -> throw IllegalArgumentException("Annotation $annotation not supported")
         }
     }
