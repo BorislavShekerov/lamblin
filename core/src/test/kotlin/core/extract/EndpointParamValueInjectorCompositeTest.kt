@@ -1,6 +1,9 @@
-package com.lamblin.core.extract
+package core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.lamblin.core.extract.EndpointParamValueInjectorComposite
+import com.lamblin.core.extract.PathParamEndpointValueInjector
+import com.lamblin.core.extract.QueryEndpointParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod

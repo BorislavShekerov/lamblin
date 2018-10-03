@@ -1,6 +1,8 @@
-package com.lamblin.core
+package core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.lamblin.core.ControllerRegistry
+import com.lamblin.core.EndpointInvoker
 import com.lamblin.core.extract.EndpointParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
@@ -44,7 +46,8 @@ class EndpointInvokerTest {
                 "/path",
                 TestController::class.java.declaredMethods.find { it.name === "testEndpointNoParams" }!!)
 
-        every { controllerRegistry.controllerForClass(TestController::class.java) } returns TestController()
+        every { controllerRegistry.controllerForClass(
+                TestController::class.java) } returns TestController()
 
         val result = endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent())
 
@@ -61,7 +64,8 @@ class EndpointInvokerTest {
                 mapOf("param" to HandlerMethodParameter(annotationMappedName = "test", name = "arg0",
                                                         type = String::class.java)))
 
-        every { controllerRegistry.controllerForClass(TestController::class.java) } returns TestController()
+        every { controllerRegistry.controllerForClass(
+                TestController::class.java) } returns TestController()
 
         val request = APIGatewayProxyRequestEvent()
         val argument = "arg"
@@ -90,7 +94,7 @@ class EndpointInvokerTest {
             method = method,
             controllerClass = TestController::class.java)
 
-    private class TestController {
+    class TestController {
         fun testEndpointNoParams(): HttpResponse<String> {
             return HttpResponse(body = "")
         }

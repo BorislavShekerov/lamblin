@@ -1,5 +1,7 @@
-package com.lamblin.core
+package core
 
+import com.lamblin.core.ControllerRegistry
+import com.lamblin.core.FrontController
 import com.lamblin.core.handler.HandlerMethodFactory
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
@@ -35,14 +37,17 @@ class FrontControllerTest {
         val controllerRegistry: ControllerRegistry = mockk()
 
         every {
-            handlerMethodFactory.method(TestControllerWithEndpoints1::class.java.declaredMethods[0],
-                                        TestControllerWithEndpoints1::class.java)
+            handlerMethodFactory.method(
+                    TestControllerWithEndpoints1::class.java.declaredMethods[0],
+                    TestControllerWithEndpoints1::class.java)
         } returns getHandlerMethod
         every {
-            handlerMethodFactory.method(TestControllerWithEndpoints1::class.java.declaredMethods[1],
-                                        TestControllerWithEndpoints1::class.java)
+            handlerMethodFactory.method(
+                    TestControllerWithEndpoints1::class.java.declaredMethods[1],
+                    TestControllerWithEndpoints1::class.java)
         } returns postHandlerMethod
-        every { controllerRegistry.controllerClasses() } returns listOf(TestControllerWithEndpoints1::class.java)
+        every { controllerRegistry.controllerClasses() } returns listOf(
+                TestControllerWithEndpoints1::class.java)
 
         val frontController = FrontController(mockk(),
                                               handlerMethodFactory,
@@ -61,24 +66,29 @@ class FrontControllerTest {
         val controllerRegistry: ControllerRegistry = mockk()
 
         every {
-            handlerMethodFactory.method(TestControllerWithEndpoints1::class.java.declaredMethods[0],
-                                        TestControllerWithEndpoints1::class.java)
+            handlerMethodFactory.method(
+                    TestControllerWithEndpoints1::class.java.declaredMethods[0],
+                    TestControllerWithEndpoints1::class.java)
         } returns getHandlerMethod
         every {
-            handlerMethodFactory.method(TestControllerWithEndpoints1::class.java.declaredMethods[1],
-                                        TestControllerWithEndpoints1::class.java)
+            handlerMethodFactory.method(
+                    TestControllerWithEndpoints1::class.java.declaredMethods[1],
+                    TestControllerWithEndpoints1::class.java)
         } returns postHandlerMethod
 
         every {
-            handlerMethodFactory.method(TestControllerWithEndpoints2::class.java.declaredMethods[0],
-                                        TestControllerWithEndpoints2::class.java)
+            handlerMethodFactory.method(
+                    TestControllerWithEndpoints2::class.java.declaredMethods[0],
+                    TestControllerWithEndpoints2::class.java)
         } returns getHandlerMethod2
         every {
-            handlerMethodFactory.method(TestControllerWithEndpoints2::class.java.declaredMethods[1],
-                                        TestControllerWithEndpoints2::class.java)
+            handlerMethodFactory.method(
+                    TestControllerWithEndpoints2::class.java.declaredMethods[1],
+                    TestControllerWithEndpoints2::class.java)
         } returns postHandlerMethod2
-        every { controllerRegistry.controllerClasses() } returns listOf(TestControllerWithEndpoints1::class.java,
-                                                                        TestControllerWithEndpoints2::class.java)
+        every { controllerRegistry.controllerClasses() } returns listOf(
+                TestControllerWithEndpoints1::class.java,
+                TestControllerWithEndpoints2::class.java)
 
         val frontController = FrontController(mockk(),
                                               handlerMethodFactory,
@@ -95,7 +105,8 @@ class FrontControllerTest {
     fun `should not create handler methods if no endpoints in controller`() {
         val controllerRegistry: ControllerRegistry = mockk()
 
-        every { controllerRegistry.controllerClasses() } returns listOf(TestControllerNoEndpoints::class.java)
+        every { controllerRegistry.controllerClasses() } returns listOf(
+                TestControllerNoEndpoints::class.java)
 
         val frontController = FrontController(mockk(),
                                               mockk(relaxed = true),

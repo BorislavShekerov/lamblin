@@ -1,8 +1,9 @@
-package com.lamblin.core.extract
+package core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lamblin.core.exception.RequestPayloadParseException
+import com.lamblin.core.extract.RequestBodyEndpointParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
@@ -97,7 +98,8 @@ class RequestBodyEndpointParamValueInjectorTest {
                 handlerMethod,
                 mapOf(REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[0]))
 
-        assertThat(result).isEqualTo(mapOf(REQUEST_BODY_MAPPED_NAME to TestBody("test")))
+        assertThat(result).isEqualTo(mapOf(REQUEST_BODY_MAPPED_NAME to TestBody(
+                "test")))
     }
 
     private data class TestBody(@JsonProperty val content: String)

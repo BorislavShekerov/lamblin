@@ -1,5 +1,6 @@
-package com.lamblin.core.handler
+package core.handler
 
+import com.lamblin.core.handler.DefaultHandlerMethodFactory
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse

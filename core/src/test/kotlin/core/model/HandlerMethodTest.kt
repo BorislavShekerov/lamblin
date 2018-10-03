@@ -1,5 +1,8 @@
-package com.lamblin.core.model
+package core.model
 
+import com.lamblin.core.model.HandlerMethod
+import com.lamblin.core.model.HandlerMethodParameter
+import com.lamblin.core.model.HttpMethod
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

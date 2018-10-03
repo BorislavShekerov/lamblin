@@ -1,7 +1,8 @@
-package com.lamblin.core.handler
+package core.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.EndpointInvoker
+import com.lamblin.core.handler.RequestHandler
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse

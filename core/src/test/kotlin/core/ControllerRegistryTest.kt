@@ -1,5 +1,6 @@
-package com.lamblin.core
+package core
 
+import com.lamblin.core.ControllerRegistry
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

@@ -1,9 +1,11 @@
-package com.lamblin.core.handler
+package core.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.lamblin.core.OBJECT_MAPPER
 import com.lamblin.core.exception.EventDeserializationException
+import com.lamblin.core.handler.RequestHandler
+import com.lamblin.core.handler.RequestHandlerAdapter
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
