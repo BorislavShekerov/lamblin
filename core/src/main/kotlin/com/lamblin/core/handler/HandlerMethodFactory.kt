@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import kotlin.reflect.KCallable
 
+/** Defines the mechanism for creating [HandlerMethod]. */
 internal interface HandlerMethodFactory {
     fun method(method: Method, controllerClass: Class<out Any>): HandlerMethod
 
@@ -27,7 +28,7 @@ private val LOGGER = LoggerFactory.getLogger(DefaultHandlerMethodFactory::class.
  * Defines the mechanism for creating [HandlerMethod] instances after inspecting
  * the details(annotations) of a [KCallable].
  */
-internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
+internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
 
     /** Creates a [HandlerMethod] instance using the details(annotations and parameters) of the input [KCallable]. */
     override fun method(method: Method, controllerClass: Class<out Any>): HandlerMethod {
@@ -35,20 +36,20 @@ internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
 
         return when (endpointAnnotation?.method) {
             POST -> createHandlerMethod(POST,
-                                                                                             endpointAnnotation.path,
-                                                                                             method, controllerClass)
+                                        endpointAnnotation.path,
+                                        method, controllerClass)
             GET -> createHandlerMethod(GET,
-                                                                                            endpointAnnotation.path,
-                                                                                            method, controllerClass)
+                                       endpointAnnotation.path,
+                                       method, controllerClass)
             PUT -> createHandlerMethod(PUT,
-                                                                                            endpointAnnotation.path,
-                                                                                            method, controllerClass)
+                                       endpointAnnotation.path,
+                                       method, controllerClass)
             PATCH -> createHandlerMethod(PATCH,
-                                                                                              endpointAnnotation.path,
-                                                                                              method, controllerClass)
+                                         endpointAnnotation.path,
+                                         method, controllerClass)
             DELETE -> createHandlerMethod(DELETE,
-                                                                                               endpointAnnotation.path,
-                                                                                               method, controllerClass)
+                                          endpointAnnotation.path,
+                                          method, controllerClass)
             else -> throw IllegalArgumentException("Http Method ${endpointAnnotation?.method} not supported.")
         }
     }
@@ -61,7 +62,7 @@ internal object DefaultHandlerMethodFactory: HandlerMethodFactory {
 
         val paramNameToParam = method.parameters.asSequence()
                 .filter { !it.annotations.isEmpty() }
-                .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.type , it.annotations[0]) }
+                .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.type, it.annotations[0]) }
                 .toMap()
 
         LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.canonicalName, method.name)

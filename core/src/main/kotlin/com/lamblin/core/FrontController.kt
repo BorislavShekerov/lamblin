@@ -27,7 +27,7 @@ class FrontController internal constructor(
 
         /** Creates an instance using a list of controller endpoint classes. */
         fun instance(controllers: Set<Any>): FrontController {
-            val controllerRegistry = ControllerRegistry(setOf(controllers))
+            val controllerRegistry = ControllerRegistry(controllers)
 
             return FrontController(
                     RequestHandlerAdapter(

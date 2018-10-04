@@ -45,7 +45,6 @@ internal class EndpointInvoker(
 
     }
 
-    @Throws(IllegalAccessException::class, InvocationTargetException::class)
     private fun invokeControllerMethod(
             handlerMethod: HandlerMethod,
             request: APIGatewayProxyRequestEvent,

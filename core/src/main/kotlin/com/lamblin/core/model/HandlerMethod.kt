@@ -5,6 +5,7 @@ import java.lang.reflect.Method
 
 private val LOGGER = LoggerFactory.getLogger(HandlerMethod::class.java)
 
+/** Defines the structure of an endpoint handling method. */
 data class HandlerMethod(
         /** The URL path, i.e /foo/bar. */
         val path: String,

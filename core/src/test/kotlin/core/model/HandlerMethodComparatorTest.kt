@@ -111,6 +111,20 @@ class HandlerMethodComparatorTest {
         assertThat(handlerMethodComparator.compare(handleMethod1, handleMethod2)).isEqualTo(0)
     }
 
+    @Test
+    fun `path with query param should take precedence when comparing to equivalent path-param-based paths`() {
+        val handleMethod1 = createHandlerMethod(
+                "/path/{param}?query=query",
+                mapOf("query" to HandlerMethodParameter(
+                        annotationMappedName = "query",
+                        name = "query",
+                        required = true,
+                        type = String::class.java)))
+        val handleMethod2 = createHandlerMethod("/path/{param}")
+
+        assertThat(handlerMethodComparator.compare(handleMethod1, handleMethod2)).isEqualTo(-1)
+    }
+
     private fun createHandlerMethod(path: String,
                                     params: Map<String, HandlerMethodParameter> = mapOf()) = HandlerMethod(
             path,
