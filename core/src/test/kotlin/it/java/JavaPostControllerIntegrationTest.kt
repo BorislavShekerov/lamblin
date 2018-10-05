@@ -1,4 +1,4 @@
-package it
+package it.kotlin
 
 import com.lamblin.core.FrontController
 import com.lamblin.core.model.HttpMethod
@@ -7,6 +7,15 @@ import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
+import it.ExampleRequestBody
+import it.PATH_PARAM_1
+import it.PATH_PARAM_2
+import it.QUERY_PARAM_1
+import it.QUERY_PARAM_2
+import it.ResponseEntity
+import it.createRequestInputStream
+import it.java.controller.PostController
+import it.runRequestAndVerifyResponse
 import org.junit.jupiter.api.Test
 
 const val SIMPLE_POST_ENDPOINT = "/post/simple"
@@ -15,9 +24,10 @@ const val QUERY_PARAM_PARAM_POST_ENDPOINT = "/post/query-param"
 const val SINGLE_PATH_PARAM_PATH_POST_ENDPOINT = "/post/path/{$PATH_PARAM_1}"
 const val MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT = "/post/path/{$PATH_PARAM_1}/foo/{$PATH_PARAM_2}"
 
-class PostControllerIntegrationTest {
+class JavaPostControllerIntegrationTest {
 
-    private val frontController = FrontController.instance(setOf(PostController()))
+    private val frontController = FrontController.instance(setOf(
+            PostController()))
 
     @Test
     fun `should handle POST requests with no params`() {
@@ -84,19 +94,6 @@ class PostControllerIntegrationTest {
     }
 
     @Test
-    fun `should handle POST requests with request body`() {
-        val requestBody = ExampleRequestBody("test")
-
-        runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        SIMPLE_REQUEST_BODY_POST_ENDPOINT,
-                        HttpMethod.POST,
-                        body = requestBody),
-                expectedResponseBodyContent = "$SIMPLE_REQUEST_BODY_POST_ENDPOINT-${requestBody.body}")
-    }
-
-    @Test
     fun `should handle POST requests with multiple path params and query params`() {
         val queryParamValue = "queryParamValue"
         val pathParamValue1 = "value1"
@@ -113,57 +110,17 @@ class PostControllerIntegrationTest {
                 expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT-$queryParamValue,$pathParamValue1,$pathParamValue2")
     }
 
-    class PostController {
+    @Test
+    fun `should handle POST requests with request body`() {
+        val requestBody = ExampleRequestBody("test")
 
-        @Endpoint(SIMPLE_POST_ENDPOINT, method = HttpMethod.POST)
-        fun simplePostNoParams(): HttpResponse<ResponseEntity> {
-            return HttpResponse.ok(ResponseEntity(SIMPLE_POST_ENDPOINT))
-        }
-
-        @Endpoint(QUERY_PARAM_PARAM_POST_ENDPOINT, method = HttpMethod.POST)
-        fun singleQueryParamTest(@QueryParam(QUERY_PARAM_1) queryParam: String): HttpResponse<ResponseEntity> {
-            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_PARAM_POST_ENDPOINT-$queryParam"))
-        }
-
-        @Endpoint(QUERY_PARAM_PARAM_POST_ENDPOINT, method = HttpMethod.POST)
-        fun multipleQueryParamTest(
-                @QueryParam(QUERY_PARAM_1) queryParam1: String,
-                @QueryParam(QUERY_PARAM_2) queryParam2: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_PARAM_POST_ENDPOINT-$queryParam1,$queryParam2"))
-        }
-
-        @Endpoint(SINGLE_PATH_PARAM_PATH_POST_ENDPOINT, method = HttpMethod.POST)
-        fun singlePathParamPath(
-                @PathParam(PATH_PARAM_1) pathParam: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$SINGLE_PATH_PARAM_PATH_POST_ENDPOINT-$pathParam"))
-        }
-
-        @Endpoint(MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT, method = HttpMethod.POST)
-        fun multiplePathParamPath(
-                @PathParam(PATH_PARAM_1) pathParamOne: String,
-                @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT-$pathParamOne,$pathParamTwo"))
-        }
-
-        @Endpoint(SIMPLE_REQUEST_BODY_POST_ENDPOINT, method = HttpMethod.POST)
-        fun requestBody(
-                @RequestBody exampleRequestBody: ExampleRequestBody): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$SIMPLE_REQUEST_BODY_POST_ENDPOINT-${exampleRequestBody.body}"))
-        }
-
-        @Endpoint(MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT, method = HttpMethod.POST)
-        fun multiplePathParamWithQueryParamsPath(
-                @QueryParam(QUERY_PARAM_1) queryParam: String,
-                @PathParam(PATH_PARAM_1) pathParamOne: String,
-                @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT-$queryParam,$pathParamOne,$pathParamTwo"))
-        }
+        runRequestAndVerifyResponse(
+                frontController,
+                createRequestInputStream(
+                        SIMPLE_REQUEST_BODY_POST_ENDPOINT,
+                        HttpMethod.POST,
+                        body = requestBody),
+                expectedResponseBodyContent = "$SIMPLE_REQUEST_BODY_POST_ENDPOINT-${requestBody.body}")
     }
 
-    data class ExampleRequestBody(val body: String)
 }

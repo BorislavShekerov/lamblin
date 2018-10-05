@@ -7,8 +7,12 @@ data class HttpResponse<T>(
         val body: T? = null) {
 
     companion object {
+        @JvmStatic
         fun apiError(message: String) = HttpResponse(statusCode = StatusCode.API_ERROR, body = ApiError(message))
+        @JvmStatic
         fun <T> ok(body: T) = HttpResponse(body = body)
+        @JvmStatic
+        fun withCode(statusCode: StatusCode) = HttpResponse<Any>(statusCode = statusCode)
     }
 }
 

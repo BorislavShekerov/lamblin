@@ -1,4 +1,4 @@
-package it
+package it.kotlin
 
 import com.lamblin.core.FrontController
 import com.lamblin.core.model.HttpMethod
@@ -7,17 +7,21 @@ import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
+import it.ExampleRequestBody
+import it.PATH_PARAM_1
+import it.PATH_PARAM_2
+import it.QUERY_PARAM_1
+import it.QUERY_PARAM_2
+import it.ResponseEntity
+import it.createRequestInputStream
+import it.kotlin.controller.PatchController
+import it.runRequestAndVerifyResponse
 import org.junit.jupiter.api.Test
 
-const val SIMPLE_PATCH_ENDPOINT = "/patch/simple"
-const val SIMPLE_REQUEST_BODY_PATCH_ENDPOINT = "/patch/request-body"
-const val QUERY_PARAM_PARAM_PATCH_ENDPOINT = "/patch/query-param"
-const val SINGLE_PATH_PARAM_PATH_PATCH_ENDPOINT = "/patch/path/{$PATH_PARAM_1}"
-const val MULTIPLE_PATH_PARAM_PATH_PATCH_ENDPOINT = "/patch/path/{$PATH_PARAM_1}/foo/{$PATH_PARAM_2}"
+class KotlinPatchControllerIntegrationTest {
 
-class PatchControllerIntegrationTest {
-
-    private val frontController = FrontController.instance(setOf(PatchController()))
+    private val frontController = FrontController.instance(setOf(
+            PatchController()))
 
     @Test
     fun `should handle PATCH requests with no params`() {
@@ -112,58 +116,4 @@ class PatchControllerIntegrationTest {
                         mapOf(QUERY_PARAM_1 to queryParamValue)),
                 expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_PATH_PATCH_ENDPOINT-$queryParamValue,$pathParamValue1,$pathParamValue2")
     }
-
-    class PatchController {
-
-        @Endpoint(SIMPLE_PATCH_ENDPOINT, method = HttpMethod.PATCH)
-        fun simplePostNoParams(): HttpResponse<ResponseEntity> {
-            return HttpResponse.ok(ResponseEntity(SIMPLE_PATCH_ENDPOINT))
-        }
-
-        @Endpoint(QUERY_PARAM_PARAM_PATCH_ENDPOINT, method = HttpMethod.PATCH)
-        fun singleQueryParamTest(@QueryParam(QUERY_PARAM_1) queryParam: String): HttpResponse<ResponseEntity> {
-            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_PARAM_PATCH_ENDPOINT-$queryParam"))
-        }
-
-        @Endpoint(QUERY_PARAM_PARAM_PATCH_ENDPOINT, method = HttpMethod.PATCH)
-        fun multipleQueryParamTest(
-                @QueryParam(QUERY_PARAM_1) queryParam1: String,
-                @QueryParam(QUERY_PARAM_2) queryParam2: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_PARAM_PATCH_ENDPOINT-$queryParam1,$queryParam2"))
-        }
-
-        @Endpoint(SINGLE_PATH_PARAM_PATH_PATCH_ENDPOINT, method = HttpMethod.PATCH)
-        fun singlePathParamPath(
-                @PathParam(PATH_PARAM_1) pathParam: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$SINGLE_PATH_PARAM_PATH_PATCH_ENDPOINT-$pathParam"))
-        }
-
-        @Endpoint(MULTIPLE_PATH_PARAM_PATH_PATCH_ENDPOINT, method = HttpMethod.PATCH)
-        fun multiplePathParamPath(
-                @PathParam(PATH_PARAM_1) pathParamOne: String,
-                @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_PATH_PATCH_ENDPOINT-$pathParamOne,$pathParamTwo"))
-        }
-
-        @Endpoint(SIMPLE_REQUEST_BODY_PATCH_ENDPOINT, method = HttpMethod.PATCH)
-        fun requestBody(
-                @RequestBody exampleRequestBody: ExampleRequestBody): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$SIMPLE_REQUEST_BODY_PATCH_ENDPOINT-${exampleRequestBody.body}"))
-        }
-
-        @Endpoint(MULTIPLE_PATH_PARAM_PATH_PATCH_ENDPOINT, method = HttpMethod.PATCH)
-        fun multiplePathParamWithQueryParamsPath(
-                @QueryParam(QUERY_PARAM_1) queryParam: String,
-                @PathParam(PATH_PARAM_1) pathParamOne: String,
-                @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
-
-            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_PATH_PATCH_ENDPOINT-$queryParam,$pathParamOne,$pathParamTwo"))
-        }
-    }
-
-    data class ExampleRequestBody(val body: String)
 }

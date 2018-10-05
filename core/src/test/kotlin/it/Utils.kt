@@ -18,6 +18,8 @@ const val PATH_PARAM_2 = "path_param_2"
 
 data class ResponseEntity(val content: String)
 
+data class ExampleRequestBody(val body: String)
+
 fun createRequestInputStream(
         path: String,
         httpMethod: HttpMethod,
