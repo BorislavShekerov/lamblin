@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>com.lamblin.core</artifactId>
+    <artifactId>core</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -124,11 +124,19 @@
                         </goals>
                         <configuration>
                             <config>detekt.yml</config>
-                            <configResource>../detekt.yml</configResource>
+                            <configResource>detekt.yml</configResource>
                             <baseline>core/baseline.xml</baseline>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

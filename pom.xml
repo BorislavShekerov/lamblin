@@ -10,11 +10,12 @@
     <version>0.0.1-SNAPSHOT</version>
     <modules>
         <module>core</module>
+        <module>integration-test</module>
     </modules>
     <name>com.lamblin.parent</name>
 
     <properties>
-        <kotlin.version>1.2.70</kotlin.version>
+        <kotlin.version>1.2.71</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <main.class>com.lamblin.core.FrontController</main.class>
 

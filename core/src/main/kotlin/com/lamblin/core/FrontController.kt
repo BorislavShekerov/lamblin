@@ -26,6 +26,7 @@ class FrontController internal constructor(
     companion object {
 
         /** Creates an instance using a list of controller endpoint classes. */
+        @JvmStatic
         fun instance(controllers: Set<Any>): FrontController {
             val controllerRegistry = ControllerRegistry(controllers)
 
@@ -41,7 +42,7 @@ class FrontController internal constructor(
         return controllerRegistry.controllerClasses()
                 .flatMap { this.createHttpMethodToHandlerMethodMap(it).entries }
                 .groupBy ({ it.key }, { it.value })
-                .mapValues { it.value.flatMap { it }.toSet() }
+                .mapValues { it.value.flatMap { handlerMethods -> handlerMethods }.toSet() }
     }
 
     private fun createHttpMethodToHandlerMethodMap(
@@ -50,7 +51,7 @@ class FrontController internal constructor(
         LOGGER.debug("Creating handlers for [{}]", controllerClass.canonicalName)
 
         val controllerEndpoints = setOf(*controllerClass.declaredMethods)
-                .filter { it.annotations.any { it is Endpoint } }
+                .filter { it.annotations.any { annotation -> annotation  is Endpoint } }
 
         return controllerEndpoints
                 .map { handlerMethodFactory.method(it, controllerClass) }
