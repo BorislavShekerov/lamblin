@@ -82,10 +82,24 @@ class RequestBodyEndpointParamValueInjectorTest {
 
     @Test
     fun `should deserialize body when request POST, RequestBody param present, request body present and JSON correct`() {
+        verifyThatRequestBodyWasExtractedFromValidRequest(HttpMethod.POST)
+    }
+
+    @Test
+    fun `should deserialize body when request PUT, RequestBody param present, request body present and JSON correct`() {
+        verifyThatRequestBodyWasExtractedFromValidRequest(HttpMethod.PUT)
+    }
+
+    @Test
+    fun `should deserialize body when request PATCH, RequestBody param present, request body present and JSON correct`() {
+        verifyThatRequestBodyWasExtractedFromValidRequest(HttpMethod.PATCH)
+    }
+
+    private fun verifyThatRequestBodyWasExtractedFromValidRequest(httpMethod: HttpMethod) {
         val bodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointWithBodyParam" }!!
         val handlerMethod = HandlerMethod(
                 NO_BODY_PARAM_PATH,
-                HttpMethod.POST,
+                httpMethod,
                 mapOf(),
                 bodyParamMethod,
                 TestController::class.java)

@@ -9,11 +9,11 @@ import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import org.junit.jupiter.api.Test
 
-const val CUSTOM_STATUS_CODE_ENDPOINT = "/get/custom-status-code"
-const val SIMPLE_GET_PATH = "/get/simple"
-const val QUERY_PARAM_PATH = "/get/query-param"
-const val SINGLE_PATH_PARAM_PATH = "/get/path/{$PATH_PARAM_1}"
-const val MULTIPLE_PATH_PARAM_PATH = "/get/path/{$PATH_PARAM_1}/foo/{$PATH_PARAM_2}"
+const val CUSTOM_STATUS_CODE_GET_ENDPOINT = "/get/custom-status-code"
+const val SIMPLE_GET_ENDPOINT = "/get/simple"
+const val QUERY_PARAM_GET_ENDPOINT = "/get/query-param"
+const val SINGLE_PATH_PARAM_GET_ENDPOINT = "/get/path/{$PATH_PARAM_1}"
+const val MULTIPLE_PATH_PARAM_GET_ENDPOINT = "/get/path/{$PATH_PARAM_1}/foo/{$PATH_PARAM_2}"
 
 class GetControllerIntegrationTest {
 
@@ -23,8 +23,8 @@ class GetControllerIntegrationTest {
     fun `should handle GET requests with no params`() {
         runRequestAndVerifyResponse(
                 frontController,
-                createRequestInputStream(SIMPLE_GET_PATH, HttpMethod.GET),
-                expectedResponseBodyContent = SIMPLE_GET_PATH)
+                createRequestInputStream(SIMPLE_GET_ENDPOINT, HttpMethod.GET),
+                expectedResponseBodyContent = SIMPLE_GET_ENDPOINT)
     }
 
     @Test
@@ -34,10 +34,10 @@ class GetControllerIntegrationTest {
         runRequestAndVerifyResponse(
                 frontController,
                 createRequestInputStream(
-                        QUERY_PARAM_PATH,
+                        QUERY_PARAM_GET_ENDPOINT,
                         HttpMethod.GET,
                         mapOf(QUERY_PARAM_1 to queryParamValue)),
-                expectedResponseBodyContent = "$QUERY_PARAM_PATH-$queryParamValue")
+                expectedResponseBodyContent = "$QUERY_PARAM_GET_ENDPOINT-$queryParamValue")
     }
 
     @Test
@@ -48,12 +48,12 @@ class GetControllerIntegrationTest {
         runRequestAndVerifyResponse(
                 frontController,
                 createRequestInputStream(
-                        QUERY_PARAM_PATH,
+                        QUERY_PARAM_GET_ENDPOINT,
                         HttpMethod.GET,
                         mapOf(
                                 QUERY_PARAM_1 to queryParam1Value,
                                 QUERY_PARAM_2 to queryParam2Value)),
-                expectedResponseBodyContent = "$QUERY_PARAM_PATH-$queryParam1Value,$queryParam2Value")
+                expectedResponseBodyContent = "$QUERY_PARAM_GET_ENDPOINT-$queryParam1Value,$queryParam2Value")
     }
 
     @Test
@@ -63,9 +63,9 @@ class GetControllerIntegrationTest {
         runRequestAndVerifyResponse(
                 frontController,
                 createRequestInputStream(
-                        SINGLE_PATH_PARAM_PATH.replace("{$PATH_PARAM_1}", pathParamValue),
+                        SINGLE_PATH_PARAM_GET_ENDPOINT.replace("{$PATH_PARAM_1}", pathParamValue),
                         HttpMethod.GET),
-                expectedResponseBodyContent = "$SINGLE_PATH_PARAM_PATH-$pathParamValue")
+                expectedResponseBodyContent = "$SINGLE_PATH_PARAM_GET_ENDPOINT-$pathParamValue")
     }
 
     @Test
@@ -76,11 +76,11 @@ class GetControllerIntegrationTest {
         runRequestAndVerifyResponse(
                 frontController,
                 createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_PATH
+                        MULTIPLE_PATH_PARAM_GET_ENDPOINT
                                 .replace("{$PATH_PARAM_1}", pathParamValue1)
                                 .replace("{$PATH_PARAM_2}", pathParamValue2),
                         HttpMethod.GET),
-                expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_PATH-$pathParamValue1,$pathParamValue2")
+                expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$pathParamValue1,$pathParamValue2")
     }
 
     @Test
@@ -92,12 +92,12 @@ class GetControllerIntegrationTest {
         runRequestAndVerifyResponse(
                 frontController,
                 createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_PATH
+                        MULTIPLE_PATH_PARAM_GET_ENDPOINT
                                 .replace("{$PATH_PARAM_1}", pathParamValue1)
                                 .replace("{$PATH_PARAM_2}", pathParamValue2),
                         HttpMethod.GET,
                         mapOf(QUERY_PARAM_1 to queryParamValue)),
-                expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_PATH-$queryParamValue,$pathParamValue1,$pathParamValue2")
+                expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$queryParamValue,$pathParamValue1,$pathParamValue2")
     }
 
     @Test
@@ -112,55 +112,55 @@ class GetControllerIntegrationTest {
     fun `should return status code returned from endpoint`() {
         runRequestAndVerifyResponse(
                 frontController,
-                createRequestInputStream(CUSTOM_STATUS_CODE_ENDPOINT, HttpMethod.GET),
+                createRequestInputStream(CUSTOM_STATUS_CODE_GET_ENDPOINT, HttpMethod.GET),
                 expectedStatusCode = StatusCode.ACCEPTED.code)
     }
 
     class GetController {
 
-        @Endpoint(SIMPLE_GET_PATH, method = HttpMethod.GET)
+        @Endpoint(SIMPLE_GET_ENDPOINT, method = HttpMethod.GET)
         fun simpleGetNoParams(): HttpResponse<ResponseEntity> {
-            return HttpResponse.ok(ResponseEntity(SIMPLE_GET_PATH))
+            return HttpResponse.ok(ResponseEntity(SIMPLE_GET_ENDPOINT))
         }
 
-        @Endpoint(QUERY_PARAM_PATH, method = HttpMethod.GET)
+        @Endpoint(QUERY_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
         fun signleQueryParamTest(@QueryParam(QUERY_PARAM_1) queryParam: String): HttpResponse<ResponseEntity> {
-            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_PATH-$queryParam"))
+            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_GET_ENDPOINT-$queryParam"))
         }
 
-        @Endpoint(QUERY_PARAM_PATH, method = HttpMethod.GET)
+        @Endpoint(QUERY_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
         fun multipleQueryParamTest(
                 @QueryParam(QUERY_PARAM_1) queryParam1: String,
                 @QueryParam(QUERY_PARAM_2) queryParam2: String): HttpResponse<ResponseEntity> {
 
-            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_PATH-$queryParam1,$queryParam2"))
+            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_GET_ENDPOINT-$queryParam1,$queryParam2"))
         }
 
-        @Endpoint(SINGLE_PATH_PARAM_PATH, method = HttpMethod.GET)
+        @Endpoint(SINGLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
         fun singlePathParamPath(
                 @PathParam(PATH_PARAM_1) pathParam: String): HttpResponse<ResponseEntity> {
 
-            return HttpResponse.ok(ResponseEntity("$SINGLE_PATH_PARAM_PATH-$pathParam"))
+            return HttpResponse.ok(ResponseEntity("$SINGLE_PATH_PARAM_GET_ENDPOINT-$pathParam"))
         }
 
-        @Endpoint(MULTIPLE_PATH_PARAM_PATH, method = HttpMethod.GET)
+        @Endpoint(MULTIPLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
         fun multiplePathParamPath(
                 @PathParam(PATH_PARAM_1) pathParamOne: String,
                 @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
 
-            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_PATH-$pathParamOne,$pathParamTwo"))
+            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$pathParamOne,$pathParamTwo"))
         }
 
-        @Endpoint(MULTIPLE_PATH_PARAM_PATH, method = HttpMethod.GET)
+        @Endpoint(MULTIPLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
         fun multiplePathParamWithQueryParamsPath(
                 @QueryParam(QUERY_PARAM_1) queryParam: String,
                 @PathParam(PATH_PARAM_1) pathParamOne: String,
                 @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
 
-            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_PATH-$queryParam,$pathParamOne,$pathParamTwo"))
+            return HttpResponse.ok(ResponseEntity("$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$queryParam,$pathParamOne,$pathParamTwo"))
         }
 
-        @Endpoint(CUSTOM_STATUS_CODE_ENDPOINT, method = HttpMethod.GET)
+        @Endpoint(CUSTOM_STATUS_CODE_GET_ENDPOINT, method = HttpMethod.GET)
         fun customStatusCodeEndpoint(): HttpResponse<ResponseEntity> {
             return HttpResponse(statusCode = StatusCode.ACCEPTED)
         }

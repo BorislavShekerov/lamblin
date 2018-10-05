@@ -13,8 +13,11 @@ import java.lang.reflect.Parameter
 
 private val LOGGER = LoggerFactory.getLogger(RequestBodyEndpointParamValueInjector::class.java)
 
+
 /** Defines a mechanism for deciding the values of request body (i.e. parameters annotated with [RequestBody]). */
 object RequestBodyEndpointParamValueInjector : EndpointParamValueInjector {
+
+    private val requestBodyEnabledHttpMethods = setOf(HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH)
 
     override fun injectParamValues(
             request: APIGatewayProxyRequestEvent,
@@ -30,7 +33,7 @@ object RequestBodyEndpointParamValueInjector : EndpointParamValueInjector {
             handlerMethod: HandlerMethod,
             request: APIGatewayProxyRequestEvent): Boolean {
 
-        return HttpMethod.POST === handlerMethod.httpMethod
+        return handlerMethod.httpMethod in requestBodyEnabledHttpMethods
                 && handlerMethod.method.parameters.isNotEmpty()
                 && handlerMethod.method.parameters.any { parameter -> parameter.annotations.any { it is RequestBody } }
                 && request.body.isNotEmpty()
