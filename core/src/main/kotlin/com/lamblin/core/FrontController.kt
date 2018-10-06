@@ -41,7 +41,7 @@ class FrontController internal constructor(
     internal fun createHttpMethodToPathToHandlerMethodMap(): Map<HttpMethod, Set<HandlerMethod>> {
         return controllerRegistry.controllerClasses()
                 .flatMap { this.createHttpMethodToHandlerMethodMap(it).entries }
-                .groupBy ({ it.key }, { it.value })
+                .groupBy({ it.key }, { it.value })
                 .mapValues { it.value.flatMap { handlerMethods -> handlerMethods }.toSet() }
     }
 
@@ -51,9 +51,9 @@ class FrontController internal constructor(
         LOGGER.debug("Creating handlers for [{}]", controllerClass.canonicalName)
 
         val controllerEndpoints = setOf(*controllerClass.declaredMethods)
-                .filter { it.annotations.any { annotation -> annotation  is Endpoint } }
+                .filter { it.annotations.any { annotation -> annotation is Endpoint } }
 
-        return controllerEndpoints
+        return controllerEndpoints.asSequence()
                 .map { handlerMethodFactory.method(it, controllerClass) }
                 .groupBy { it.httpMethod }
                 .mapValues { it.value.toSet() }

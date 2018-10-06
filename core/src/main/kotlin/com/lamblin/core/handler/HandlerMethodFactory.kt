@@ -10,6 +10,7 @@ import com.lamblin.core.model.HttpMethod.POST
 import com.lamblin.core.model.HttpMethod.PUT
 import com.lamblin.core.model.annotation.Endpoint
 import org.slf4j.LoggerFactory
+import java.lang.IllegalStateException
 import java.lang.reflect.Method
 import kotlin.reflect.KCallable
 
@@ -50,7 +51,7 @@ internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
             DELETE -> createHandlerMethod(DELETE,
                                           endpointAnnotation.path,
                                           method, controllerClass)
-            else -> throw IllegalArgumentException("Http Method ${endpointAnnotation?.method} not supported.")
+            else -> throw IllegalStateException("Http Method ${endpointAnnotation?.method} not supported.")
         }
     }
 

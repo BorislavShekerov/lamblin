@@ -9,6 +9,7 @@ import com.lamblin.core.extract.EndpointParamValueInjectorComposite
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodComparator
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.StatusCode
 import org.slf4j.LoggerFactory
 
@@ -62,18 +63,23 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
 
         val response = endpointInvoker.invoke(requestHandlerMethod, request)
 
-        return if (response.statusCode === StatusCode.OK) {
-            APIGatewayProxyResponseEvent().apply {
-                withStatusCode(response.statusCode.code)
-                withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
-
-                response.body?.let { withBody(OBJECT_MAPPER.writeValueAsString(response.body)) }
-            }
-        } else {
-            APIGatewayProxyResponseEvent().apply {
-                withStatusCode(response.statusCode.code)
-                withHeaders(response.headers)
-            }
-        }
+        return createApiGatewayResponseEvent(response)
     }
+
+    private fun createApiGatewayResponseEvent(
+            response: HttpResponse<*>
+    ): APIGatewayProxyResponseEvent =
+            if (response.statusCode === StatusCode.OK) {
+                APIGatewayProxyResponseEvent().apply {
+                    withStatusCode(response.statusCode.code)
+                    withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
+
+                    response.body?.let { withBody(OBJECT_MAPPER.writeValueAsString(response.body)) }
+                }
+            } else {
+                APIGatewayProxyResponseEvent().apply {
+                    withStatusCode(response.statusCode.code)
+                    withHeaders(response.headers)
+                }
+            }
 }

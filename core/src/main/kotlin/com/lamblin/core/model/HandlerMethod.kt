@@ -56,10 +56,11 @@ data class HandlerMethod(
     private fun requestPathMatchesEndpointPath(
             requestPathEntries: List<String>,
             expectedPathEntries: List<String>
-    ) = requestPathEntries.size == expectedPathEntries.size
-            && expectedPathEntries.asSequence().withIndex()
-            .filter { !isPathParamSection(it.value) }
-            .all { it.value == requestPathEntries[it.index] }
+    ) =
+            requestPathEntries.size == expectedPathEntries.size
+                    && expectedPathEntries.asSequence().withIndex()
+                    .filter { !isPathParamSection(it.value) }
+                    .all { it.value == requestPathEntries[it.index] }
 
     // Checks if the required query params (without default values) are present
     private fun requiredQueryParamsPresent(queryParams: Map<String, String>): Boolean {

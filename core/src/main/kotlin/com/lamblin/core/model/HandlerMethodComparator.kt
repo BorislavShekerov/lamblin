@@ -16,15 +16,15 @@ class HandlerMethodComparator : Comparator<HandlerMethod>, Serializable {
      *  -the method with i.e less path params takes precedence
      * - the method with more mandatory query param takes precedence
      */
-    override fun compare(o1: HandlerMethod, o2: HandlerMethod): Int {
-        val o1PathSections = o1.path.split("/")
-        val o2PathSections = o2.path.split("/")
+    override fun compare(m1: HandlerMethod, m2: HandlerMethod): Int {
+        val m1PathSections = m1.path.split("/")
+        val m2PathSections = m2.path.split("/")
 
         return when {
-            o1PathSections.size != o2PathSections.size -> o1PathSections.size - o2PathSections.size
-            comparePathParams(o1PathSections, o2PathSections) != 0 -> comparePathParams(o1PathSections,
-                                                                                        o2PathSections)
-            else -> compareMandatoryQueryParams(o1, o2)
+            m1PathSections.size != m2PathSections.size -> m1PathSections.size - m2PathSections.size
+            comparePathParams(m1PathSections, m2PathSections) != 0 -> comparePathParams(m1PathSections,
+                                                                                        m2PathSections)
+            else -> compareMandatoryQueryParams(m1, m2)
         }
     }
 
@@ -45,11 +45,11 @@ class HandlerMethodComparator : Comparator<HandlerMethod>, Serializable {
     }
 
     // The method with more mandatory query params will take precedence
-    private fun compareMandatoryQueryParams(o1: HandlerMethod, o2: HandlerMethod): Int {
-        return (o2.paramNameToParam.values.stream()
+    private fun compareMandatoryQueryParams(m1: HandlerMethod, m2: HandlerMethod): Int {
+        return (m2.paramNameToParam.values.stream()
                 .filter { it.required }
                 .count()
-                - o1.paramNameToParam.values
+                - m1.paramNameToParam.values
                 .filter { it.required }
                 .count())
                 .toInt()
