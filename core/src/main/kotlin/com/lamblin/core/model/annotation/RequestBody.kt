@@ -5,11 +5,6 @@ package com.lamblin.core.model.annotation
  *
  * The framework will attempt to deserialize the request body into the target object.
  */
-@Target(
-        AnnotationTarget.VALUE_PARAMETER,
-        AnnotationTarget.FUNCTION,
-        AnnotationTarget.PROPERTY_GETTER,
-        AnnotationTarget.PROPERTY_SETTER,
-        AnnotationTarget.FIELD)
+@Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RequestBody

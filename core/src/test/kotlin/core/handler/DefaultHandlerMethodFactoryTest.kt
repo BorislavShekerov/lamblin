@@ -20,7 +20,7 @@ class DefaultHandlerMethodFactoryTest {
 
     @Test
     fun `method has no endpoint annotation`() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<IllegalStateException> {
             DefaultHandlerMethodFactory.method(
                     TestController::class.java.declaredMethods.find { it.name === "testEndpointNoAnnotation" }!!,
                     TestController::class.java)

@@ -11,8 +11,10 @@
     <modules>
         <module>core</module>
         <module>integration-test</module>
+        <module>test</module>
+        <module>local-runner</module>
     </modules>
-    <name>com.lamblin.parent</name>
+    <name>lamblin-parent</name>
 
     <properties>
         <kotlin.version>1.2.71</kotlin.version>

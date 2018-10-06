@@ -12,11 +12,13 @@ import static java.text.MessageFormat.format;
 
 import com.lamblin.core.model.HttpMethod;
 import com.lamblin.core.model.HttpResponse;
+import com.lamblin.core.model.annotation.Controller;
 import com.lamblin.core.model.annotation.Endpoint;
 import com.lamblin.core.model.annotation.PathParam;
 import com.lamblin.core.model.annotation.QueryParam;
 import com.lamblin.it.model.ResponseEntity;
 
+@Controller
 public class DeleteController {
 
     @Endpoint(path = SIMPLE_DELETE_ENDPOINT, method = HttpMethod.DELETE)

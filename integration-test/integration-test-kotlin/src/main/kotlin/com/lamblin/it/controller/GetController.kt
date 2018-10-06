@@ -3,6 +3,7 @@ package com.lamblin.it.controller
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.StatusCode
+import com.lamblin.core.model.annotation.Controller
 import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
@@ -17,6 +18,7 @@ import com.lamblin.it.model.ResponseEntity
 import com.lamblin.it.model.SIMPLE_GET_ENDPOINT
 import com.lamblin.it.model.SINGLE_PATH_PARAM_GET_ENDPOINT
 
+@Controller
 class GetController {
 
     @Endpoint(SIMPLE_GET_ENDPOINT, method = HttpMethod.GET)

@@ -6,12 +6,7 @@ package com.lamblin.core.model.annotation
  * E.g /test?paramA=foo
  * The annotation to use here in order to target "paramA" will be @QueryParam("paramA") String param
  */
-@Target(
-        AnnotationTarget.VALUE_PARAMETER,
-        AnnotationTarget.FUNCTION,
-        AnnotationTarget.PROPERTY_GETTER,
-        AnnotationTarget.PROPERTY_SETTER,
-        AnnotationTarget.FIELD)
+@Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class QueryParam(
         /** The query param name. */

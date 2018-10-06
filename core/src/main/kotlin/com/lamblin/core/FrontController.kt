@@ -21,7 +21,7 @@ class FrontController internal constructor(
         private val handlerMethodFactory: HandlerMethodFactory,
         private val controllerRegistry: ControllerRegistry) {
 
-    private val httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>> = createHttpMethodToPathToHandlerMethodMap()
+    val httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>> = createHttpMethodToPathToHandlerMethodMap()
 
     companion object {
 

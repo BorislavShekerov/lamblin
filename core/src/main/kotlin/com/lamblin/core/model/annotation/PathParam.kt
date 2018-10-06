@@ -6,11 +6,6 @@ package com.lamblin.core.model.annotation
  * E.g /test/{param}
  * The annotation to use here in order to target "{param}" will be @PathParam("param") String param
  */
-@Target(
-        AnnotationTarget.VALUE_PARAMETER,
-        AnnotationTarget.FUNCTION,
-        AnnotationTarget.PROPERTY_GETTER,
-        AnnotationTarget.PROPERTY_SETTER,
-        AnnotationTarget.FIELD)
+@Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class PathParam(val value: String)

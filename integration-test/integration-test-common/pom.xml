@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>com.lamblin</groupId>
-      <artifactId>core</artifactId>
+      <artifactId>lamblin-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
 

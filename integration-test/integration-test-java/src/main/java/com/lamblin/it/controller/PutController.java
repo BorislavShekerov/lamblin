@@ -13,6 +13,7 @@ import static java.text.MessageFormat.format;
 
 import com.lamblin.core.model.HttpMethod;
 import com.lamblin.core.model.HttpResponse;
+import com.lamblin.core.model.annotation.Controller;
 import com.lamblin.core.model.annotation.Endpoint;
 import com.lamblin.core.model.annotation.PathParam;
 import com.lamblin.core.model.annotation.QueryParam;
@@ -20,6 +21,7 @@ import com.lamblin.core.model.annotation.RequestBody;
 import com.lamblin.it.model.ExampleRequestBody;
 import com.lamblin.it.model.ResponseEntity;
 
+@Controller
 public class PutController {
 
     @Endpoint(path = SIMPLE_PUT_ENDPOINT, method = HttpMethod.PUT)

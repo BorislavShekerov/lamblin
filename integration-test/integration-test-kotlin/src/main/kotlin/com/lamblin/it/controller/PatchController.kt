@@ -2,6 +2,7 @@ package com.lamblin.it.controller
 
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
+import com.lamblin.core.model.annotation.Controller
 import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
@@ -18,6 +19,7 @@ import com.lamblin.it.model.SIMPLE_PATCH_ENDPOINT
 import com.lamblin.it.model.SIMPLE_REQUEST_BODY_PATCH_ENDPOINT
 import com.lamblin.it.model.SINGLE_PATH_PARAM_PATH_PATCH_ENDPOINT
 
+@Controller
 class PatchController {
 
     @Endpoint(SIMPLE_PATCH_ENDPOINT, method = HttpMethod.PATCH)

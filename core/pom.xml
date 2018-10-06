@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>lamblin-core</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -125,7 +125,6 @@
                         <configuration>
                             <config>detekt.yml</config>
                             <configResource>detekt.yml</configResource>
-                            <baseline>core/baseline.xml</baseline>
                         </configuration>
                     </execution>
                 </executions>
