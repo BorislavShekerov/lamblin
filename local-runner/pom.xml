@@ -11,12 +11,10 @@
 
     <artifactId>local-runner</artifactId>
     <packaging>jar</packaging>
-
     <name>lamblin-local-runner</name>
 
     <properties>
         <javalin.version>2.2.0</javalin.version>
-        <retrofit.version>2.4.0</retrofit.version>
     </properties>
 
     <dependencies>

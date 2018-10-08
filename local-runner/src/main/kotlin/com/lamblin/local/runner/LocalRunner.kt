@@ -12,7 +12,7 @@ private val LOGGER = LoggerFactory.getLogger(LocalRunner::class.java)
 class LocalRunner internal constructor(
         private val server: Javalin,
         private val endpointRegistrator: EndpointRegistrator,
-        private val timeToBlockFor: Long = SECONDS_BEFORE_TERMINATING.toLong()) {
+        private val millisecondsToBlockFor: Long = SECONDS_BEFORE_TERMINATING.toLong()) {
 
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -23,7 +23,7 @@ class LocalRunner internal constructor(
         fun createRunner(
                 port: Int,
                 controllers: Set<Any>,
-                runTimeInSeconds: Long = SECONDS_BEFORE_TERMINATING.toLong()
+                runTimeInMilliseconds: Long = SECONDS_BEFORE_TERMINATING.toLong()
         ): LocalRunner {
 
             val server = Javalin.create().port(port)
@@ -31,7 +31,7 @@ class LocalRunner internal constructor(
 
             val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)
 
-            return LocalRunner(server, endpointRegistrator, runTimeInSeconds)
+            return LocalRunner(server, endpointRegistrator, runTimeInMilliseconds)
         }
     }
 
@@ -41,15 +41,14 @@ class LocalRunner internal constructor(
 
         executor.submit {
             try {
-                TimeUnit.HOURS.sleep(timeToBlockFor)
-            } catch (e: InterruptedException) {
-            }finally {
+                TimeUnit.HOURS.sleep(millisecondsToBlockFor)
+            } finally {
                 server.stop()
             }
         }
 
         executor.shutdown()
-        executor.awaitTermination(timeToBlockFor, TimeUnit.SECONDS)
+        executor.awaitTermination(millisecondsToBlockFor, TimeUnit.SECONDS)
     }
 
     fun stop() {

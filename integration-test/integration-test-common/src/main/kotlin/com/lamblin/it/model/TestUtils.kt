@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.lamblin.core.FrontController
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.StatusCode
 import org.assertj.core.api.Assertions.assertThat
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -24,38 +25,38 @@ const val PATH_PARAM_1 = "path_param_1"
 const val PATH_PARAM_2 = "path_param_2"
 
 fun createRequestInputStream(
-    path: String,
-    httpMethod: HttpMethod,
-    body: Any) = createRequestInputStream(path, httpMethod, mapOf(), body)
+        path: String,
+        httpMethod: HttpMethod,
+        body: Any) = createRequestInputStream(path, httpMethod, mapOf(), body)
 
 @JvmOverloads
 fun createRequestInputStream(
-    path: String,
-    httpMethod: HttpMethod,
-    queryParams: Map<String, String> = mapOf(),
-    body: Any? = null) =
+        path: String,
+        httpMethod: HttpMethod,
+        queryParams: Map<String, String> = mapOf(),
+        body: Any? = null) =
 
-    ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(APIGatewayProxyRequestEvent().apply {
-        withPath(path)
-        withHttpMethod(httpMethod.name)
-        withQueryStringParamters(queryParams)
-        body?.let { withBody(OBJECT_MAPPER.writeValueAsString(body)) }
-    }))
+        ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(APIGatewayProxyRequestEvent().apply {
+            withPath(path)
+            withHttpMethod(httpMethod.name)
+            withQueryStringParamters(queryParams)
+            body?.let { withBody(OBJECT_MAPPER.writeValueAsString(body)) }
+        }))
 
 fun runRequestAndVerifyResponse(
-    frontController: FrontController,
-    requestInputStream: InputStream,
-    expectedResponseBodyContent: String) = runRequestAndVerifyResponse(frontController,
-    requestInputStream,
-    200,
-    expectedResponseBodyContent)
+        frontController: FrontController,
+        requestInputStream: InputStream,
+        expectedResponseBodyContent: String) = runRequestAndVerifyResponse(frontController,
+                                                                           requestInputStream,
+                                                                           StatusCode.OK.code,
+                                                                           expectedResponseBodyContent)
 
 @JvmOverloads
 fun runRequestAndVerifyResponse(
-    frontController: FrontController,
-    requestInputStream: InputStream,
-    expectedStatusCode: Int = 200,
-    expectedResponseBodyContent: String? = null) {
+        frontController: FrontController,
+        requestInputStream: InputStream,
+        expectedStatusCode: Int = StatusCode.OK.code,
+        expectedResponseBodyContent: String? = null) {
 
     val outputStream = ByteArrayOutputStream()
 
@@ -68,7 +69,7 @@ fun runRequestAndVerifyResponse(
     assertThat(response.statusCode).isEqualTo(expectedStatusCode)
     expectedResponseBodyContent?.let {
         assertThat(response.body).isEqualTo(
-            OBJECT_MAPPER.writeValueAsString(ResponseEntity(it)))
+                OBJECT_MAPPER.writeValueAsString(ResponseEntity(it)))
     }
 }
 

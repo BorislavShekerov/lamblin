@@ -13,7 +13,8 @@ class ControllerRegistry(private val controllers: Set<Any>) {
                 .asSequence()
                 .find { !it::class.java.isAnnotationPresent(Controller::class.java) }
                 ?.let {
-                    throw MissingControllerAnnotationException("${it::class.java.name} class not annotated with @Controller")
+                    throw MissingControllerAnnotationException(
+                            "${it::class.java.name} class not annotated with @Controller")
                 }
     }
 
