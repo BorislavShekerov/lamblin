@@ -18,7 +18,8 @@ class JUnit4LamblinTestRunnerTest {
     fun `should run local runner before test and stop after tests are done`() {
         JUnit4LamblinTestRunner.Runner.run(localRunner, notifier, TestClass::class.java)
 
-        val description = Description.createTestDescription(TestClass::class.java, TestClass::class.java.methods[0].name)
+        val description =
+            Description.createTestDescription(TestClass::class.java, TestClass::class.java.methods[0].name)
 
         verifySequence {
             localRunner.run()

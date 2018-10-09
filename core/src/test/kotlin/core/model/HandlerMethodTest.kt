@@ -47,11 +47,12 @@ class HandlerMethodTest {
     @Test
     fun `should match when path param used, path param in the end`() {
         val handlerMethod = createHandlerMethod(
-                "/path/{param}",
-                mapOf("param" to HandlerMethodParameter(
-                        annotationMappedName = "param",
-                        name = "param",
-                        type = String::class.java)))
+            "/path/{param}",
+            mapOf(
+                "param" to HandlerMethodParameter(
+                    annotationMappedName = "param",
+                    name = "param",
+                    type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo", mapOf())
 
@@ -61,11 +62,12 @@ class HandlerMethodTest {
     @Test
     fun `should match when path param used, path param in the middle`() {
         val handlerMethod = createHandlerMethod(
-                "/path/{param}/remaining",
-                mapOf("param" to HandlerMethodParameter(
-                        annotationMappedName = "param",
-                        name = "param",
-                        type = String::class.java)))
+            "/path/{param}/remaining",
+            mapOf(
+                "param" to HandlerMethodParameter(
+                    annotationMappedName = "param",
+                    name = "param",
+                    type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -75,17 +77,17 @@ class HandlerMethodTest {
     @Test
     fun `should not match when paths match but required query param not present`() {
         val handlerMethod = createHandlerMethod(
-                "/path/{param}/remaining",
-                mapOf(
-                        "param" to HandlerMethodParameter(
-                                annotationMappedName = "param",
-                                name = "param",
-                                type = String::class.java),
-                        "query" to HandlerMethodParameter(
-                                annotationMappedName = "query",
-                                name = "query",
-                                required = true,
-                                type = String::class.java)))
+            "/path/{param}/remaining",
+            mapOf(
+                "param" to HandlerMethodParameter(
+                    annotationMappedName = "param",
+                    name = "param",
+                    type = String::class.java),
+                "query" to HandlerMethodParameter(
+                    annotationMappedName = "query",
+                    name = "query",
+                    required = true,
+                    type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -95,18 +97,18 @@ class HandlerMethodTest {
     @Test
     fun `should match when paths match, required query param not present but a default value present`() {
         val handlerMethod = createHandlerMethod(
-                "/path/{param}/remaining",
-                mapOf(
-                        "param" to HandlerMethodParameter(
-                                annotationMappedName = "param",
-                                name = "param",
-                                type = String::class.java),
-                        "query" to HandlerMethodParameter(
-                                annotationMappedName = "query",
-                                name = "query",
-                                required = true,
-                                type = String::class.java,
-                                defaultValue = "test")))
+            "/path/{param}/remaining",
+            mapOf(
+                "param" to HandlerMethodParameter(
+                    annotationMappedName = "param",
+                    name = "param",
+                    type = String::class.java),
+                "query" to HandlerMethodParameter(
+                    annotationMappedName = "query",
+                    name = "query",
+                    required = true,
+                    type = String::class.java,
+                    defaultValue = "test")))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -116,17 +118,17 @@ class HandlerMethodTest {
     @Test
     fun `should match when paths match and non-required query param not present`() {
         val handlerMethod = createHandlerMethod(
-                "/path/{param}/remaining",
-                mapOf(
-                        "param" to HandlerMethodParameter(
-                                annotationMappedName = "param",
-                                name = "param",
-                                type = String::class.java),
-                        "query" to HandlerMethodParameter(
-                                annotationMappedName = "query",
-                                name = "query",
-                                required = false,
-                                type = String::class.java)))
+            "/path/{param}/remaining",
+            mapOf(
+                "param" to HandlerMethodParameter(
+                    annotationMappedName = "param",
+                    name = "param",
+                    type = String::class.java),
+                "query" to HandlerMethodParameter(
+                    annotationMappedName = "query",
+                    name = "query",
+                    required = false,
+                    type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -136,25 +138,28 @@ class HandlerMethodTest {
     @Test
     fun `should match when paths match and required query param present`() {
         val handlerMethod = createHandlerMethod(
-                "/path/{param}/remaining",
-                mapOf(
-                        "param" to HandlerMethodParameter(
-                                annotationMappedName = "param",
-                                name = "param",
-                                type = String::class.java),
-                        "query" to HandlerMethodParameter(
-                                annotationMappedName = "query",
-                                name = "query",
-                                required = true,
-                                type = String::class.java)))
+            "/path/{param}/remaining",
+            mapOf(
+                "param" to HandlerMethodParameter(
+                    annotationMappedName = "param",
+                    name = "param",
+                    type = String::class.java),
+                "query" to HandlerMethodParameter(
+                    annotationMappedName = "query",
+                    name = "query",
+                    required = true,
+                    type = String::class.java)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf("query" to "test"))
 
         assertThat(result).isTrue()
     }
 
-    private fun createHandlerMethod(path: String,
-                                    paramMap: Map<String, HandlerMethodParameter> = mapOf()) = HandlerMethod(
+    private fun createHandlerMethod(
+        path: String,
+        paramMap: Map<String, HandlerMethodParameter> = mapOf()
+    ) =
+        HandlerMethod(
             path,
             HttpMethod.GET,
             paramMap,

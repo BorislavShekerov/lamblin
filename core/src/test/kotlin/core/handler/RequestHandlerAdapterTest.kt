@@ -48,9 +48,9 @@ class RequestHandlerAdapterTest {
         every { requestHandler.handle(request, mapOf()) } returns response
 
         requestHandlerAdapter.handlerRequest(
-                ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(request)),
-                output,
-                mapOf())
+            ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(request)),
+            output,
+            mapOf())
 
         verify { output.write(OBJECT_MAPPER.writeValueAsBytes(response)) }
     }

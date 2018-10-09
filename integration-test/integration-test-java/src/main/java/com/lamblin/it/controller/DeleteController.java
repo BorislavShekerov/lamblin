@@ -1,15 +1,5 @@
 package com.lamblin.it.controller;
 
-import static com.lamblin.it.model.EndpointsKt.MULTIPLE_PATH_PARAM_DELETE_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_DELETE_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_DELETE_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_DELETE_ENDPOINT;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
-import static java.text.MessageFormat.format;
-
 import com.lamblin.core.model.HttpMethod;
 import com.lamblin.core.model.HttpResponse;
 import com.lamblin.core.model.annotation.Controller;
@@ -17,6 +7,10 @@ import com.lamblin.core.model.annotation.Endpoint;
 import com.lamblin.core.model.annotation.PathParam;
 import com.lamblin.core.model.annotation.QueryParam;
 import com.lamblin.it.model.ResponseEntity;
+
+import static com.lamblin.it.model.EndpointsKt.*;
+import static com.lamblin.it.model.TestUtilsKt.*;
+import static java.text.MessageFormat.format;
 
 @Controller
 public class DeleteController {

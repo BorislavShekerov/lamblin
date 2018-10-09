@@ -1,42 +1,34 @@
 package com.lamblin.it.controller;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
-import com.lamblin.core.FrontController;
-import com.lamblin.core.model.HttpMethod;
+import com.lamblin.it.controller.client.DeleteControllerClient;
+import com.lamblin.test.config.LamblinTestConfig;
+import com.lamblin.test.config.annotation.LamblinTestRunnerConfig;
+import com.lamblin.test.junit4.JUnit4LamblinTestRunner;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static com.lamblin.it.model.EndpointsKt.MULTIPLE_PATH_PARAM_DELETE_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_DELETE_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.SIMPLE_DELETE_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_DELETE_ENDPOINT;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.createRequestInputStream;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;
 
+@RunWith(JUnit4LamblinTestRunner.class)
+@LamblinTestRunnerConfig(testConfigClass = DeleteControllerTest.TestConfiguration.class)
 public class DeleteControllerTest {
 
-    private FrontController frontController;
-
-    {
-        Set<Object> controllers = new HashSet<>();
-        controllers.add(new DeleteController());
-        frontController = FrontController.instance(controllers);
-    }
+    private static final DeleteControllerClient client = DeleteControllerClient.INSTANCE;
 
     @Test
     public void shouldHandleDeleteRequestsWithNoParams() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(SIMPLE_DELETE_ENDPOINT, HttpMethod.DELETE),
+                client::callSimpleDeleteNoParamsEndpoint,
                 SIMPLE_DELETE_ENDPOINT);
     }
 
@@ -45,11 +37,7 @@ public class DeleteControllerTest {
         String queryParamValue = "value";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_DELETE_ENDPOINT,
-                        HttpMethod.DELETE,
-                        ImmutableMap.of(QUERY_PARAM_1, queryParamValue)),
+                () -> client.callSingleQueryParamEndpoint(queryParamValue),
                 format(
                         "{0}-{1}",
                         QUERY_PARAM_DELETE_ENDPOINT,
@@ -62,13 +50,7 @@ public class DeleteControllerTest {
         String queryParam2Value = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_DELETE_ENDPOINT,
-                        HttpMethod.DELETE,
-                        ImmutableMap.of(
-                                QUERY_PARAM_1, queryParam1Value,
-                                QUERY_PARAM_2, queryParam2Value)),
+                () -> client.callMultiQueryParamEndpoint(queryParam1Value, queryParam2Value),
                 format(
                         "{0}-{1},{2}",
                         QUERY_PARAM_DELETE_ENDPOINT,
@@ -81,10 +63,7 @@ public class DeleteControllerTest {
         String pathParamValue = "value";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        SINGLE_PATH_PARAM_DELETE_ENDPOINT.replace("{" + PATH_PARAM_1 + "}", pathParamValue),
-                        HttpMethod.DELETE),
+                () -> client.callSinglePathParamEndpoint(pathParamValue),
                 format(
                         "{0}-{1}",
                         SINGLE_PATH_PARAM_DELETE_ENDPOINT,
@@ -97,12 +76,7 @@ public class DeleteControllerTest {
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_DELETE_ENDPOINT
-                                .replace("{" + PATH_PARAM_1 + "}", pathParamValue1)
-                                .replace("{" + PATH_PARAM_2 + "}", pathParamValue2),
-                        HttpMethod.DELETE),
+                () -> client.callMultiPathParamEndpoint(pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2}",
                         MULTIPLE_PATH_PARAM_DELETE_ENDPOINT,
@@ -117,19 +91,21 @@ public class DeleteControllerTest {
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_DELETE_ENDPOINT
-                                .replace("{" + PATH_PARAM_1 + "}", pathParamValue1)
-                                .replace("{" + PATH_PARAM_2 + "}", pathParamValue2),
-                        HttpMethod.DELETE,
-                        ImmutableMap.of(QUERY_PARAM_1, queryParamValue)),
+                () -> client.callMultiPathParamWithQueryParamEndpoint(queryParamValue, pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2},{3}",
                         MULTIPLE_PATH_PARAM_DELETE_ENDPOINT,
                         queryParamValue,
                         pathParamValue1,
                         pathParamValue2));
+    }
+
+    public static class TestConfiguration implements LamblinTestConfig {
+
+        @Override
+        public Set<Object> controllers() {
+            return ImmutableSet.of(new DeleteController());
+        }
     }
 
 }

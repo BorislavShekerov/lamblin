@@ -36,35 +36,46 @@ internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
         val endpointAnnotation = method.annotations.find { it is Endpoint } as? Endpoint
 
         return when (endpointAnnotation?.method) {
-            POST -> createHandlerMethod(POST,
-                                        endpointAnnotation.path,
-                                        method, controllerClass)
-            GET -> createHandlerMethod(GET,
-                                       endpointAnnotation.path,
-                                       method, controllerClass)
-            PUT -> createHandlerMethod(PUT,
-                                       endpointAnnotation.path,
-                                       method, controllerClass)
-            PATCH -> createHandlerMethod(PATCH,
-                                         endpointAnnotation.path,
-                                         method, controllerClass)
-            DELETE -> createHandlerMethod(DELETE,
-                                          endpointAnnotation.path,
-                                          method, controllerClass)
+            POST -> createHandlerMethod(
+                POST,
+                endpointAnnotation.path,
+                method,
+                controllerClass)
+            GET -> createHandlerMethod(
+                GET,
+                endpointAnnotation.path,
+                method,
+                controllerClass)
+            PUT -> createHandlerMethod(
+                PUT,
+                endpointAnnotation.path,
+                method,
+                controllerClass)
+            PATCH -> createHandlerMethod(
+                PATCH,
+                endpointAnnotation.path,
+                method,
+                controllerClass)
+            DELETE -> createHandlerMethod(
+                DELETE,
+                endpointAnnotation.path,
+                method,
+                controllerClass)
             else -> throw IllegalStateException("Http Method ${endpointAnnotation?.method} not supported.")
         }
     }
 
     private fun createHandlerMethod(
-            httpMethod: HttpMethod,
-            path: String,
-            method: Method,
-            controllerClass: Class<out Any>): HandlerMethod {
+        httpMethod: HttpMethod,
+        path: String,
+        method: Method,
+        controllerClass: Class<out Any>
+    ): HandlerMethod {
 
         val paramNameToParam = method.parameters.asSequence()
-                .filter { !it.annotations.isEmpty() }
-                .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.type, it.annotations[0]) }
-                .toMap()
+            .filter { !it.annotations.isEmpty() }
+            .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.type, it.annotations[0]) }
+            .toMap()
 
         LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.canonicalName, method.name)
 

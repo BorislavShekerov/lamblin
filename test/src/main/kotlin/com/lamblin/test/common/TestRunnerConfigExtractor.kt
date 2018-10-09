@@ -20,21 +20,22 @@ object DefaultTestRunnerConfigExtractor : TestRunnerConfigExtractor {
 
     override fun extractConfigFromTestClass(testClass: Class<*>): TestRunnerConfig {
         val testRunnerConfig = testClass.annotations
-                .find { it is LamblinTestRunnerConfig }
+            .find { it is LamblinTestRunnerConfig }
                 as? LamblinTestRunnerConfig
                 ?: throw TestRunnerConfigAnnotationMissingException(
-                        "LamblinTestRunnerConfig annotation missing on class ${testClass.name}")
+                    "LamblinTestRunnerConfig annotation missing on class ${testClass.name}")
 
         return TestRunnerConfig(
-                testRunnerConfig.serverPort,
-                getControllerInstances(testRunnerConfig.testConfigClass))
+            testRunnerConfig.serverPort,
+            getControllerInstances(testRunnerConfig.testConfigClass)
+        )
     }
 
     private fun getControllerInstances(configClass: KClass<*>): Set<Any> {
         val configClassInstance = configClass.createInstance()
                 as? LamblinTestConfig
                 ?: throw IllegalTestConfigClassException(
-                        "Config class ${configClass.qualifiedName} should implement LamblinTestConfig")
+                    "Config class ${configClass.qualifiedName} should implement LamblinTestConfig")
 
         return configClassInstance.controllers()
     }

@@ -11,9 +11,9 @@ interface ClientApi {
     companion object {
         fun create(baseUrl: String, objectMapper: ObjectMapper): ClientApi {
             val retrofit = Retrofit.Builder()
-                    .addConverterFactory(JacksonConverterFactory.create(objectMapper))
-                    .baseUrl(baseUrl)
-                    .build()
+                .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                .baseUrl(baseUrl)
+                .build()
 
             return retrofit.create(ClientApi::class.java)
         }

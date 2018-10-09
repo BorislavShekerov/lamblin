@@ -35,11 +35,11 @@ class RequestBodyEndpointParamValueInjectorTest {
     fun `should return empty map when no params`() {
         val noBodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointNoBodyParam" }!!
         val handlerMethod = HandlerMethod(
-                NO_BODY_PARAM_PATH,
-                HttpMethod.POST,
-                mapOf(),
-                noBodyParamMethod,
-                TestController::class.java)
+            NO_BODY_PARAM_PATH,
+            HttpMethod.POST,
+            mapOf(),
+            noBodyParamMethod,
+            TestController::class.java)
 
         val result = RequestBodyEndpointParamValueInjector.injectParamValues(mockk(), handlerMethod, mapOf())
         assertThat(result).isEmpty()
@@ -49,13 +49,14 @@ class RequestBodyEndpointParamValueInjectorTest {
     fun `should return empty map if request body empty and RequestBody param present`() {
         val bodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointWithBodyParam" }!!
         val handlerMethod = HandlerMethod(
-                NO_BODY_PARAM_PATH,
-                HttpMethod.POST,
-                mapOf(),
-                bodyParamMethod,
-                TestController::class.java)
+            NO_BODY_PARAM_PATH,
+            HttpMethod.POST,
+            mapOf(),
+            bodyParamMethod,
+            TestController::class.java)
 
-        val result = RequestBodyEndpointParamValueInjector.injectParamValues(mockk(relaxed = true), handlerMethod, mapOf())
+        val result =
+            RequestBodyEndpointParamValueInjector.injectParamValues(mockk(relaxed = true), handlerMethod, mapOf())
         assertThat(result).isEmpty()
     }
 
@@ -63,20 +64,20 @@ class RequestBodyEndpointParamValueInjectorTest {
     fun `should throw RequestPayloadParseException exception when JSON malformed`() {
         val bodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointWithBodyParam" }!!
         val handlerMethod = HandlerMethod(
-                NO_BODY_PARAM_PATH,
-                HttpMethod.POST,
-                mapOf(),
-                bodyParamMethod,
-                TestController::class.java)
+            NO_BODY_PARAM_PATH,
+            HttpMethod.POST,
+            mapOf(),
+            bodyParamMethod,
+            TestController::class.java)
 
         val request: APIGatewayProxyRequestEvent = mockk()
         every { request.body } returns """{ "content": }"""
 
         assertThrows<RequestPayloadParseException> {
             RequestBodyEndpointParamValueInjector.injectParamValues(
-                    request,
-                    handlerMethod,
-                    mapOf(REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[0]))
+                request,
+                handlerMethod,
+                mapOf(REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[0]))
         }
     }
 
@@ -98,22 +99,24 @@ class RequestBodyEndpointParamValueInjectorTest {
     private fun verifyThatRequestBodyWasExtractedFromValidRequest(httpMethod: HttpMethod) {
         val bodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointWithBodyParam" }!!
         val handlerMethod = HandlerMethod(
-                NO_BODY_PARAM_PATH,
-                httpMethod,
-                mapOf(),
-                bodyParamMethod,
-                TestController::class.java)
+            NO_BODY_PARAM_PATH,
+            httpMethod,
+            mapOf(),
+            bodyParamMethod,
+            TestController::class.java)
 
         val request: APIGatewayProxyRequestEvent = mockk()
         every { request.body } returns """{ "content": "test"}"""
 
         val result = RequestBodyEndpointParamValueInjector.injectParamValues(
-                request,
-                handlerMethod,
-                mapOf(REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[0]))
+            request,
+            handlerMethod,
+            mapOf(REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[0]))
 
-        assertThat(result).isEqualTo(mapOf(REQUEST_BODY_MAPPED_NAME to TestBody(
-                "test")))
+        assertThat(result).isEqualTo(
+            mapOf(
+                REQUEST_BODY_MAPPED_NAME to TestBody(
+                    "test")))
     }
 
     private data class TestBody(@JsonProperty val content: String)

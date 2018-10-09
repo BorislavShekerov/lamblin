@@ -31,7 +31,8 @@ class DefaultTestRunnerConfigExtractorTest {
 
     @Test
     fun `should return test runner config when test class is properly configured`() {
-        val config = DefaultTestRunnerConfigExtractor.extractConfigFromTestClass(TestWithValidTestConfiguration::class.java)
+        val config =
+            DefaultTestRunnerConfigExtractor.extractConfigFromTestClass(TestWithValidTestConfiguration::class.java)
 
         assertThat(config.port).isEqualTo(DEFAULT_SERVER_PORT)
         assertThat(config.controllers).hasSize(1)
@@ -51,7 +52,7 @@ class DefaultTestRunnerConfigExtractorTest {
     @LamblinTestRunnerConfig(testConfigClass = ValidTestConfiguration::class)
     class TestWithValidTestConfiguration
 
-    class ValidTestConfiguration: LamblinTestConfig {
+    class ValidTestConfiguration : LamblinTestConfig {
 
         override fun controllers(): Set<Any> {
             return setOf(Controller())

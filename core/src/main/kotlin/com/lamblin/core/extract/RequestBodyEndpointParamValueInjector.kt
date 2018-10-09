@@ -20,18 +20,21 @@ object RequestBodyEndpointParamValueInjector : EndpointParamValueInjector {
     private val requestBodyEnabledHttpMethods = setOf(HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH)
 
     override fun injectParamValues(
-            request: APIGatewayProxyRequestEvent,
-            handlerMethod: HandlerMethod,
-            paramAnnotationMappedNameToParam: Map<String, Parameter>) =
-
-            if (canDeserializeRequestBody(handlerMethod, request)) {
-                mapOf(deserializeBodyJson(paramAnnotationMappedNameToParam.values, request.body))
-            } else mapOf()
+        request: APIGatewayProxyRequestEvent,
+        handlerMethod: HandlerMethod,
+        paramAnnotationMappedNameToParam: Map<String, Parameter>
+    ) =
+        if (canDeserializeRequestBody(handlerMethod, request)) {
+            mapOf(deserializeBodyJson(paramAnnotationMappedNameToParam.values, request.body))
+        } else {
+            mapOf()
+        }
 
 
     private fun canDeserializeRequestBody(
-            handlerMethod: HandlerMethod,
-            request: APIGatewayProxyRequestEvent): Boolean {
+        handlerMethod: HandlerMethod,
+        request: APIGatewayProxyRequestEvent
+    ): Boolean {
 
         return handlerMethod.httpMethod in requestBodyEnabledHttpMethods
                 && handlerMethod.method.parameters.isNotEmpty()

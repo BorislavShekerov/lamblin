@@ -19,9 +19,9 @@ class QueryEndpointParamValueInjectorTest {
         every { request.queryStringParameters } returns mapOf("query1" to "value1")
 
         val result = QueryEndpointParamValueInjector.injectParamValues(
-                request,
-                mockk(),
-                mapOf("query1" to TestController::class.java.declaredMethods[0].parameters[0]))
+            request,
+            mockk(),
+            mapOf("query1" to TestController::class.java.declaredMethods[0].parameters[0]))
 
         assertThat(result).isEqualTo(mapOf("query1" to "value1"))
     }

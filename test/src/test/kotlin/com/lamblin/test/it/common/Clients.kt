@@ -11,9 +11,9 @@ interface Controller1Client {
     companion object {
         fun create(baseUrl: String, objectMapper: ObjectMapper): Controller1Client {
             val retrofit = Retrofit.Builder()
-                    .addConverterFactory(JacksonConverterFactory.create(objectMapper))
-                    .baseUrl(baseUrl)
-                    .build()
+                .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                .baseUrl(baseUrl)
+                .build()
 
             return retrofit.create(Controller1Client::class.java)
         }
@@ -28,9 +28,9 @@ interface Controller2Client {
     companion object {
         fun create(baseUrl: String, objectMapper: ObjectMapper): Controller2Client {
             val retrofit = Retrofit.Builder()
-                    .addConverterFactory(JacksonConverterFactory.create(objectMapper))
-                    .baseUrl(baseUrl)
-                    .build()
+                .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                .baseUrl(baseUrl)
+                .build()
 
             return retrofit.create(Controller2Client::class.java)
         }

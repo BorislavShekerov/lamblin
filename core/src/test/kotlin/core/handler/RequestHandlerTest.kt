@@ -45,8 +45,9 @@ class RequestHandlerTest {
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns false
 
         val response = requestHandler.handle(
-                apiGatewayProxyRequestEvent,
-                mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
+            apiGatewayProxyRequestEvent,
+            mapOf(HttpMethod.GET to setOf(handlerMethodMock))
+        )
 
         assertThat(response.statusCode).isEqualTo(404)
     }
@@ -59,11 +60,15 @@ class RequestHandlerTest {
 
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
-        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } throws RuntimeException("Error executing")
+        every {
+            endpointInvoker.invoke(
+                handlerMethodMock,
+                apiGatewayProxyRequestEvent)
+        } throws RuntimeException("Error executing")
 
         val response = requestHandler.handle(
-                apiGatewayProxyRequestEvent,
-                mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
+            apiGatewayProxyRequestEvent,
+            mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
 
         assertThat(response.statusCode).isEqualTo(500)
     }
@@ -76,12 +81,13 @@ class RequestHandlerTest {
 
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
-        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse(body = Result(
-                true))
+        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse(
+            body = Result(true))
 
         val response = requestHandler.handle(
-                apiGatewayProxyRequestEvent,
-                mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
+            apiGatewayProxyRequestEvent,
+            mapOf(HttpMethod.GET to setOf(handlerMethodMock))
+        )
 
         assertThat(response.statusCode).isEqualTo(200)
         assertThat(response.headers).isEqualTo(mapOf("Content-Type" to "application/json"))
@@ -96,11 +102,12 @@ class RequestHandlerTest {
 
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
-        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse<Any>(statusCode = StatusCode.UNAUTHORIZED)
+        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse<Any>(
+            statusCode = StatusCode.UNAUTHORIZED)
 
         val response = requestHandler.handle(
-                apiGatewayProxyRequestEvent,
-                mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
+            apiGatewayProxyRequestEvent,
+            mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
 
         assertThat(response.statusCode).isEqualTo(401)
         assertThat(response.headers).isEmpty()
@@ -116,11 +123,13 @@ class RequestHandlerTest {
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
         val headers = mapOf("Authorization" to "Token")
-        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse<Any>(statusCode = StatusCode.FORBIDDEN, headers = headers)
+        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse<Any>(
+            statusCode = StatusCode.FORBIDDEN,
+            headers = headers)
 
         val response = requestHandler.handle(
-                apiGatewayProxyRequestEvent,
-                mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
+            apiGatewayProxyRequestEvent,
+            mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
 
         assertThat(response.statusCode).isEqualTo(403)
         assertThat(response.headers).isEqualTo(headers)

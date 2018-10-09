@@ -12,22 +12,24 @@ private val LOGGER = LoggerFactory.getLogger(EndpointParamValueInjectorComposite
  * using the details in the [APIGatewayProxyRequestEvent] for the request being served.
  */
 internal class EndpointParamValueInjectorComposite internal constructor(
-        private val injectorEndpoints: List<EndpointParamValueInjector>) : EndpointParamValueInjector {
+    private val injectorEndpoints: List<EndpointParamValueInjector>
+) : EndpointParamValueInjector {
 
     companion object {
         fun instance(): EndpointParamValueInjectorComposite = EndpointParamValueInjectorComposite(
-                listOf(
-                        PathParamEndpointValueInjector,
-                        QueryEndpointParamValueInjector,
-                        RequestBodyEndpointParamValueInjector))
+            listOf(
+                PathParamEndpointValueInjector,
+                QueryEndpointParamValueInjector,
+                RequestBodyEndpointParamValueInjector))
     }
 
     override fun injectParamValues(
-            request: APIGatewayProxyRequestEvent,
-            handlerMethod: HandlerMethod,
-            paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any> {
+        request: APIGatewayProxyRequestEvent,
+        handlerMethod: HandlerMethod,
+        paramAnnotationMappedNameToParam: Map<String, Parameter>
+    ): Map<String, Any> {
 
-        LOGGER.info("Extracting param values from request ${request.path}")
+        LOGGER.debug("Extracting param values from request ${request.path}")
 
         val paramAnnotationMappedNameToValue = injectorEndpoints.map {
             it.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
@@ -36,11 +38,12 @@ internal class EndpointParamValueInjectorComposite internal constructor(
         val result = linkedMapOf<String, Any>()
 
         return handlerMethod.method.parameters
-                .map {
-                    handlerMethod.paramNameToParam[it.name]
-                            ?: throw IllegalStateException("Param not found for ${it.name}") }
-                .map { it.annotationMappedName to paramAnnotationMappedNameToValue[it.annotationMappedName]!! }
-                .toMap(result)
+            .map {
+                handlerMethod.paramNameToParam[it.name]
+                        ?: throw IllegalStateException("Param not found for ${it.name}")
+            }
+            .map { it.annotationMappedName to paramAnnotationMappedNameToValue[it.annotationMappedName]!! }
+            .toMap(result)
     }
 
 }

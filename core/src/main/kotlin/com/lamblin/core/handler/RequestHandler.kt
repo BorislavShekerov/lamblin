@@ -19,17 +19,19 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
 
     companion object {
         internal fun instance(controllerRegistry: ControllerRegistry) = RequestHandler(
-                EndpointInvoker(
-                        EndpointParamValueInjectorComposite.instance(),
-                        controllerRegistry))
+            EndpointInvoker(
+                EndpointParamValueInjectorComposite.instance(),
+                controllerRegistry))
     }
 
     /**
      * Attempts to handle an [APIGatewayProxyRequestEvent] by first looking for
      * a suitable [HandlerMethod] and then delegating the execution to it.
      */
-    fun handle(request: APIGatewayProxyRequestEvent,
-               httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>): APIGatewayProxyResponseEvent {
+    fun handle(
+        request: APIGatewayProxyRequestEvent,
+        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
+    ): APIGatewayProxyResponseEvent {
 
         return try {
             LOGGER.debug("Handling request to [{}]", request.path)
@@ -39,27 +41,29 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
             LOGGER.error("Error handling request", e)
 
             APIGatewayProxyResponseEvent()
-                    .withStatusCode(StatusCode.API_ERROR.code)
-                    .withHeaders(mapOf("Content-Type" to "application/json"))
+                .withStatusCode(StatusCode.API_ERROR.code)
+                .withHeaders(mapOf("Content-Type" to "application/json"))
         }
 
     }
 
-    private fun handlerRequest(request: APIGatewayProxyRequestEvent,
-                               httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
+    private fun handlerRequest(
+        request: APIGatewayProxyRequestEvent,
+        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
     ): APIGatewayProxyResponseEvent {
 
         val handlersForHttpMethod = httpMethodToHandlers[HttpMethod.valueOf(request.httpMethod)]
                 ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
 
         val requestHandlerMethod = handlersForHttpMethod.asSequence()
-                .sortedWith(HandlerMethodComparator())
-                .find { it.matches(request.path, request.queryStringParameters) }
+            .sortedWith(HandlerMethodComparator())
+            .find { it.matches(request.path, request.queryStringParameters) }
                 ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
 
-        LOGGER.debug("Handler method [{}] in [{}] selected",
-                     requestHandlerMethod.httpMethod.name,
-                     requestHandlerMethod.controllerClass.canonicalName)
+        LOGGER.debug(
+            "Handler method [{}] in [{}] selected",
+            requestHandlerMethod.httpMethod.name,
+            requestHandlerMethod.controllerClass.canonicalName)
 
         val response = endpointInvoker.invoke(requestHandlerMethod, request)
 
@@ -67,19 +71,19 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
     }
 
     private fun createApiGatewayResponseEvent(
-            response: HttpResponse<*>
+        response: HttpResponse<*>
     ): APIGatewayProxyResponseEvent =
-            if (response.statusCode === StatusCode.OK) {
-                APIGatewayProxyResponseEvent().apply {
-                    withStatusCode(response.statusCode.code)
-                    withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
+        if (response.statusCode === StatusCode.OK) {
+            APIGatewayProxyResponseEvent().apply {
+                withStatusCode(response.statusCode.code)
+                withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
 
-                    response.body?.let { withBody(OBJECT_MAPPER.writeValueAsString(response.body)) }
-                }
-            } else {
-                APIGatewayProxyResponseEvent().apply {
-                    withStatusCode(response.statusCode.code)
-                    withHeaders(response.headers)
-                }
+                response.body?.let { withBody(OBJECT_MAPPER.writeValueAsString(response.body)) }
             }
+        } else {
+            APIGatewayProxyResponseEvent().apply {
+                withStatusCode(response.statusCode.code)
+                withHeaders(response.headers)
+            }
+        }
 }

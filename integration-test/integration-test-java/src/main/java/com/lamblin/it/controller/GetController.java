@@ -1,16 +1,5 @@
 package com.lamblin.it.controller;
 
-import static com.lamblin.it.model.EndpointsKt.CUSTOM_STATUS_CODE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.MULTIPLE_PATH_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
-import static java.text.MessageFormat.format;
-
 import com.lamblin.core.model.HttpMethod;
 import com.lamblin.core.model.HttpResponse;
 import com.lamblin.core.model.StatusCode;
@@ -19,6 +8,10 @@ import com.lamblin.core.model.annotation.Endpoint;
 import com.lamblin.core.model.annotation.PathParam;
 import com.lamblin.core.model.annotation.QueryParam;
 import com.lamblin.it.model.ResponseEntity;
+
+import static com.lamblin.it.model.EndpointsKt.*;
+import static com.lamblin.it.model.TestUtilsKt.*;
+import static java.text.MessageFormat.format;
 
 @Controller
 public class GetController {
@@ -59,7 +52,7 @@ public class GetController {
                                 pathParam)));
     }
 
-    @Endpoint(path = MULTIPLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
+    @Endpoint(path = MULTI_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     public HttpResponse<ResponseEntity> multiplePathParamPath(
             @PathParam(PATH_PARAM_1) String pathParamOne,
             @PathParam(PATH_PARAM_2) String pathParamTwo) {
@@ -68,12 +61,12 @@ public class GetController {
                 new ResponseEntity(
                         format(
                                 "{0}-{1},{2}",
-                                MULTIPLE_PATH_PARAM_GET_ENDPOINT,
+                                MULTI_PATH_PARAM_GET_ENDPOINT,
                                 pathParamOne,
                                 pathParamTwo)));
     }
 
-    @Endpoint(path = MULTIPLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
+    @Endpoint(path = MULTI_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     public HttpResponse<ResponseEntity> multiplePathParamWithQueryParamsPath(
             @QueryParam(QUERY_PARAM_1) String queryParam,
             @PathParam(PATH_PARAM_1) String pathParamOne,
@@ -83,7 +76,7 @@ public class GetController {
                 new ResponseEntity(
                         format(
                                 "{0}-{1},{2},{3}",
-                                MULTIPLE_PATH_PARAM_GET_ENDPOINT,
+                                MULTI_PATH_PARAM_GET_ENDPOINT,
                                 queryParam,
                                 pathParamOne,
                                 pathParamTwo)));

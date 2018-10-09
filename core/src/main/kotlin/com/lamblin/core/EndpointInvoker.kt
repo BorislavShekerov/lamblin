@@ -15,8 +15,9 @@ private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
  * Responsible for invoking a [HandlerMethod] using the details in a [APIGatewayProxyRequestEvent].
  */
 internal class EndpointInvoker(
-        private val endpointParamValueInjector: EndpointParamValueInjector,
-        private val controllerRegistry: ControllerRegistry) {
+    private val endpointParamValueInjector: EndpointParamValueInjector,
+    private val controllerRegistry: ControllerRegistry
+) {
 
     /**
      * Invokes the handler method, using the details of the request.
@@ -46,20 +47,23 @@ internal class EndpointInvoker(
     }
 
     private fun invokeControllerMethod(
-            handlerMethod: HandlerMethod,
-            request: APIGatewayProxyRequestEvent,
-            method: Method,
-            parameters: Array<Parameter>,
-            controller: Any): HttpResponse<*> {
+        handlerMethod: HandlerMethod,
+        request: APIGatewayProxyRequestEvent,
+        method: Method,
+        parameters: Array<Parameter>,
+        controller: Any
+    ): HttpResponse<*> =
 
         try {
-            return if (parameters.isEmpty())
+            if (parameters.isEmpty())
                 method.invoke(controller) as HttpResponse<*>
             else {
                 val paramValues = endpointParamValueInjector
-                        .injectParamValues(request,
-                                           handlerMethod,
-                                           handlerMethod.annotationMappedNameToParam()).values.toTypedArray()
+                    .injectParamValues(
+                        request,
+                        handlerMethod,
+                        handlerMethod.annotationMappedNameToParam())
+                    .values.toTypedArray()
 
                 method.invoke(controller, *paramValues) as HttpResponse<*>
             }
@@ -67,18 +71,16 @@ internal class EndpointInvoker(
             LOGGER.error("Exception occurred while executing handler.")
             throw e
         }
-    }
-
 }
 
 fun HandlerMethod.annotationMappedNameToParam(): Map<String, Parameter> {
     val nameToParam = method.parameters
-            .map { it.name to it }
-            .toMap()
+        .map { it.name to it }
+        .toMap()
 
     return this.paramNameToParam.values
-            .map {
-                it.annotationMappedName to (nameToParam[it.name] ?: throw IllegalStateException(
-                        "Param not found for name ${it.name}"))
-            }.toMap()
+        .map {
+            it.annotationMappedName to (nameToParam[it.name]
+                    ?: throw IllegalStateException("Param not found for name ${it.name}"))
+        }.toMap()
 }

@@ -5,8 +5,10 @@ import com.lamblin.test.common.TestRunnerConfigExtractor
 import org.junit.Test
 import org.junit.runner.Description
 import org.junit.runner.Runner
+import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
 import org.slf4j.LoggerFactory
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 
@@ -21,9 +23,7 @@ class JUnit4LamblinTestRunner constructor(private val testClass: Class<*>) : Run
         localRunner = createLocalRunner()
     }
 
-    override fun getDescription() = Description.createTestDescription(
-            testClass,
-            "Executing test ${testClass.name} using JUnit4LamblinTestRunner")
+    override fun getDescription() = Description.createSuiteDescription(testClass)
 
     override fun run(notifier: RunNotifier) {
         Runner.run(localRunner, notifier, testClass)
@@ -44,24 +44,31 @@ class JUnit4LamblinTestRunner constructor(private val testClass: Class<*>) : Run
             try {
                 val testObject = testClass.newInstance()
                 testClass.methods
-                        .filter { it.isAnnotationPresent(Test::class.java) }
-                        .forEach { executeTest(notifier, it, testObject, testClass) }
+                    .filter { it.isAnnotationPresent(Test::class.java) }
+                    .forEach { executeTest(notifier, it, testObject, testClass) }
             } finally {
                 localRunner.stop()
                 LOGGER.info("Starting Lamblin local runner")
             }
         }
 
-        private fun executeTest(notifier: RunNotifier,
-                                testMethod: Method,
-                                testObject: Any?,
-                                testClass: Class<*>) {
+        private fun executeTest(
+            notifier: RunNotifier,
+            testMethod: Method,
+            testObject: Any?,
+            testClass: Class<*>
+        ) {
 
             val testDescription = Description.createTestDescription(testClass, testMethod.name)
 
-            notifier.fireTestStarted(testDescription)
-            testMethod.invoke(testObject)
-            notifier.fireTestFinished(testDescription)
+            try {
+                notifier.fireTestStarted(testDescription)
+                testMethod.invoke(testObject)
+                notifier.fireTestFinished(testDescription)
+            } catch (e: InvocationTargetException) {
+                LOGGER.error("Error occurred while executing test ${testMethod.name}")
+                notifier.fireTestFailure(Failure(testDescription, e))
+            }
         }
     }
 }

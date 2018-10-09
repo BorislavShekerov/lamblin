@@ -23,7 +23,8 @@ class EndpointParamValueInjectorCompositeTest {
     private val queryParamValueInjector: QueryEndpointParamValueInjector = mockk(relaxed = true)
     private val pathParamValueInjector: PathParamEndpointValueInjector = mockk(relaxed = true)
     private val endpointParamValueInjectorComposite = EndpointParamValueInjectorComposite(
-            listOf(queryParamValueInjector, pathParamValueInjector))
+        listOf(queryParamValueInjector, pathParamValueInjector)
+    )
 
     @BeforeEach
     fun setUp() {
@@ -33,13 +34,14 @@ class EndpointParamValueInjectorCompositeTest {
     @Test
     fun `should return empty result if no params`() {
         val result = endpointParamValueInjectorComposite.injectParamValues(
-                mockk(relaxed = true),
-                HandlerMethod(
-                        "",
-                        HttpMethod.GET,
-                        method = TestController::class.java.declaredMethods.find { it.name === "endpointNoParams" }!!,
-                        controllerClass = TestController::class.java),
-                mapOf())
+            mockk(relaxed = true),
+            HandlerMethod(
+                "",
+                HttpMethod.GET,
+                method = TestController::class.java.declaredMethods.find { it.name === "endpointNoParams" }!!,
+                controllerClass = TestController::class.java),
+            mapOf()
+        )
 
         assertThat(result).isEmpty()
     }
@@ -50,24 +52,26 @@ class EndpointParamValueInjectorCompositeTest {
         val method = TestController::class.java.declaredMethods.find { it.name === "endpointWithParam" }!!
 
         val handlerMethod = HandlerMethod(
-                "endpointWithParam/{pathParam}",
-                HttpMethod.GET,
-                mapOf(
-                        "arg0" to HandlerMethodParameter(
-                                annotationMappedName = "queryParam",
-                                name = "arg0",
-                                type = String::class.java),
-                        "arg1" to HandlerMethodParameter(
-                                annotationMappedName = "pathParam",
-                                name = "arg1",
-                                type = String::class.java)),
-                method,
-                TestController::class.java)
+            "endpointWithParam/{pathParam}",
+            HttpMethod.GET,
+            mapOf(
+                "arg0" to HandlerMethodParameter(
+                    annotationMappedName = "queryParam",
+                    name = "arg0",
+                    type = String::class.java),
+                "arg1" to HandlerMethodParameter(
+                    annotationMappedName = "pathParam",
+                    name = "arg1",
+                    type = String::class.java)),
+            method,
+            TestController::class.java
+        )
 
 
         val paramAnnotationMappedNameToParam = mapOf(
-                "queryParam" to method.parameters[0],
-                "pathParam" to method.parameters[0])
+            "queryParam" to method.parameters[0],
+            "pathParam" to method.parameters[0]
+        )
 
         every {
             queryParamValueInjector.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
@@ -77,9 +81,10 @@ class EndpointParamValueInjectorCompositeTest {
         } returns mapOf("pathParam" to "pathValue")
 
         val result = endpointParamValueInjectorComposite.injectParamValues(
-                request,
-                handlerMethod,
-                paramAnnotationMappedNameToParam)
+            request,
+            handlerMethod,
+            paramAnnotationMappedNameToParam
+        )
 
         assertThat(result).isEqualTo(linkedMapOf("queryParam" to "queryValue", "pathParam" to "pathValue"))
     }
@@ -90,24 +95,29 @@ class EndpointParamValueInjectorCompositeTest {
         val method = TestController::class.java.declaredMethods.find { it.name === "endpointWithParamsFlipped" }!!
 
         val handlerMethod = HandlerMethod(
-                "endpointWithParam/{pathParam}",
-                HttpMethod.GET,
-                mapOf(
-                        "arg0" to HandlerMethodParameter(
-                                annotationMappedName = "pathParam",
-                                name = "arg1",
-                                type = String::class.java),
-                        "arg1" to HandlerMethodParameter(
-                                annotationMappedName = "queryParam",
-                                name = "arg0",
-                                type = String::class.java)),
-                method,
-                TestController::class.java)
+            "endpointWithParam/{pathParam}",
+            HttpMethod.GET,
+            mapOf(
+                "arg0" to HandlerMethodParameter(
+                    annotationMappedName = "pathParam",
+                    name = "arg1",
+                    type = String::class.java
+                ),
+                "arg1" to HandlerMethodParameter(
+                    annotationMappedName = "queryParam",
+                    name = "arg0",
+                    type = String::class.java
+                )
+            ),
+            method,
+            TestController::class.java
+        )
 
 
         val paramAnnotationMappedNameToParam = mapOf(
-                "queryParam" to method.parameters[0],
-                "pathParam" to method.parameters[1])
+            "queryParam" to method.parameters[0],
+            "pathParam" to method.parameters[1]
+        )
 
         every {
             queryParamValueInjector.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
@@ -117,9 +127,10 @@ class EndpointParamValueInjectorCompositeTest {
         } returns mapOf("pathParam" to "pathValue")
 
         val result = endpointParamValueInjectorComposite.injectParamValues(
-                request,
-                handlerMethod,
-                paramAnnotationMappedNameToParam)
+            request,
+            handlerMethod,
+            paramAnnotationMappedNameToParam
+        )
 
         assertThat(result).isEqualTo(linkedMapOf("pathParam" to "pathValue", "queryParam" to "queryValue"))
     }
@@ -133,16 +144,18 @@ class EndpointParamValueInjectorCompositeTest {
 
         @Endpoint("endpointWithParam/{pathParam}", method = HttpMethod.GET)
         fun endpointWithParam(
-                @QueryParam("queryParam") queryParam: String,
-                @PathParam("pathParam") pathParam: String): HttpResponse<String> {
+            @QueryParam("queryParam") queryParam: String,
+            @PathParam("pathParam") pathParam: String
+        ): HttpResponse<String> {
 
             return HttpResponse.ok(queryParam + pathParam)
         }
 
         @Endpoint("endpointWithParam/{pathParam}", method = HttpMethod.GET)
         fun endpointWithParamsFlipped(
-                @PathParam("pathParam") pathParam: String,
-                @QueryParam("queryParam") queryParam: String): HttpResponse<String> {
+            @PathParam("pathParam") pathParam: String,
+            @QueryParam("queryParam") queryParam: String
+        ): HttpResponse<String> {
 
             return HttpResponse.ok(pathParam + queryParam)
         }

@@ -8,12 +8,12 @@ import com.lamblin.test.it.common.CONTROLLER2_RESPONSE_CONTENT
 import com.lamblin.test.it.common.Controller1Client
 import com.lamblin.test.it.common.Controller2Client
 import com.lamblin.test.it.common.TestConfiguration
-import com.lamblin.test.junit5.JUnit5LamblinTestRunner
+import com.lamblin.test.junit5.JUnit5LamblinExtension
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(JUnit5LamblinTestRunner::class)
+@ExtendWith(JUnit5LamblinExtension::class)
 @LamblinTestRunnerConfig(serverPort = PORT, testConfigClass = TestConfiguration::class)
 class JUnit5LamblinTestRunnerIntegrationTest {
 

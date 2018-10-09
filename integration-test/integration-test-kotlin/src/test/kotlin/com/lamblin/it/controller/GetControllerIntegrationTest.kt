@@ -1,21 +1,21 @@
 package com.lamblin.it.controller
 
 import com.lamblin.core.FrontController
-import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.StatusCode
-import com.lamblin.it.model.CUSTOM_STATUS_CODE_GET_ENDPOINT
-import com.lamblin.it.model.MULTIPLE_PATH_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.PATH_PARAM_1
-import com.lamblin.it.model.PATH_PARAM_2
-import com.lamblin.it.model.QUERY_PARAM_1
-import com.lamblin.it.model.QUERY_PARAM_2
+import com.lamblin.it.controller.client.GetControllerClient
+import com.lamblin.it.model.MULTI_PATH_PARAM_GET_ENDPOINT
 import com.lamblin.it.model.QUERY_PARAM_GET_ENDPOINT
 import com.lamblin.it.model.SIMPLE_GET_ENDPOINT
 import com.lamblin.it.model.SINGLE_PATH_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.createRequestInputStream
 import com.lamblin.it.model.runRequestAndVerifyResponse
+import com.lamblin.test.config.LamblinTestConfig
+import com.lamblin.test.config.annotation.LamblinTestRunnerConfig
+import com.lamblin.test.junit5.JUnit5LamblinExtension
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(JUnit5LamblinExtension::class)
+@LamblinTestRunnerConfig(testConfigClass = GetControllerIntegrationTest.TestConfiguration::class)
 class GetControllerIntegrationTest {
 
     private val frontController = FrontController.instance(setOf(GetController()))
@@ -23,9 +23,8 @@ class GetControllerIntegrationTest {
     @Test
     fun `should handle GET requests with no params`() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(SIMPLE_GET_ENDPOINT, HttpMethod.GET),
-                expectedResponseBodyContent = SIMPLE_GET_ENDPOINT)
+            GetControllerClient::callSimpleGetNoParamsEndpoint,
+            SIMPLE_GET_ENDPOINT)
     }
 
     @Test
@@ -33,12 +32,8 @@ class GetControllerIntegrationTest {
         val queryParamValue = "value"
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_GET_ENDPOINT,
-                        HttpMethod.GET,
-                        mapOf(QUERY_PARAM_1 to queryParamValue)),
-                expectedResponseBodyContent = "$QUERY_PARAM_GET_ENDPOINT-$queryParamValue")
+            { GetControllerClient.callSingleQueryParamEndpoint(queryParamValue) },
+            "$QUERY_PARAM_GET_ENDPOINT-$queryParamValue")
     }
 
     @Test
@@ -47,14 +42,8 @@ class GetControllerIntegrationTest {
         val queryParam2Value = "value2"
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_GET_ENDPOINT,
-                        HttpMethod.GET,
-                        mapOf(
-                                QUERY_PARAM_1 to queryParam1Value,
-                                QUERY_PARAM_2 to queryParam2Value)),
-                expectedResponseBodyContent = "$QUERY_PARAM_GET_ENDPOINT-$queryParam1Value,$queryParam2Value")
+            { GetControllerClient.callMultiQueryParamEndpoint(queryParam1Value, queryParam2Value) },
+            "$QUERY_PARAM_GET_ENDPOINT-$queryParam1Value,$queryParam2Value")
     }
 
     @Test
@@ -62,11 +51,8 @@ class GetControllerIntegrationTest {
         val pathParamValue = "value"
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        SINGLE_PATH_PARAM_GET_ENDPOINT.replace("{$PATH_PARAM_1}", pathParamValue),
-                        HttpMethod.GET),
-                expectedResponseBodyContent = "$SINGLE_PATH_PARAM_GET_ENDPOINT-$pathParamValue")
+            { GetControllerClient.callSinglePathParamEndpoint(pathParamValue) },
+            "$SINGLE_PATH_PARAM_GET_ENDPOINT-$pathParamValue")
     }
 
     @Test
@@ -75,13 +61,8 @@ class GetControllerIntegrationTest {
         val pathParamValue2 = "value2"
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_GET_ENDPOINT
-                                .replace("{$PATH_PARAM_1}", pathParamValue1)
-                                .replace("{$PATH_PARAM_2}", pathParamValue2),
-                        HttpMethod.GET),
-                expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$pathParamValue1,$pathParamValue2")
+            { GetControllerClient.callMultiPathParamEndpoint(pathParamValue1, pathParamValue2) },
+            "$MULTI_PATH_PARAM_GET_ENDPOINT-$pathParamValue1,$pathParamValue2")
     }
 
     @Test
@@ -91,30 +72,34 @@ class GetControllerIntegrationTest {
         val pathParamValue2 = "value2"
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_GET_ENDPOINT
-                                .replace("{$PATH_PARAM_1}", pathParamValue1)
-                                .replace("{$PATH_PARAM_2}", pathParamValue2),
-                        HttpMethod.GET,
-                        mapOf(QUERY_PARAM_1 to queryParamValue)),
-                expectedResponseBodyContent = "$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$queryParamValue,$pathParamValue1,$pathParamValue2")
+            {
+                GetControllerClient.callMultiPathParamWithQueryParamEndpoint(
+                    queryParamValue,
+                    pathParamValue1,
+                    pathParamValue2)
+            },
+            "$MULTI_PATH_PARAM_GET_ENDPOINT-$queryParamValue,$pathParamValue1,$pathParamValue2")
     }
 
     @Test
     fun `should return 404 for unknown routes`() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream("/unknown", HttpMethod.GET),
-                expectedStatusCode = 404)
+            GetControllerClient::callUnknownEndpoint,
+            expectedStatusCode = StatusCode.NOT_FOUND.code
+        )
     }
 
     @Test
     fun `should return status code returned from endpoint`() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(CUSTOM_STATUS_CODE_GET_ENDPOINT, HttpMethod.GET),
-                expectedStatusCode = StatusCode.ACCEPTED.code)
+            GetControllerClient::callCustomStatusCodeEndpoint,
+            expectedStatusCode = StatusCode.ACCEPTED.code)
     }
 
+    class TestConfiguration : LamblinTestConfig {
+
+        override fun controllers(): Set<Any> {
+            return setOf(GetController())
+        }
+    }
 }

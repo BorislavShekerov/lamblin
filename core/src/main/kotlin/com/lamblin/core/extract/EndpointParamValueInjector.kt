@@ -13,9 +13,10 @@ internal interface EndpointParamValueInjector {
      * Returns an ordered paramAnnotationMappedName => paramValue map.
      */
     fun injectParamValues(
-            request: APIGatewayProxyRequestEvent,
-            handlerMethod: HandlerMethod,
-            paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any>
+        request: APIGatewayProxyRequestEvent,
+        handlerMethod: HandlerMethod,
+        paramAnnotationMappedNameToParam: Map<String, Parameter>
+    ): Map<String, Any>
 
     fun castParamToRequiredType(paramType: Class<*>?, paramValue: Any) = when (paramType) {
         Int::class.java -> (paramValue as String).toInt()

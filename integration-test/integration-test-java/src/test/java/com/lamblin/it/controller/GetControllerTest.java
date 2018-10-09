@@ -1,44 +1,35 @@
 package com.lamblin.it.controller;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
-import com.lamblin.core.FrontController;
-import com.lamblin.core.model.HttpMethod;
 import com.lamblin.core.model.StatusCode;
+import com.lamblin.it.controller.client.GetControllerClient;
+import com.lamblin.test.config.LamblinTestConfig;
+import com.lamblin.test.config.annotation.LamblinTestRunnerConfig;
+import com.lamblin.test.junit4.JUnit4LamblinTestRunner;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import static com.lamblin.it.model.EndpointsKt.CUSTOM_STATUS_CODE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.MULTIPLE_PATH_PARAM_GET_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_GET_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_GET_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.SIMPLE_GET_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.createRequestInputStream;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;
 
+@RunWith(JUnit4LamblinTestRunner.class)
+@LamblinTestRunnerConfig(testConfigClass = GetControllerTest.TestConfiguration.class)
 public class GetControllerTest {
 
-    private FrontController frontController;
-
-    {
-        Set<Object> controllers = new HashSet<>();
-        controllers.add(new GetController());
-        frontController = FrontController.instance(controllers);
-    }
+    private static final GetControllerClient client = GetControllerClient.INSTANCE;
 
     @Test
     public void shouldHandleGetRequestsWithNoParams() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(SIMPLE_GET_ENDPOINT, HttpMethod.GET),
+                client::callSimpleGetNoParamsEndpoint,
                 SIMPLE_GET_ENDPOINT);
     }
 
@@ -47,11 +38,7 @@ public class GetControllerTest {
         String queryParamValue = "value";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_GET_ENDPOINT,
-                        HttpMethod.GET,
-                        ImmutableMap.of(QUERY_PARAM_1, queryParamValue)),
+                () -> client.callSingleQueryParamEndpoint(queryParamValue),
                 format(
                         "{0}-{1}",
                         QUERY_PARAM_GET_ENDPOINT,
@@ -64,13 +51,7 @@ public class GetControllerTest {
         String queryParam2Value = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_GET_ENDPOINT,
-                        HttpMethod.GET,
-                        ImmutableMap.of(
-                                QUERY_PARAM_1, queryParam1Value,
-                                QUERY_PARAM_2, queryParam2Value)),
+                () -> client.callMultiQueryParamEndpoint(queryParam1Value, queryParam2Value),
                 format(
                         "{0}-{1},{2}",
                         QUERY_PARAM_GET_ENDPOINT,
@@ -83,10 +64,7 @@ public class GetControllerTest {
         String pathParamValue = "value";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        SINGLE_PATH_PARAM_GET_ENDPOINT.replace("{" + PATH_PARAM_1 + "}", pathParamValue),
-                        HttpMethod.GET),
+                () -> client.callSinglePathParamEndpoint(pathParamValue),
                 format(
                         "{0}-{1}",
                         SINGLE_PATH_PARAM_GET_ENDPOINT,
@@ -99,15 +77,10 @@ public class GetControllerTest {
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_GET_ENDPOINT
-                                .replace("{" + PATH_PARAM_1 + "}", pathParamValue1)
-                                .replace("{" + PATH_PARAM_2 + "}", pathParamValue2),
-                        HttpMethod.GET),
+                () -> client.callMultiPathParamEndpoint(pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2}",
-                        MULTIPLE_PATH_PARAM_GET_ENDPOINT,
+                        MULTI_PATH_PARAM_GET_ENDPOINT,
                         pathParamValue1,
                         pathParamValue2));
     }
@@ -119,16 +92,10 @@ public class GetControllerTest {
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_GET_ENDPOINT
-                                .replace("{" + PATH_PARAM_1 + "}", pathParamValue1)
-                                .replace("{" + PATH_PARAM_2 + "}", pathParamValue2),
-                        HttpMethod.GET,
-                        ImmutableMap.of(QUERY_PARAM_1, queryParamValue)),
+                () -> client.callMultiPathParamWithQueryParamEndpoint(queryParamValue, pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2},{3}",
-                        MULTIPLE_PATH_PARAM_GET_ENDPOINT,
+                        MULTI_PATH_PARAM_GET_ENDPOINT,
                         queryParamValue,
                         pathParamValue1,
                         pathParamValue2));
@@ -137,17 +104,25 @@ public class GetControllerTest {
     @Test
     public void shouldReturn404ForUnknownRoutes() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream("/unknown", HttpMethod.GET),
-                 404);
+                client::callUnknownEndpoint,
+                null,
+                 StatusCode.NOT_FOUND.getCode());
     }
 
     @Test
     public void shouldReturnStatusCodeReturnedFromEndpoint() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(CUSTOM_STATUS_CODE_GET_ENDPOINT, HttpMethod.GET),
+                client::callCustomStatusCodeEndpoint,
+                null,
                 StatusCode.ACCEPTED.getCode());
+    }
+
+    public static class TestConfiguration implements LamblinTestConfig {
+
+        @Override
+        public Set<Object> controllers() {
+            return ImmutableSet.of(new GetController());
+        }
     }
 
 }

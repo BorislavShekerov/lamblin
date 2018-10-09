@@ -17,9 +17,10 @@ private val LOGGER = LoggerFactory.getLogger(FrontController::class.java)
  * Defines the controller responsible for delegating the requests to the endpoint controllers.
  */
 class FrontController internal constructor(
-        private val requestHandler: RequestHandlerAdapter,
-        private val handlerMethodFactory: HandlerMethodFactory,
-        private val controllerRegistry: ControllerRegistry) {
+    private val requestHandler: RequestHandlerAdapter,
+    private val handlerMethodFactory: HandlerMethodFactory,
+    private val controllerRegistry: ControllerRegistry
+) {
 
     val httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>> = createHttpMethodToPathToHandlerMethodMap()
 
@@ -31,32 +32,33 @@ class FrontController internal constructor(
             val controllerRegistry = ControllerRegistry(controllers)
 
             return FrontController(
-                    RequestHandlerAdapter(
-                            RequestHandler.instance(controllerRegistry = controllerRegistry)),
-                    HandlerMethodFactory.default(),
-                    controllerRegistry)
+                RequestHandlerAdapter(
+                    RequestHandler.instance(controllerRegistry)),
+                HandlerMethodFactory.default(),
+                controllerRegistry)
         }
     }
 
     internal fun createHttpMethodToPathToHandlerMethodMap(): Map<HttpMethod, Set<HandlerMethod>> {
         return controllerRegistry.controllerClasses()
-                .flatMap { this.createHttpMethodToHandlerMethodMap(it).entries }
-                .groupBy({ it.key }, { it.value })
-                .mapValues { it.value.flatMap { handlerMethods -> handlerMethods }.toSet() }
+            .flatMap { this.createHttpMethodToHandlerMethodMap(it).entries }
+            .groupBy({ it.key }, { it.value })
+            .mapValues { it.value.flatMap { handlerMethods -> handlerMethods }.toSet() }
     }
 
     private fun createHttpMethodToHandlerMethodMap(
-            controllerClass: Class<out Any>): Map<HttpMethod, Set<HandlerMethod>> {
+        controllerClass: Class<out Any>
+    ): Map<HttpMethod, Set<HandlerMethod>> {
 
         LOGGER.debug("Creating handlers for [{}]", controllerClass.canonicalName)
 
         val controllerEndpoints = setOf(*controllerClass.declaredMethods)
-                .filter { it.annotations.any { annotation -> annotation is Endpoint } }
+            .filter { it.annotations.any { annotation -> annotation is Endpoint } }
 
         return controllerEndpoints.asSequence()
-                .map { handlerMethodFactory.method(it, controllerClass) }
-                .groupBy { it.httpMethod }
-                .mapValues { it.value.toSet() }
+            .map { handlerMethodFactory.method(it, controllerClass) }
+            .groupBy { it.httpMethod }
+            .mapValues { it.value.toSet() }
     }
 
     /**

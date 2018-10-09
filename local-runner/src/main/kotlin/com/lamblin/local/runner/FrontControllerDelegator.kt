@@ -14,8 +14,9 @@ internal val OBJECT_MAPPER = ObjectMapper()
 private val LOGGER = LoggerFactory.getLogger(FrontControllerDelegator::class.java)
 
 class FrontControllerDelegator(
-        internal val frontController: FrontController,
-        private val objetMapper: ObjectMapper = OBJECT_MAPPER) {
+    internal val frontController: FrontController,
+    private val objetMapper: ObjectMapper = OBJECT_MAPPER
+) {
 
     internal fun delegateToController(context: Context) {
         val requestEvent = createRequestEvent(context)
@@ -24,16 +25,16 @@ class FrontControllerDelegator(
 
         try {
             frontController.handlerRequest(
-                    ByteArrayInputStream(objetMapper.writeValueAsBytes(requestEvent)),
-                    responseOutputStream)
+                ByteArrayInputStream(objetMapper.writeValueAsBytes(requestEvent)),
+                responseOutputStream)
 
             val response = objetMapper.readValue(
-                    String(responseOutputStream.toByteArray()),
-                    APIGatewayProxyResponseEvent::class.java)
+                String(responseOutputStream.toByteArray()),
+                APIGatewayProxyResponseEvent::class.java)
 
             context.status(response.statusCode)
             response?.headers?.forEach { context.header(it.key, it.value) }
-            context.result(response.body)
+            response.body?.let { context.result(it) }
         } catch (e: RuntimeException) {
             LOGGER.error("Error occurred while handling request", e)
             context.status(StatusCode.API_ERROR.code)

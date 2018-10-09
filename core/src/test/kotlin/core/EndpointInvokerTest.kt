@@ -32,8 +32,8 @@ class EndpointInvokerTest {
     @Test
     fun `should throw IllegalStateException if controller for class not found`() {
         val handlerMethod = createHandlerMethod(
-                "/path",
-                TestController::class.java.declaredMethods.find { it.name === "testEndpointNoParams" }!!)
+            "/path",
+            TestController::class.java.declaredMethods.find { it.name === "testEndpointNoParams" }!!)
 
         every { controllerRegistry.controllerForClass(TestController::class.java) } returns null
 
@@ -43,11 +43,13 @@ class EndpointInvokerTest {
     @Test
     fun `should call method with no parameters if the method does not have any parameters`() {
         val handlerMethod = createHandlerMethod(
-                "/path",
-                TestController::class.java.declaredMethods.find { it.name === "testEndpointNoParams" }!!)
+            "/path",
+            TestController::class.java.declaredMethods.find { it.name === "testEndpointNoParams" }!!)
 
-        every { controllerRegistry.controllerForClass(
-                TestController::class.java) } returns TestController()
+        every {
+            controllerRegistry.controllerForClass(
+                TestController::class.java)
+        } returns TestController()
 
         val result = endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent())
 
@@ -59,24 +61,28 @@ class EndpointInvokerTest {
         val methodWithParam = TestController::class.java.declaredMethods.find { it.name === "testEndpointWithParam" }!!
 
         val handlerMethod = createHandlerMethod(
-                "/path",
-                methodWithParam,
-                mapOf("param" to HandlerMethodParameter(annotationMappedName = "test", name = "arg0",
-                                                        type = String::class.java)))
+            "/path",
+            methodWithParam,
+            mapOf(
+                "param" to HandlerMethodParameter(
+                    annotationMappedName = "test", name = "arg0",
+                    type = String::class.java)))
 
-        every { controllerRegistry.controllerForClass(
-                TestController::class.java) } returns TestController()
+        every {
+            controllerRegistry.controllerForClass(
+                TestController::class.java)
+        } returns TestController()
 
         val request = APIGatewayProxyRequestEvent()
         val argument = "arg"
 
-        val m = mapOf("test" to methodWithParam.parameters[0])
+        val annotationMappedNameToParam = mapOf("test" to methodWithParam.parameters[0])
 
         every {
             endpointParamValueInjector.injectParamValues(
-                    request,
-                    handlerMethod,
-                    m)
+                request,
+                handlerMethod,
+                annotationMappedNameToParam)
         } returns mapOf("test" to argument)
 
         val result = endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent())
@@ -85,9 +91,11 @@ class EndpointInvokerTest {
     }
 
     private fun createHandlerMethod(
-            path: String,
-            method: Method,
-            paramNameToParam: Map<String, HandlerMethodParameter> = mapOf()) = HandlerMethod(
+        path: String,
+        method: Method,
+        paramNameToParam: Map<String, HandlerMethodParameter> = mapOf()
+    ) =
+        HandlerMethod(
             path,
             HttpMethod.GET,
             paramNameToParam,

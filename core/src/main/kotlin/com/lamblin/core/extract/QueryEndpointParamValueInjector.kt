@@ -11,13 +11,15 @@ private val LOGGER = LoggerFactory.getLogger(QueryEndpointParamValueInjector::cl
 object QueryEndpointParamValueInjector : EndpointParamValueInjector {
 
     override fun injectParamValues(
-            request: APIGatewayProxyRequestEvent,
-            handlerMethod: HandlerMethod,
-            paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any> {
+        request: APIGatewayProxyRequestEvent,
+        handlerMethod: HandlerMethod,
+        paramAnnotationMappedNameToParam: Map<String, Parameter>
+    ): Map<String, Any> {
 
         LOGGER.debug("Extracting query param values from request ${request.path}")
 
         return request.queryStringParameters
-                .mapValues { castParamToRequiredType(paramAnnotationMappedNameToParam[it.key]?.type, it.value) }
+            ?.mapValues { castParamToRequiredType(paramAnnotationMappedNameToParam[it.key]?.type, it.value) }
+                ?: mapOf()
     }
 }

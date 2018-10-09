@@ -10,9 +10,10 @@ internal const val SECONDS_BEFORE_TERMINATING = 60 * 60
 private val LOGGER = LoggerFactory.getLogger(LocalRunner::class.java)
 
 class LocalRunner internal constructor(
-        private val server: Javalin,
-        private val endpointRegistrator: EndpointRegistrator,
-        private val millisecondsToBlockFor: Long = SECONDS_BEFORE_TERMINATING.toLong()) {
+    private val server: Javalin,
+    private val endpointRegistrator: EndpointRegistrator,
+    private val millisecondsToBlockFor: Long = SECONDS_BEFORE_TERMINATING.toLong()
+) {
 
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -21,9 +22,9 @@ class LocalRunner internal constructor(
         @JvmStatic
         @JvmOverloads
         fun createRunner(
-                port: Int,
-                controllers: Set<Any>,
-                runTimeInMilliseconds: Long = SECONDS_BEFORE_TERMINATING.toLong()
+            port: Int,
+            controllers: Set<Any>,
+            runTimeInMilliseconds: Long = SECONDS_BEFORE_TERMINATING.toLong()
         ): LocalRunner {
 
             val server = Javalin.create().port(port)
@@ -36,8 +37,11 @@ class LocalRunner internal constructor(
     }
 
     fun run() {
+        LOGGER.info("Starting Lamblin local runner.")
         server.start()
+
         endpointRegistrator.registerEndpoints()
+        LOGGER.debug("Endpoints Registered")
 
         executor.submit {
             try {
@@ -49,6 +53,7 @@ class LocalRunner internal constructor(
 
         executor.shutdown()
         executor.awaitTermination(millisecondsToBlockFor, TimeUnit.SECONDS)
+        LOGGER.debug("Local runner terminated.")
     }
 
     fun stop() {

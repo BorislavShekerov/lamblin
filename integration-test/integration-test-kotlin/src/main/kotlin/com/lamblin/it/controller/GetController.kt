@@ -7,16 +7,7 @@ import com.lamblin.core.model.annotation.Controller
 import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
-import com.lamblin.it.model.CUSTOM_STATUS_CODE_GET_ENDPOINT
-import com.lamblin.it.model.MULTIPLE_PATH_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.PATH_PARAM_1
-import com.lamblin.it.model.PATH_PARAM_2
-import com.lamblin.it.model.QUERY_PARAM_1
-import com.lamblin.it.model.QUERY_PARAM_2
-import com.lamblin.it.model.QUERY_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.ResponseEntity
-import com.lamblin.it.model.SIMPLE_GET_ENDPOINT
-import com.lamblin.it.model.SINGLE_PATH_PARAM_GET_ENDPOINT
+import com.lamblin.it.model.*
 
 @Controller
 class GetController {
@@ -33,36 +24,41 @@ class GetController {
 
     @Endpoint(QUERY_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     fun multipleQueryParamTest(
-            @QueryParam(QUERY_PARAM_1) queryParam1: String,
-            @QueryParam(QUERY_PARAM_2) queryParam2: String): HttpResponse<ResponseEntity> {
+        @QueryParam(QUERY_PARAM_1) queryParam1: String,
+        @QueryParam(QUERY_PARAM_2) queryParam2: String
+    ): HttpResponse<ResponseEntity> {
 
         return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_GET_ENDPOINT-$queryParam1,$queryParam2"))
     }
 
     @Endpoint(SINGLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     fun singlePathParamPath(
-            @PathParam(PATH_PARAM_1) pathParam: String): HttpResponse<ResponseEntity> {
+        @PathParam(PATH_PARAM_1) pathParam: String
+    ): HttpResponse<ResponseEntity> {
 
         return HttpResponse.ok(ResponseEntity("$SINGLE_PATH_PARAM_GET_ENDPOINT-$pathParam"))
     }
 
-    @Endpoint(MULTIPLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
+    @Endpoint(MULTI_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     fun multiplePathParamPath(
-            @PathParam(PATH_PARAM_1) pathParamOne: String,
-            @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
+        @PathParam(PATH_PARAM_1) pathParamOne: String,
+        @PathParam(PATH_PARAM_2) pathParamTwo: String
+    ): HttpResponse<ResponseEntity> {
 
         return HttpResponse.ok(
-                ResponseEntity("$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$pathParamOne,$pathParamTwo"))
+            ResponseEntity("$MULTI_PATH_PARAM_GET_ENDPOINT-$pathParamOne,$pathParamTwo"))
     }
 
-    @Endpoint(MULTIPLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
+    @Endpoint(MULTI_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     fun multiplePathParamWithQueryParamsPath(
-            @QueryParam(QUERY_PARAM_1) queryParam: String,
-            @PathParam(PATH_PARAM_1) pathParamOne: String,
-            @PathParam(PATH_PARAM_2) pathParamTwo: String): HttpResponse<ResponseEntity> {
+        @QueryParam(QUERY_PARAM_1) queryParam: String,
+        @PathParam(PATH_PARAM_1) pathParamOne: String,
+        @PathParam(PATH_PARAM_2) pathParamTwo: String
+    ): HttpResponse<ResponseEntity> {
 
-        return HttpResponse.ok(ResponseEntity(
-                "$MULTIPLE_PATH_PARAM_GET_ENDPOINT-$queryParam,$pathParamOne,$pathParamTwo"))
+        return HttpResponse.ok(
+            ResponseEntity(
+                "$MULTI_PATH_PARAM_GET_ENDPOINT-$queryParam,$pathParamOne,$pathParamTwo"))
     }
 
     @Endpoint(CUSTOM_STATUS_CODE_GET_ENDPOINT, method = HttpMethod.GET)

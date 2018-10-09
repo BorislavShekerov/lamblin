@@ -3,6 +3,7 @@ package com.lamblin.test.config.annotation
 import kotlin.reflect.KClass
 
 const val DEFAULT_SERVER_PORT = 8080
+
 /**
  * Defines the mechanism for defining test runner configuration.
  */

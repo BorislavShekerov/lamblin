@@ -1,44 +1,36 @@
 package com.lamblin.it.controller;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
-import com.lamblin.core.FrontController;
-import com.lamblin.core.model.HttpMethod;
+import com.lamblin.it.controller.client.PostControllerClient;
 import com.lamblin.it.model.ExampleRequestBody;
+import com.lamblin.test.config.LamblinTestConfig;
+import com.lamblin.test.config.annotation.LamblinTestRunnerConfig;
+import com.lamblin.test.junit4.JUnit4LamblinTestRunner;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import static com.lamblin.it.model.EndpointsKt.MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_PARAM_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_POST_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.SIMPLE_POST_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.SIMPLE_REQUEST_BODY_POST_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_PATH_POST_ENDPOINT;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.createRequestInputStream;
+import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_POST_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;
 
+@RunWith(JUnit4LamblinTestRunner.class)
+@LamblinTestRunnerConfig(testConfigClass = PostControllerTest.TestConfiguration.class)
 public class PostControllerTest {
 
-    private FrontController frontController;
-
-    {
-        Set<Object> controllers = new HashSet<>();
-        controllers.add(new PostController());
-        frontController = FrontController.instance(controllers);
-    }
+    private static final PostControllerClient client = PostControllerClient.INSTANCE;
 
     @Test
     public void shouldHandlePostRequestsWithNoParams() {
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(SIMPLE_POST_ENDPOINT, HttpMethod.POST),
+                client::callSimplePostNoParamsEndpoint,
                 SIMPLE_POST_ENDPOINT);
     }
 
@@ -47,14 +39,10 @@ public class PostControllerTest {
         String queryParamValue = "value";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_PARAM_POST_ENDPOINT,
-                        HttpMethod.POST,
-                        ImmutableMap.of(QUERY_PARAM_1, queryParamValue)),
+                () -> client.callSingleQueryParamEndpoint(queryParamValue),
                 format(
                         "{0}-{1}",
-                        QUERY_PARAM_PARAM_POST_ENDPOINT,
+                        QUERY_PARAM_POST_ENDPOINT,
                         queryParamValue));
     }
 
@@ -64,16 +52,10 @@ public class PostControllerTest {
         String queryParam2Value = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        QUERY_PARAM_PARAM_POST_ENDPOINT,
-                        HttpMethod.POST,
-                        ImmutableMap.of(
-                                QUERY_PARAM_1, queryParam1Value,
-                                QUERY_PARAM_2, queryParam2Value)),
+                () -> client.callMultiQueryParamEndpoint(queryParam1Value, queryParam2Value),
                 format(
                         "{0}-{1},{2}",
-                        QUERY_PARAM_PARAM_POST_ENDPOINT,
+                        QUERY_PARAM_POST_ENDPOINT,
                         queryParam1Value,
                         queryParam2Value));
     }
@@ -83,13 +65,10 @@ public class PostControllerTest {
         String pathParamValue = "value";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        SINGLE_PATH_PARAM_PATH_POST_ENDPOINT.replace("{" + PATH_PARAM_1 + "}", pathParamValue),
-                        HttpMethod.POST),
+                () -> client.callSinglePathParamEndpoint(pathParamValue),
                 format(
                         "{0}-{1}",
-                        SINGLE_PATH_PARAM_PATH_POST_ENDPOINT,
+                        SINGLE_PATH_PARAM_POST_ENDPOINT,
                         pathParamValue));
     }
 
@@ -99,15 +78,10 @@ public class PostControllerTest {
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT
-                                .replace("{" + PATH_PARAM_1 + "}", pathParamValue1)
-                                .replace("{" + PATH_PARAM_2 + "}", pathParamValue2),
-                        HttpMethod.POST),
+                () -> client.callMultiPathParamEndpoint(pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2}",
-                        MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT,
+                        MULTI_PATH_PARAM_POST_ENDPOINT,
                         pathParamValue1,
                         pathParamValue2));
     }
@@ -119,16 +93,10 @@ public class PostControllerTest {
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT
-                                .replace("{" + PATH_PARAM_1 + "}", pathParamValue1)
-                                .replace("{" + PATH_PARAM_2 + "}", pathParamValue2),
-                        HttpMethod.POST,
-                        ImmutableMap.of(QUERY_PARAM_1, queryParamValue)),
+                () -> client.callMultiPathParamEndpointWithQueryParam(queryParamValue, pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2},{3}",
-                        MULTIPLE_PATH_PARAM_PATH_POST_ENDPOINT,
+                        MULTI_PATH_PARAM_POST_ENDPOINT,
                         queryParamValue,
                         pathParamValue1,
                         pathParamValue2));
@@ -141,11 +109,16 @@ public class PostControllerTest {
         ExampleRequestBody requestBody = new ExampleRequestBody(bodyContent);
 
         runRequestAndVerifyResponse(
-                frontController,
-                createRequestInputStream(
-                        SIMPLE_REQUEST_BODY_POST_ENDPOINT,
-                        HttpMethod.POST,
-                        requestBody),
+                () -> client.callRequestBodyEndpoint(requestBody),
                 format("{0}-{1}", SIMPLE_REQUEST_BODY_POST_ENDPOINT, bodyContent));
     }
+
+    public static class TestConfiguration implements LamblinTestConfig {
+
+        @Override
+        public Set<Object> controllers() {
+            return ImmutableSet.of(new PostController());
+        }
+    }
+
 }

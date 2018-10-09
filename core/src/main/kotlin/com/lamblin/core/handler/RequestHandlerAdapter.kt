@@ -19,9 +19,10 @@ internal class RequestHandlerAdapter internal constructor(private val requestHan
      * and then writing the result [ApiGatewayProxyResponseEvent] to the output
      */
     fun handlerRequest(
-            input: InputStream,
-            output: OutputStream,
-            httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>) {
+        input: InputStream,
+        output: OutputStream,
+        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
+    ) {
 
         try {
             val request = OBJECT_MAPPER.readValue(input, APIGatewayProxyRequestEvent::class.java)
@@ -31,8 +32,8 @@ internal class RequestHandlerAdapter internal constructor(private val requestHan
             output.write(OBJECT_MAPPER.writeValueAsBytes(response))
         } catch (e: JsonParseException) {
             throw EventDeserializationException(
-                    "Unable to deserialize event into APIGatewayProxyRequestEvent. " +
-                            "Please make sure lambda was triggered by an API Gateway event", e)
+                "Unable to deserialize event into APIGatewayProxyRequestEvent. " +
+                        "Please make sure lambda was triggered by an API Gateway event", e)
         }
     }
 

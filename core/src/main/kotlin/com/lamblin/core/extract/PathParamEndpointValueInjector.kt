@@ -9,20 +9,21 @@ import java.lang.reflect.Parameter
 object PathParamEndpointValueInjector : EndpointParamValueInjector {
 
     override fun injectParamValues(
-            request: APIGatewayProxyRequestEvent,
-            handlerMethod: HandlerMethod,
-            paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any> {
+        request: APIGatewayProxyRequestEvent,
+        handlerMethod: HandlerMethod,
+        paramAnnotationMappedNameToParam: Map<String, Parameter>
+    ): Map<String, Any> {
 
         val handlerPathSections = handlerMethod.path.split("/")
         val requestPathSections = request.path.split("/")
 
         return handlerPathSections.asSequence().withIndex()
-                .filter { isPathParamSection(it.value) }
-                .map { it.value.removeSurrounding("{", "}") to requestPathSections[it.index] }
-                .map {
-                    it.first to castParamToRequiredType(
-                            paramAnnotationMappedNameToParam[it.first]?.type,
-                            it.second)
-                }.toMap()
+            .filter { isPathParamSection(it.value) }
+            .map { it.value.removeSurrounding("{", "}") to requestPathSections[it.index] }
+            .map {
+                it.first to castParamToRequiredType(
+                    paramAnnotationMappedNameToParam[it.first]?.type,
+                    it.second)
+            }.toMap()
     }
 }
