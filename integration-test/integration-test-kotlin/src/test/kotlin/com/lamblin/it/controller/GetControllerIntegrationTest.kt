@@ -1,6 +1,6 @@
 package com.lamblin.it.controller
 
-import com.lamblin.core.FrontController
+import com.lamblin.core.Lamblin
 import com.lamblin.core.model.StatusCode
 import com.lamblin.it.controller.client.GetControllerClient
 import com.lamblin.it.model.MULTI_PATH_PARAM_GET_ENDPOINT
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @LamblinTestRunnerConfig(testConfigClass = GetControllerIntegrationTest.TestConfiguration::class)
 class GetControllerIntegrationTest {
 
-    private val frontController = FrontController.instance(setOf(GetController()))
+    private val frontController = Lamblin.instance(setOf(GetController()))
 
     @Test
     fun `should handle GET requests with no params`() {

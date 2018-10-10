@@ -13,7 +13,7 @@ class EndpointRegistrator(
 ) {
 
     internal fun registerEndpoints() {
-        frontControllerDelegator.frontController.httpMethodToHandlers
+        frontControllerDelegator.lamblin.httpMethodToHandlers
             .mapValues { it.value.distinctBy { it.path } }
             .values
             .flatMap { it }

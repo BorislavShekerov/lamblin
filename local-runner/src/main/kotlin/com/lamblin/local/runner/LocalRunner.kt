@@ -1,6 +1,6 @@
 package com.lamblin.local.runner
 
-import com.lamblin.core.FrontController
+import com.lamblin.core.Lamblin
 import io.javalin.Javalin
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
@@ -28,7 +28,7 @@ class LocalRunner internal constructor(
         ): LocalRunner {
 
             val server = Javalin.create().port(port)
-            val frontControllerDelegator = FrontControllerDelegator(FrontController.instance(controllers))
+            val frontControllerDelegator = FrontControllerDelegator(Lamblin.instance(controllers))
 
             val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)
 

@@ -3,7 +3,7 @@ package com.lamblin.local.runner
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lamblin.core.FrontController
+import com.lamblin.core.Lamblin
 import com.lamblin.core.model.StatusCode
 import io.javalin.Context
 import org.slf4j.LoggerFactory
@@ -14,7 +14,7 @@ internal val OBJECT_MAPPER = ObjectMapper()
 private val LOGGER = LoggerFactory.getLogger(FrontControllerDelegator::class.java)
 
 class FrontControllerDelegator(
-    internal val frontController: FrontController,
+    internal val lamblin: Lamblin,
     private val objetMapper: ObjectMapper = OBJECT_MAPPER
 ) {
 
@@ -24,7 +24,7 @@ class FrontControllerDelegator(
         val responseOutputStream = ByteArrayOutputStream()
 
         try {
-            frontController.handlerRequest(
+            lamblin.handlerRequest(
                 ByteArrayInputStream(objetMapper.writeValueAsBytes(requestEvent)),
                 responseOutputStream)
 
