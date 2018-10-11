@@ -29,10 +29,10 @@ jobs:
         - v1-dependencies-{{ checksum "pom.xml" }}
         # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
-        
-    - save_cache:
-      paths:
-      - ~/.m2
-      key: v1-dependencies-{{ checksum "pom.xml" }}
 
     - run: mvn clean install
+
+    - save_cache:
+        paths:
+        - ~/.m2
+        key: v1-dependencies-{{ checksum "pom.xml" }}
