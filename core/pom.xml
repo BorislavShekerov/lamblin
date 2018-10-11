@@ -14,7 +14,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.lamblin</groupId>
+            <groupId>org.lamblin</groupId>
             <artifactId>plugin-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
