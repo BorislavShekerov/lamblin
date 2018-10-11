@@ -12,13 +12,11 @@
     <artifactId>plugin-warmup</artifactId>
     <packaging>jar</packaging>
 
-    <name>plugin-warmup</name>
-
     <dependencies>
         <dependency>
             <groupId>org.lamblin</groupId>
             <artifactId>plugin-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

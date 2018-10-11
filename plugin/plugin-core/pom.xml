@@ -12,14 +12,6 @@
     <artifactId>plugin-core</artifactId>
     <packaging>jar</packaging>
 
-    <name>plugin-core</name>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.2.71</kotlin.version>
-        <junit.version>4.12</junit.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

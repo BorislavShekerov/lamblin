@@ -16,7 +16,7 @@
         <dependency>
             <groupId>org.lamblin</groupId>
             <artifactId>plugin-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
