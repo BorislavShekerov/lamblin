@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.lamblin</groupId>
+            <groupId>org.lamblin</groupId>
             <artifactId>lamblin-core</artifactId>
             <version>${project.version}</version>
         </dependency>

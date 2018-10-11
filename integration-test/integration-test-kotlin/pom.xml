@@ -21,14 +21,14 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.lamblin</groupId>
+            <groupId>org.lamblin</groupId>
             <artifactId>integration-test-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- Testing dependencies -->
         <dependency>
-            <groupId>com.lamblin</groupId>
+            <groupId>org.lamblin</groupId>
             <artifactId>lamblin-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
