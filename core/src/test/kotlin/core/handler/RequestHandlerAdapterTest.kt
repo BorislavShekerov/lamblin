@@ -3,7 +3,6 @@ package core.handler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.lamblin.core.OBJECT_MAPPER
-import com.lamblin.core.exception.EventDeserializationException
 import com.lamblin.core.handler.RequestHandler
 import com.lamblin.core.handler.RequestHandlerAdapter
 import io.mockk.clearMocks
@@ -12,8 +11,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import java.io.ByteArrayInputStream
 import java.io.OutputStream
 
 class RequestHandlerAdapterTest {
@@ -28,16 +25,11 @@ class RequestHandlerAdapterTest {
     }
 
     @Test
-    fun `should throw EventDeserializationException when event cannot be deserialzied into APIGatewayProxyRequestEvent`() {
-        assertThrows<EventDeserializationException> {
-            requestHandlerAdapter.handlerRequest(ByteArrayInputStream("test".toByteArray()), mockk(), mapOf())
-        }
-    }
-
-    @Test
     fun `should write response to output stream`() {
+        val queryParams =  mapOf("query1" to "value1")
+
         val request = APIGatewayProxyRequestEvent().apply {
-            queryStringParameters = mapOf("query1" to "value1")
+            queryStringParameters = queryParams
         }
 
         val output: OutputStream = mockk(relaxed = true)
@@ -48,7 +40,7 @@ class RequestHandlerAdapterTest {
         every { requestHandler.handle(request, mapOf()) } returns response
 
         requestHandlerAdapter.handlerRequest(
-            ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(request)),
+            mapOf("queryStringParameters" to queryParams),
             output,
             mapOf())
 

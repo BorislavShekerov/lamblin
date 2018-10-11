@@ -28,7 +28,7 @@ class LocalRunner internal constructor(
         ): LocalRunner {
 
             val server = Javalin.create().port(port)
-            val frontControllerDelegator = FrontControllerDelegator(Lamblin.instance(controllers))
+            val frontControllerDelegator = LamblinDelegator(Lamblin.instance(controllers))
 
             val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)
 

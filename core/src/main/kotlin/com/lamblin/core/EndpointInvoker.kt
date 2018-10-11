@@ -16,8 +16,7 @@ private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
  */
 internal class EndpointInvoker(
     private val endpointParamValueInjector: EndpointParamValueInjector,
-    private val controllerRegistry: ControllerRegistry
-) {
+    private val controllerRegistry: ControllerRegistry) {
 
     /**
      * Invokes the handler method, using the details of the request.
@@ -33,7 +32,7 @@ internal class EndpointInvoker(
 
         try {
             val controller = controllerRegistry.controllerForClass(controllerClass)
-                    ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.canonicalName}]")
+                ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.canonicalName}]")
 
             return invokeControllerMethod(handlerMethod, request, method, parameters, controller)
         } catch (e: IllegalAccessException) {
@@ -81,6 +80,6 @@ fun HandlerMethod.annotationMappedNameToParam(): Map<String, Parameter> {
     return this.paramNameToParam.values
         .map {
             it.annotationMappedName to (nameToParam[it.name]
-                    ?: throw IllegalStateException("Param not found for name ${it.name}"))
+                ?: throw IllegalStateException("Param not found for name ${it.name}"))
         }.toMap()
 }

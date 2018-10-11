@@ -22,8 +22,9 @@ class HandlerMethodComparator : Comparator<HandlerMethod>, Serializable {
 
         return when {
             m1PathSections.size != m2PathSections.size -> m1PathSections.size - m2PathSections.size
-            comparePathParams(m1PathSections, m2PathSections) != 0 -> comparePathParams(m1PathSections,
-                                                                                        m2PathSections)
+            comparePathParams(m1PathSections, m2PathSections) != 0 -> comparePathParams(
+                m1PathSections,
+                m2PathSections)
             else -> compareMandatoryQueryParams(m1, m2)
         }
     }
@@ -47,11 +48,11 @@ class HandlerMethodComparator : Comparator<HandlerMethod>, Serializable {
     // The method with more mandatory query params will take precedence
     private fun compareMandatoryQueryParams(m1: HandlerMethod, m2: HandlerMethod): Int {
         return (m2.paramNameToParam.values.stream()
-                .filter { it.required }
-                .count()
+            .filter { it.required }
+            .count()
                 - m1.paramNameToParam.values
-                .filter { it.required }
-                .count())
-                .toInt()
+            .filter { it.required }
+            .count())
+            .toInt()
     }
 }

@@ -9,11 +9,10 @@ private val LOGGER = LoggerFactory.getLogger(EndpointRegistrator::class.java)
 
 class EndpointRegistrator(
     private val server: Javalin,
-    private val frontControllerDelegator: FrontControllerDelegator
-) {
+    private val lamblinDelegator: LamblinDelegator) {
 
     internal fun registerEndpoints() {
-        frontControllerDelegator.lamblin.httpMethodToHandlers
+        lamblinDelegator.lamblin.httpMethodToHandlers
             .mapValues { it.value.distinctBy { it.path } }
             .values
             .flatMap { it }
@@ -27,23 +26,23 @@ class EndpointRegistrator(
             HttpMethod.GET ->
                 server.get(
                     formatPath(handlerMethod.path)
-                ) { frontControllerDelegator.delegateToController(it) }
+                ) { lamblinDelegator.delegateToController(it) }
             HttpMethod.POST ->
                 server.post(
                     formatPath(handlerMethod.path)
-                ) { frontControllerDelegator.delegateToController(it) }
+                ) { lamblinDelegator.delegateToController(it) }
             HttpMethod.DELETE ->
                 server.delete(
                     formatPath(handlerMethod.path)
-                ) { frontControllerDelegator.delegateToController(it) }
+                ) { lamblinDelegator.delegateToController(it) }
             HttpMethod.PUT ->
                 server.put(
                     formatPath(handlerMethod.path)
-                ) { frontControllerDelegator.delegateToController(it) }
+                ) { lamblinDelegator.delegateToController(it) }
             HttpMethod.PATCH ->
                 server.patch(
                     formatPath(handlerMethod.path)
-                ) { frontControllerDelegator.delegateToController(it) }
+                ) { lamblinDelegator.delegateToController(it) }
         }
     }
 

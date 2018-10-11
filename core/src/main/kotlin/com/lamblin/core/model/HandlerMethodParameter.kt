@@ -21,8 +21,7 @@ data class HandlerMethodParameter(
     val defaultValue: Any? = null,
 
     /** The type of the parameter. */
-    val type: Class<*>
-) {
+    val type: Class<*>) {
 
     companion object {
 

@@ -6,7 +6,6 @@ import com.lamblin.core.OBJECT_MAPPER
 import com.lamblin.core.exception.EventDeserializationException
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
-import java.io.InputStream
 import java.io.OutputStream
 
 /**
@@ -19,22 +18,24 @@ internal class RequestHandlerAdapter internal constructor(private val requestHan
      * and then writing the result [ApiGatewayProxyResponseEvent] to the output
      */
     fun handlerRequest(
-        input: InputStream,
+        requestContents: Map<String, Any>,
         output: OutputStream,
-        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
-    ) {
+        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>) {
 
-        try {
-            val request = OBJECT_MAPPER.readValue(input, APIGatewayProxyRequestEvent::class.java)
+        val request = transformRequestContentsToAwsProxyRequest(requestContents)
 
-            val response = requestHandler.handle(request, httpMethodToHandlers)
+        val response = requestHandler.handle(request, httpMethodToHandlers)
 
-            output.write(OBJECT_MAPPER.writeValueAsBytes(response))
-        } catch (e: JsonParseException) {
-            throw EventDeserializationException(
-                "Unable to deserialize event into APIGatewayProxyRequestEvent. " +
-                        "Please make sure lambda was triggered by an API Gateway event", e)
-        }
+        output.write(OBJECT_MAPPER.writeValueAsBytes(response))
     }
+
+    private fun transformRequestContentsToAwsProxyRequest(requestContents: Map<String, Any>) =
+        APIGatewayProxyRequestEvent().apply {
+            path = requestContents["path"] as? String
+            httpMethod = requestContents["httpMethod"] as? String
+            headers = requestContents["headers"] as? Map<String, String>
+            queryStringParameters = requestContents["queryStringParameters"] as? Map<String, String>
+            body = requestContents["body"] as? String
+        }
 
 }

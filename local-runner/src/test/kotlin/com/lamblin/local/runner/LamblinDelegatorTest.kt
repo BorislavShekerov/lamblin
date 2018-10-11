@@ -15,7 +15,7 @@ class LamblinDelegatorTest {
 
     private val lamblin: Lamblin = mockk(relaxed = true)
     private val objectMapper: ObjectMapper = mockk(relaxed = true)
-    private val frontControllerDelegator = FrontControllerDelegator(lamblin, objectMapper)
+    private val frontControllerDelegator = LamblinDelegator(lamblin, objectMapper)
 
     private val requestMethod = "GET"
     private val requestPath = "path"

@@ -4,8 +4,7 @@ package com.lamblin.core.model
 data class HttpResponse<T>(
     val statusCode: StatusCode = StatusCode.OK,
     val headers: Map<String, String> = mapOf(),
-    val body: T? = null
-) {
+    val body: T? = null) {
 
     companion object {
         @JvmStatic

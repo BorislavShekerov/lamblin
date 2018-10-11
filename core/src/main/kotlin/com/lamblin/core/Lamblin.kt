@@ -1,15 +1,20 @@
 package com.lamblin.core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.fasterxml.jackson.core.type.TypeReference
 import com.lamblin.core.handler.HandlerMethodFactory
 import com.lamblin.core.handler.RequestHandler
 import com.lamblin.core.handler.RequestHandlerAdapter
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.annotation.Endpoint
+import com.lamblin.plugin.core.ExecutableLamblinPlugin
+import com.lamblin.plugin.core.model.PluginExecutionResult
+import com.lamblin.plugin.core.model.PluginType
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.HashMap
 
 private val LOGGER = LoggerFactory.getLogger(Lamblin::class.java)
 
@@ -19,8 +24,8 @@ private val LOGGER = LoggerFactory.getLogger(Lamblin::class.java)
 class Lamblin internal constructor(
     private val requestHandler: RequestHandlerAdapter,
     private val handlerMethodFactory: HandlerMethodFactory,
-    private val controllerRegistry: ControllerRegistry
-) {
+    private val controllerRegistry: ControllerRegistry,
+    private val pluginRegistry: PluginRegistry) {
 
     val httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>> = createHttpMethodToPathToHandlerMethodMap()
 
@@ -35,8 +40,38 @@ class Lamblin internal constructor(
                 RequestHandlerAdapter(
                     RequestHandler.instance(controllerRegistry)),
                 HandlerMethodFactory.default(),
-                controllerRegistry)
+                controllerRegistry,
+                DefaultPluginRegistry)
         }
+    }
+
+    /**
+     * Attempts to handle an [APIGatewayProxyRequestEvent] by first looking for
+     * a suitable [HandlerMethod] and then delegating the execution to it.
+     */
+    fun handlerRequest(input: InputStream, output: OutputStream) {
+        val eventContents = deserializeEventContents(input)
+
+        if (pluginRegistry.isPluginRegistered(PluginType.WARMUP)) {
+            val executionResult = pluginRegistry.executePlugin(PluginType.WARMUP, eventContents)
+
+            if (executionResult == PluginExecutionResult.SUCCESS) {
+                return
+            }
+        }
+
+        requestHandler.handlerRequest(eventContents, output, httpMethodToHandlers)
+    }
+
+    private fun deserializeEventContents(event: InputStream): Map<String, Any> {
+        val typeRef = object : TypeReference<HashMap<String, Any>>() {
+        }
+
+        return OBJECT_MAPPER.readValue(event, typeRef)
+    }
+
+    fun registerPlugin(plugin: ExecutableLamblinPlugin) {
+        pluginRegistry.registerPlugin(plugin)
     }
 
     internal fun createHttpMethodToPathToHandlerMethodMap(): Map<HttpMethod, Set<HandlerMethod>> {
@@ -61,13 +96,4 @@ class Lamblin internal constructor(
             .mapValues { it.value.toSet() }
     }
 
-    /**
-     * Attempts to handle an [APIGatewayProxyRequestEvent] by first looking for
-     * a suitable [HandlerMethod] and then delegating the execution to it.
-     */
-    fun handlerRequest(input: InputStream, output: OutputStream) {
-        requestHandler.handlerRequest(input, output, httpMethodToHandlers)
-    }
 }
-
-

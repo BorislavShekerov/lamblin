@@ -10,7 +10,7 @@ class WarmupLambdaPluginTest {
 
     @Test
     fun `should skip execution if event not warmup`() {
-        val result = warmupLambdaPlugin.execute(mapOf())
+        val result = warmupLambdaPlugin.execute(mapOf<String, Any>())
 
         assertThat(result).isEqualTo(PluginExecutionResult.SKIPPED)
     }

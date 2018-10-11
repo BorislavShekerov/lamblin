@@ -2,14 +2,22 @@ package core
 
 import com.lamblin.core.ControllerRegistry
 import com.lamblin.core.Lamblin
+import com.lamblin.core.OBJECT_MAPPER
+import com.lamblin.core.PluginRegistry
 import com.lamblin.core.handler.HandlerMethodFactory
+import com.lamblin.core.handler.RequestHandler
+import com.lamblin.core.handler.RequestHandlerAdapter
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.annotation.Endpoint
+import com.lamblin.plugin.core.model.PluginExecutionResult
+import com.lamblin.plugin.core.model.PluginType
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayInputStream
 
 const val PATH_GET_1 = "path_get_1"
 const val PATH_POST_1 = "path_post_1"
@@ -49,12 +57,13 @@ class LamblinTest {
         every { controllerRegistry.controllerClasses() } returns listOf(
             TestControllerWithEndpoints1::class.java)
 
-        val frontController = Lamblin(
+        val lamblin = Lamblin(
             mockk(),
             handlerMethodFactory,
-            controllerRegistry)
+            controllerRegistry,
+            mockk(relaxed = true))
 
-        val httpMethodToMethodHandlers = frontController.createHttpMethodToPathToHandlerMethodMap()
+        val httpMethodToMethodHandlers = lamblin.createHttpMethodToPathToHandlerMethodMap()
 
         assertThat(httpMethodToMethodHandlers).hasSize(2)
         assertThat(httpMethodToMethodHandlers[HttpMethod.GET]).hasSize(1)
@@ -91,12 +100,13 @@ class LamblinTest {
             TestControllerWithEndpoints1::class.java,
             TestControllerWithEndpoints2::class.java)
 
-        val frontController = Lamblin(
+        val lamblin = Lamblin(
             mockk(),
             handlerMethodFactory,
-            controllerRegistry)
+            controllerRegistry,
+            mockk(relaxed = true))
 
-        val httpMethodToMethodHandlers = frontController.createHttpMethodToPathToHandlerMethodMap()
+        val httpMethodToMethodHandlers = lamblin.createHttpMethodToPathToHandlerMethodMap()
 
         assertThat(httpMethodToMethodHandlers).hasSize(2)
         assertThat(httpMethodToMethodHandlers[HttpMethod.GET]).hasSize(2)
@@ -110,15 +120,98 @@ class LamblinTest {
         every { controllerRegistry.controllerClasses() } returns listOf(
             TestControllerNoEndpoints::class.java)
 
-        val frontController = Lamblin(
+        val lamblin = Lamblin(
             mockk(),
             mockk(relaxed = true),
-            controllerRegistry)
+            controllerRegistry,
+            mockk(relaxed = true))
 
-        val httpMethodToMethodHandlers = frontController.createHttpMethodToPathToHandlerMethodMap()
+        val httpMethodToMethodHandlers = lamblin.createHttpMethodToPathToHandlerMethodMap()
 
         assertThat(httpMethodToMethodHandlers).hasSize(0)
     }
+
+    @Test
+    fun `should use warmup plugin if request warmup and plugin registered`() {
+        val controllerRegistry: ControllerRegistry = mockk()
+        val requestHandlerAdapter: RequestHandlerAdapter = mockk()
+
+        every { controllerRegistry.controllerClasses() } returns listOf(
+            TestControllerNoEndpoints::class.java)
+
+        val pluginRegistryMock: PluginRegistry = mockk(relaxed = true)
+
+        val eventContents = mapOf("warmup" to "warmup")
+        val eventInput = ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(eventContents))
+
+        every { pluginRegistryMock.isPluginRegistered(PluginType.WARMUP) } returns true
+        every { pluginRegistryMock.executePlugin(PluginType.WARMUP, eventContents) } returns PluginExecutionResult.SUCCESS
+
+        val lamblin = Lamblin(
+            requestHandlerAdapter,
+            mockk(relaxed = true),
+            controllerRegistry,
+            pluginRegistryMock)
+
+        lamblin.handlerRequest(eventInput, mockk())
+
+        verify { pluginRegistryMock.executePlugin(PluginType.WARMUP, eventContents) }
+        verify(exactly = 0) { requestHandlerAdapter.handlerRequest(any(), any(), any())  }
+    }
+
+    @Test
+    fun `should handle request if warmup plugin configured but event not warmup`() {
+        val controllerRegistry: ControllerRegistry = mockk()
+        val requestHandlerAdapter: RequestHandlerAdapter = mockk(relaxed = true)
+
+        every { controllerRegistry.controllerClasses() } returns listOf(
+            TestControllerNoEndpoints::class.java)
+
+        val pluginRegistryMock: PluginRegistry = mockk(relaxed = true)
+
+        val eventContents = mapOf("foo" to "bar")
+        val eventInput = ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(eventContents))
+
+        every { pluginRegistryMock.isPluginRegistered(PluginType.WARMUP) } returns true
+        every { pluginRegistryMock.executePlugin(PluginType.WARMUP, eventContents) } returns PluginExecutionResult.SKIPPED
+
+        val lamblin = Lamblin(
+            requestHandlerAdapter,
+            mockk(relaxed = true),
+            controllerRegistry,
+            pluginRegistryMock)
+
+        lamblin.handlerRequest(eventInput, mockk())
+
+        verify { pluginRegistryMock.executePlugin(PluginType.WARMUP, eventContents) }
+        verify{ requestHandlerAdapter.handlerRequest(eventContents, any(), lamblin.httpMethodToHandlers)  }
+    }
+
+    @Test
+    fun `should handle request if warmup plugin not configured`() {
+        val controllerRegistry: ControllerRegistry = mockk()
+        val requestHandlerAdapter: RequestHandlerAdapter = mockk(relaxed = true)
+
+        every { controllerRegistry.controllerClasses() } returns listOf(
+            TestControllerNoEndpoints::class.java)
+
+        val pluginRegistryMock: PluginRegistry = mockk(relaxed = true)
+
+        val eventContents = mapOf("foo" to "bar")
+        val eventInput = ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(eventContents))
+
+        val lamblin = Lamblin(
+            requestHandlerAdapter,
+            mockk(relaxed = true),
+            controllerRegistry,
+            mockk(relaxed = true))
+
+        lamblin.handlerRequest(eventInput, mockk())
+
+        verify(exactly = 0) { pluginRegistryMock.executePlugin(PluginType.WARMUP, eventContents) }
+        verify{ requestHandlerAdapter.handlerRequest(eventContents, any(), lamblin.httpMethodToHandlers)  }
+    }
+
 
     class TestControllerWithEndpoints1 {
 
@@ -142,7 +235,6 @@ class LamblinTest {
         fun endpoint_post() {
         }
     }
-
 
     class TestControllerNoEndpoints
 }

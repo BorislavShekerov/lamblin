@@ -17,18 +17,18 @@ class EndpointRegistratorTest {
     private val testPath = "testPath"
     private val server: Javalin = mockk(relaxed = true)
     private val lamblin: Lamblin = mockk(relaxed = true)
-    private val frontControllerDelegator: FrontControllerDelegator = mockk(relaxed = true)
+    private val lamblinDelegator: LamblinDelegator = mockk(relaxed = true)
 
-    private val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)
+    private val endpointRegistrator = EndpointRegistrator(server, lamblinDelegator)
 
     @BeforeEach
     fun setUp() {
-        every { frontControllerDelegator.lamblin }.returns(lamblin)
+        every { lamblinDelegator.lamblin }.returns(lamblin)
     }
 
     @AfterEach
     fun tearDown() {
-        clearMocks(lamblin, frontControllerDelegator, server)
+        clearMocks(lamblin, lamblinDelegator, server)
     }
 
     @Test

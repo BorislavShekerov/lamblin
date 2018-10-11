@@ -11,12 +11,11 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
 internal val OBJECT_MAPPER = ObjectMapper()
-private val LOGGER = LoggerFactory.getLogger(FrontControllerDelegator::class.java)
+private val LOGGER = LoggerFactory.getLogger(LamblinDelegator::class.java)
 
-class FrontControllerDelegator(
+class LamblinDelegator(
     internal val lamblin: Lamblin,
-    private val objectMapper: ObjectMapper = OBJECT_MAPPER
-) {
+    private val objectMapper: ObjectMapper = OBJECT_MAPPER) {
 
     internal fun delegateToController(context: Context) {
         val requestEvent = createRequestEvent(context)
