@@ -1,3 +1,9 @@
+/*
+ * Lamblin
+ * Copyright 2018 Borislav Shekerov
+ * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
+ */
+
 package com.lamblin.it.controller;
 
 import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_PUT_ENDPOINT;

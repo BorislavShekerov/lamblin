@@ -1,3 +1,9 @@
+/*
+ * Lamblin
+ * Copyright 2018 Borislav Shekerov
+ * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
+ */
+
 package core
 
 import com.lamblin.core.DefaultPluginRegistry
@@ -14,7 +20,7 @@ import org.junit.jupiter.api.Test
 
 class DefaultPluginRegistryTest {
 
-    private var mockPlugin: ExecutableLamblinPlugin = mockk()
+    private val mockPlugin: ExecutableLamblinPlugin = mockk()
 
     @BeforeEach
     fun setUp() {

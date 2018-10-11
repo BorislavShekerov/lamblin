@@ -1,3 +1,9 @@
+/*
+ * Lamblin
+ * Copyright 2018 Borislav Shekerov
+ * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
+ */
+
 package com.lamblin.test.junit4
 
 import com.lamblin.local.runner.LocalRunner

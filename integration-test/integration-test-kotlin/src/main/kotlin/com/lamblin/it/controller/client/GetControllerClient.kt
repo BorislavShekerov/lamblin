@@ -1,3 +1,9 @@
+/*
+ * Lamblin
+ * Copyright 2018 Borislav Shekerov
+ * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
+ */
+
 package com.lamblin.it.controller.client
 
 import com.lamblin.it.model.CUSTOM_STATUS_CODE_GET_ENDPOINT

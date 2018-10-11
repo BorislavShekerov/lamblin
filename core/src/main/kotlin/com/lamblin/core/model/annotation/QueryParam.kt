@@ -1,3 +1,9 @@
+/*
+ * Lamblin
+ * Copyright 2018 Borislav Shekerov
+ * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
+ */
+
 package com.lamblin.core.model.annotation
 
 /**
@@ -9,11 +15,11 @@ package com.lamblin.core.model.annotation
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class QueryParam(
-        /** The query param name. */
-        val value: String,
+    /** The query param name. */
+    val value: String,
 
-        /** Defines if the presence of the query param is required */
-        val required: Boolean = true,
+    /** Defines if the presence of the query param is required */
+    val required: Boolean = true,
 
-        /** The default value to use in absence of the param in the request.  */
-        val defaultValue: String = "")
+    /** The default value to use in absence of the param in the request.  */
+    val defaultValue: String = "")
