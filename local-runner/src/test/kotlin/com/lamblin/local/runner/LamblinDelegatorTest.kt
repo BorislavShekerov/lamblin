@@ -2,7 +2,7 @@ package com.lamblin.local.runner
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.lamblin.core.FrontController
+import com.lamblin.core.Lamblin
 import com.lamblin.core.model.StatusCode
 import io.javalin.Context
 import io.mockk.every
@@ -11,11 +11,11 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import java.lang.RuntimeException
 
-class FrontControllerDelegatorTest {
+class LamblinDelegatorTest {
 
-    private val frontController: FrontController = mockk(relaxed = true)
+    private val lamblin: Lamblin = mockk(relaxed = true)
     private val objectMapper: ObjectMapper = mockk(relaxed = true)
-    private val frontControllerDelegator = FrontControllerDelegator(frontController, objectMapper)
+    private val frontControllerDelegator = FrontControllerDelegator(lamblin, objectMapper)
 
     private val requestMethod = "GET"
     private val requestPath = "path"
@@ -43,7 +43,7 @@ class FrontControllerDelegatorTest {
 
         frontControllerDelegator.delegateToController(context)
 
-        verify { frontController.handlerRequest(any(), any()) }
+        verify { lamblin.handlerRequest(any(), any()) }
         verify { context.status(responseStatus) }
         verify { context.header("header1", "header1Val") }
         verify { context.result(responseBody) }
@@ -63,7 +63,7 @@ class FrontControllerDelegatorTest {
 
         frontControllerDelegator.delegateToController(context)
 
-        verify { frontController.handlerRequest(any(), any()) }
+        verify { lamblin.handlerRequest(any(), any()) }
         verify { context.status(StatusCode.API_ERROR.code) }
     }
 

@@ -1,6 +1,6 @@
 package com.lamblin.local.runner
 
-import com.lamblin.core.FrontController
+import com.lamblin.core.Lamblin
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import io.javalin.Javalin
@@ -16,19 +16,19 @@ class EndpointRegistratorTest {
 
     private val testPath = "testPath"
     private val server: Javalin = mockk(relaxed = true)
-    private val frontController: FrontController = mockk(relaxed = true)
+    private val lamblin: Lamblin = mockk(relaxed = true)
     private val frontControllerDelegator: FrontControllerDelegator = mockk(relaxed = true)
 
     private val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)
 
     @BeforeEach
     fun setUp() {
-        every { frontControllerDelegator.frontController }.returns(frontController)
+        every { frontControllerDelegator.lamblin }.returns(lamblin)
     }
 
     @AfterEach
     fun tearDown() {
-        clearMocks(frontController, frontControllerDelegator, server)
+        clearMocks(lamblin, frontControllerDelegator, server)
     }
 
     @Test
@@ -70,7 +70,7 @@ class EndpointRegistratorTest {
     fun `should format path params before registering endpoint`() {
         val getHandlerMethod: HandlerMethod = mockk(relaxed = true)
 
-        every { frontController.httpMethodToHandlers } returns mapOf(HttpMethod.GET to setOf(getHandlerMethod))
+        every { lamblin.httpMethodToHandlers } returns mapOf(HttpMethod.GET to setOf(getHandlerMethod))
         every { getHandlerMethod.httpMethod } returns HttpMethod.GET
         val testPathWithPathParam = "/foo/{param}/bar"
         every { getHandlerMethod.path } returns testPathWithPathParam
@@ -83,7 +83,7 @@ class EndpointRegistratorTest {
     private fun setUpForMethodAndRegister(httpMethod: HttpMethod) {
         val getHandlerMethod: HandlerMethod = mockk(relaxed = true)
 
-        every { frontController.httpMethodToHandlers } returns mapOf(httpMethod to setOf(getHandlerMethod))
+        every { lamblin.httpMethodToHandlers } returns mapOf(httpMethod to setOf(getHandlerMethod))
         every { getHandlerMethod.httpMethod } returns httpMethod
         val testPath = "testPath"
         every { getHandlerMethod.path } returns testPath

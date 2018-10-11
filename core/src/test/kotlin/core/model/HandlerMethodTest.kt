@@ -155,6 +155,15 @@ class HandlerMethodTest {
         assertThat(result).isTrue()
     }
 
+    @Test
+    fun `should match paths when no query params in the request`() {
+        val handlerMethod = createHandlerMethod("/path/no-query-params")
+
+        val result = handlerMethod.matches("/path/no-query-params", null)
+
+        assertThat(result).isTrue()
+    }
+
     private fun createHandlerMethod(
         path: String,
         paramMap: Map<String, HandlerMethodParameter> = mapOf()

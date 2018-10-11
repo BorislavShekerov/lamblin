@@ -1,0 +1,24 @@
+service: lamblin-kotlin-lambda
+provider:
+  name: aws
+  region: eu-west-1
+  runtime: java8
+  memorySize: 512
+  timeout: 10
+  versionFunctions: false
+
+package:
+  artifact: target/kotlin-lambda-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+
+functions:
+  kotlin-lamblin:
+    handler: com.lamblin.example.lambda.LambdaHandler
+    name: kotlin-lamblin-lambda
+    description: An example Lamblin kotlin function
+    events:
+    - http:
+        path: /todo-lists
+        method: any
+    - http:
+        path: /todo-lists/{proxy+}
+        method: any

@@ -11,12 +11,12 @@ import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
 
-private val LOGGER = LoggerFactory.getLogger(FrontController::class.java)
+private val LOGGER = LoggerFactory.getLogger(Lamblin::class.java)
 
 /**
  * Defines the controller responsible for delegating the requests to the endpoint controllers.
  */
-class FrontController internal constructor(
+class Lamblin internal constructor(
     private val requestHandler: RequestHandlerAdapter,
     private val handlerMethodFactory: HandlerMethodFactory,
     private val controllerRegistry: ControllerRegistry
@@ -28,10 +28,10 @@ class FrontController internal constructor(
 
         /** Creates an instance using a list of controller endpoint classes. */
         @JvmStatic
-        fun instance(controllers: Set<Any>): FrontController {
+        fun instance(controllers: Set<Any>): Lamblin {
             val controllerRegistry = ControllerRegistry(controllers)
 
-            return FrontController(
+            return Lamblin(
                 RequestHandlerAdapter(
                     RequestHandler.instance(controllerRegistry)),
                 HandlerMethodFactory.default(),

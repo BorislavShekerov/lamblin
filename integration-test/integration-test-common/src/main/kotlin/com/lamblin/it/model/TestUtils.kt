@@ -1,18 +1,11 @@
 package com.lamblin.it.model
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.lamblin.core.FrontController
-import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.StatusCode
 import org.assertj.core.api.Assertions.assertThat
 import retrofit2.Response
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 
 val OBJECT_MAPPER = ObjectMapper().apply {
     registerModule(JavaTimeModule())

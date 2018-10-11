@@ -1,7 +1,7 @@
 package core
 
 import com.lamblin.core.ControllerRegistry
-import com.lamblin.core.FrontController
+import com.lamblin.core.Lamblin
 import com.lamblin.core.handler.HandlerMethodFactory
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
@@ -16,7 +16,7 @@ const val PATH_POST_1 = "path_post_1"
 const val PATH_GET_2 = "path_get_2"
 const val PATH_POST_2 = "path_post_2"
 
-class FrontControllerTest {
+class LamblinTest {
 
     private val getHandlerMethod: HandlerMethod = mockk()
     private val postHandlerMethod: HandlerMethod = mockk()
@@ -49,7 +49,7 @@ class FrontControllerTest {
         every { controllerRegistry.controllerClasses() } returns listOf(
             TestControllerWithEndpoints1::class.java)
 
-        val frontController = FrontController(
+        val frontController = Lamblin(
             mockk(),
             handlerMethodFactory,
             controllerRegistry)
@@ -91,7 +91,7 @@ class FrontControllerTest {
             TestControllerWithEndpoints1::class.java,
             TestControllerWithEndpoints2::class.java)
 
-        val frontController = FrontController(
+        val frontController = Lamblin(
             mockk(),
             handlerMethodFactory,
             controllerRegistry)
@@ -110,7 +110,7 @@ class FrontControllerTest {
         every { controllerRegistry.controllerClasses() } returns listOf(
             TestControllerNoEndpoints::class.java)
 
-        val frontController = FrontController(
+        val frontController = Lamblin(
             mockk(),
             mockk(relaxed = true),
             controllerRegistry)

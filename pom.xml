@@ -13,20 +13,22 @@
         <module>integration-test</module>
         <module>test</module>
         <module>local-runner</module>
+        <module>example</module>
     </modules>
     <name>lamblin-parent</name>
 
     <properties>
         <kotlin.version>1.2.71</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <main.class>com.lamblin.core.FrontController</main.class>
+        <main.class>com.lamblin.core.Lamblin</main.class>
 
         <aws-lambda-java-events.version>2.2.2</aws-lambda-java-events.version>
         <aws-lambda-java-sdk.version>1.11.405</aws-lambda-java-sdk.version>
         <jackson-databind.version>2.9.6</jackson-databind.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <retrofit.version>2.4.0</retrofit.version>
-        
+        <guava.version>23.0</guava.version>
+
         <junit-jupiter.version>5.3.1</junit-jupiter.version>
         <assertj.version>3.11.1</assertj.version>
         <mockk.version>1.8.7</mockk.version>

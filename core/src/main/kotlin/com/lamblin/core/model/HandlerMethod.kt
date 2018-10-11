@@ -38,7 +38,7 @@ data class HandlerMethod(
      * @param requestPath the request path to check
      * @return true if request path matches the handler path
      */
-    fun matches(requestPath: String, queryParams: Map<String, String>): Boolean {
+    fun matches(requestPath: String, queryParams: Map<String, String>?): Boolean {
         LOGGER.debug("Matching path [{}] against request handler [{}]", requestPath, path)
 
         val requestPathEntries = requestPath.split("/")
@@ -63,10 +63,10 @@ data class HandlerMethod(
                     .all { it.value == requestPathEntries[it.index] }
 
     // Checks if the required query params (without default values) are present
-    private fun requiredQueryParamsPresent(queryParams: Map<String, String>): Boolean {
+    private fun requiredQueryParamsPresent(queryParams: Map<String, String>?): Boolean {
         return paramNameToParam.values
                 .filter { it.required && it.defaultValue == null }
-                .all { queryParams.containsKey(it.annotationMappedName) }
+                .all { queryParams?.containsKey(it.annotationMappedName) ?: false }
     }
 
 }
