@@ -11,6 +11,7 @@ import com.lamblin.example.lambda.service.InMemoryDataService;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/** Defines the main Handler class used by Lambda. */
 public class LambdaHandler implements RequestStreamHandler {
 
   private static final DataService DATA_SERVICE = new InMemoryDataService();

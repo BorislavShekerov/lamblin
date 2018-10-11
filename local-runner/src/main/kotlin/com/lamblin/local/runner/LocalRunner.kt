@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-internal const val SECONDS_BEFORE_TERMINATING = 60 * 60
+internal const val SECONDS_BEFORE_TERMINATING = 1000 * 60 * 60
 private val LOGGER = LoggerFactory.getLogger(LocalRunner::class.java)
 
 class LocalRunner internal constructor(

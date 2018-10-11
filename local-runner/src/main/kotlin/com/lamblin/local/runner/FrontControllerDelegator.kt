@@ -15,7 +15,7 @@ private val LOGGER = LoggerFactory.getLogger(FrontControllerDelegator::class.jav
 
 class FrontControllerDelegator(
     internal val lamblin: Lamblin,
-    private val objetMapper: ObjectMapper = OBJECT_MAPPER
+    private val objectMapper: ObjectMapper = OBJECT_MAPPER
 ) {
 
     internal fun delegateToController(context: Context) {
@@ -25,10 +25,10 @@ class FrontControllerDelegator(
 
         try {
             lamblin.handlerRequest(
-                ByteArrayInputStream(objetMapper.writeValueAsBytes(requestEvent)),
+                ByteArrayInputStream(objectMapper.writeValueAsBytes(requestEvent)),
                 responseOutputStream)
 
-            val response = objetMapper.readValue(
+            val response = objectMapper.readValue(
                 String(responseOutputStream.toByteArray()),
                 APIGatewayProxyResponseEvent::class.java)
 

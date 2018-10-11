@@ -10,7 +10,7 @@ const val TODOS_ROOT_ENDPOINT = "/todo-lists"
 const val TODOS_SPECIFIC_LIST = "/todo-lists/{uid}"
 
 @Controller
-class ExampleTodoController(private val dataService: DataService) {
+class TodoController(private val dataService: DataService) {
 
     @Endpoint(TODOS_ROOT_ENDPOINT, HttpMethod.GET)
     fun getAllTodoLists() = HttpResponse.ok(dataService.fetchAll())
