@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>parent</artifactId>
-        <groupId>com.lamblin</groupId>
+        <artifactId>lamblin-parent</artifactId>
+        <groupId>org.lamblin</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
