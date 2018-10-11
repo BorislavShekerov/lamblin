@@ -9,12 +9,12 @@
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
+        <module>plugin</module>
         <module>core</module>
         <module>integration-test</module>
         <module>test</module>
         <module>local-runner</module>
         <module>example</module>
-        <module>plugin</module>
     </modules>
     <name>lamblin-parent</name>
 
