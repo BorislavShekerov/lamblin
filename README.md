@@ -3,4 +3,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # lamblin
-A REST Framework for Java applications deployed as AWS Lambdas
+A REST Framework for Java applications deployed as AWS Lambdas.
+
+# In Progress...
