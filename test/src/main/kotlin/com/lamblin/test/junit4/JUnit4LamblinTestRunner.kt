@@ -38,7 +38,7 @@ class JUnit4LamblinTestRunner constructor(private val testClass: Class<*>) : Run
     private fun createLocalRunner(): LocalRunner {
         val (port, controllers) = testRunnerConfigExtractor.extractConfigFromTestClass(testClass)
 
-        return LocalRunner.createRunner(port, controllers, 1)
+        return LocalRunner.createRunner(port, 1, *controllers.toTypedArray())
     }
 
     object Runner {

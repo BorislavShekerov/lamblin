@@ -19,8 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 @LamblinTestRunnerConfig(testConfigClass = GetControllerIntegrationTest.TestConfiguration::class)
 class GetControllerIntegrationTest {
 
-    private val frontController = Lamblin.instance(setOf(GetController()))
-
     @Test
     fun `should handle GET requests with no params`() {
         runRequestAndVerifyResponse(

@@ -29,12 +29,12 @@ class LocalRunner internal constructor(
         @JvmOverloads
         fun createRunner(
             port: Int,
-            controllers: Set<Any>,
-            runTimeInMilliseconds: Long = SECONDS_BEFORE_TERMINATING.toLong()
+            runTimeInMilliseconds: Long = SECONDS_BEFORE_TERMINATING.toLong(),
+            vararg controllers: Any
         ): LocalRunner {
 
             val server = Javalin.create().port(port)
-            val frontControllerDelegator = LamblinDelegator(Lamblin.frontController(controllers))
+            val frontControllerDelegator = LamblinDelegator(Lamblin.frontController(*controllers))
 
             val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)
 

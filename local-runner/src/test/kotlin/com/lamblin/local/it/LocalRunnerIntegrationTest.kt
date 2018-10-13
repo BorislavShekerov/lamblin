@@ -11,7 +11,7 @@ const val PORT = 7070
 
 class LocalRunnerIntegrationTest {
 
-    private val runner = LocalRunner.createRunner(PORT, setOf(Controller()), 1)
+    private val runner = LocalRunner.createRunner(PORT, 1, Controller())
     private val objectMapper = ObjectMapper().apply {
         registerModule(KotlinModule())
     }

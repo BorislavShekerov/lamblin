@@ -33,8 +33,7 @@ object DefaultTestRunnerConfigExtractor : TestRunnerConfigExtractor {
 
         return TestRunnerConfig(
             testRunnerConfig.serverPort,
-            getControllerInstances(testRunnerConfig.testConfigClass)
-        )
+            getControllerInstances(testRunnerConfig.testConfigClass))
     }
 
     private fun getControllerInstances(configClass: KClass<*>): Set<Any> {

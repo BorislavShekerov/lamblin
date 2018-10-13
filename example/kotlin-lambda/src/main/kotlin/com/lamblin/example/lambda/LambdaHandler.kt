@@ -15,7 +15,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 val todoController = TodoController(InMemoryDataService)
-val lamblin = Lamblin.instance(setOf(todoController))
+val lamblin = Lamblin.frontController(todoController)
 
 /** Defines the main Handler class used by Lambda. */
 class LambdaHandler : RequestStreamHandler {
