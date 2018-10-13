@@ -6,11 +6,11 @@
 
 package com.lamblin.local.runner
 
-import com.lamblin.core.Lamblin
 import io.javalin.Javalin
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import com.lamblin.core.Lamblin
 
 internal const val SECONDS_BEFORE_TERMINATING = 1000 * 60 * 60
 private val LOGGER = LoggerFactory.getLogger(LocalRunner::class.java)
@@ -34,7 +34,7 @@ class LocalRunner internal constructor(
         ): LocalRunner {
 
             val server = Javalin.create().port(port)
-            val frontControllerDelegator = LamblinDelegator(Lamblin.instance(controllers))
+            val frontControllerDelegator = LamblinDelegator(Lamblin.frontController(controllers))
 
             val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)
 
