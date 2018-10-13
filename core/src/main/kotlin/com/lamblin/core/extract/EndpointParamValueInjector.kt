@@ -27,6 +27,7 @@ internal interface EndpointParamValueInjector {
     fun castParamToRequiredType(paramType: Class<*>?, paramValue: Any) = when (paramType) {
         Int::class.java -> (paramValue as String).toInt()
         Long::class.java -> (paramValue as String).toLong()
+        Double::class.java -> (paramValue as String).toDouble()
         Boolean::class.java -> (paramValue as String).toBoolean()
         else -> paramValue
     }

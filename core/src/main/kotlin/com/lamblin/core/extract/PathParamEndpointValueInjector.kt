@@ -28,7 +28,7 @@ object PathParamEndpointValueInjector : EndpointParamValueInjector {
             .map { it.value.removeSurrounding("{", "}") to requestPathSections[it.index] }
             .map {
                 it.first to castParamToRequiredType(
-                    paramAnnotationMappedNameToParam[it.first]?.type,
+                    paramAnnotationMappedNameToParam[it.first]!!.type,
                     it.second)
             }.toMap()
     }

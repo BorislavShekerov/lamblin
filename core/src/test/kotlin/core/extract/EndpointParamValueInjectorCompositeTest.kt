@@ -10,6 +10,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.extract.EndpointParamValueInjectorComposite
 import com.lamblin.core.extract.PathParamEndpointValueInjector
 import com.lamblin.core.extract.QueryEndpointParamValueInjector
+import com.lamblin.core.extract.RequestBodyEndpointParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
@@ -23,6 +24,8 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.lang.IllegalStateException
 
 class EndpointParamValueInjectorCompositeTest {
 
@@ -46,10 +49,19 @@ class EndpointParamValueInjectorCompositeTest {
                 HttpMethod.GET,
                 method = TestController::class.java.declaredMethods.find { it.name === "endpointNoParams" }!!,
                 controllerClass = TestController::class.java),
-            mapOf()
-        )
+            mapOf())
 
         assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `instance should contain all value injectors`() {
+        val instance = EndpointParamValueInjectorComposite.instance()
+
+        assertThat(instance.injectorEndpoints).hasSize(3)
+        assertThat(instance.injectorEndpoints).contains(PathParamEndpointValueInjector)
+        assertThat(instance.injectorEndpoints).contains(QueryEndpointParamValueInjector)
+        assertThat(instance.injectorEndpoints).contains(RequestBodyEndpointParamValueInjector)
     }
 
     @Test
@@ -70,14 +82,12 @@ class EndpointParamValueInjectorCompositeTest {
                     name = "arg1",
                     type = String::class.java)),
             method,
-            TestController::class.java
-        )
+            TestController::class.java)
 
 
         val paramAnnotationMappedNameToParam = mapOf(
             "queryParam" to method.parameters[0],
-            "pathParam" to method.parameters[0]
-        )
+            "pathParam" to method.parameters[0])
 
         every {
             queryParamValueInjector.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
@@ -89,8 +99,7 @@ class EndpointParamValueInjectorCompositeTest {
         val result = endpointParamValueInjectorComposite.injectParamValues(
             request,
             handlerMethod,
-            paramAnnotationMappedNameToParam
-        )
+            paramAnnotationMappedNameToParam)
 
         assertThat(result).isEqualTo(linkedMapOf("queryParam" to "queryValue", "pathParam" to "pathValue"))
     }
@@ -107,23 +116,18 @@ class EndpointParamValueInjectorCompositeTest {
                 "arg0" to HandlerMethodParameter(
                     annotationMappedName = "pathParam",
                     name = "arg1",
-                    type = String::class.java
-                ),
+                    type = String::class.java),
                 "arg1" to HandlerMethodParameter(
                     annotationMappedName = "queryParam",
                     name = "arg0",
-                    type = String::class.java
-                )
-            ),
+                    type = String::class.java)),
             method,
-            TestController::class.java
-        )
+            TestController::class.java)
 
 
         val paramAnnotationMappedNameToParam = mapOf(
             "queryParam" to method.parameters[0],
-            "pathParam" to method.parameters[1]
-        )
+            "pathParam" to method.parameters[1])
 
         every {
             queryParamValueInjector.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
@@ -135,10 +139,38 @@ class EndpointParamValueInjectorCompositeTest {
         val result = endpointParamValueInjectorComposite.injectParamValues(
             request,
             handlerMethod,
-            paramAnnotationMappedNameToParam
-        )
+            paramAnnotationMappedNameToParam)
 
         assertThat(result).isEqualTo(linkedMapOf("pathParam" to "pathValue", "queryParam" to "queryValue"))
+    }
+
+    @Test
+    fun `should throw IllegalStateException if param not found for a give name`() {
+        val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
+        val method = TestController::class.java.declaredMethods.find { it.name === "endpointWithParamsFlipped" }!!
+
+        val handlerMethod = HandlerMethod(
+            "endpointWithParam/{pathParam}",
+            HttpMethod.GET,
+            mapOf(
+                "arg1" to HandlerMethodParameter(
+                    annotationMappedName = "queryParam",
+                    name = "arg0",
+                    type = String::class.java)),
+            method,
+            TestController::class.java)
+
+
+        val paramAnnotationMappedNameToParam = mapOf(
+            "queryParam" to method.parameters[0],
+            "pathParam" to method.parameters[1])
+
+        assertThrows<IllegalStateException> {
+            endpointParamValueInjectorComposite.injectParamValues(
+                request,
+                handlerMethod,
+                paramAnnotationMappedNameToParam)
+        }
     }
 
     private class TestController {

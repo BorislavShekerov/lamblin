@@ -32,6 +32,19 @@ class QueryEndpointParamValueInjectorTest {
         assertThat(result).isEqualTo(mapOf("query1" to "value1"))
     }
 
+    @Test
+    fun `should return empty map if no query string params`() {
+        val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
+        every { request.queryStringParameters } returns null
+
+        val result = QueryEndpointParamValueInjector.injectParamValues(
+            request,
+            mockk(),
+            mapOf("query1" to TestController::class.java.declaredMethods[0].parameters[0]))
+
+        assertThat(result).isEqualTo(mapOf<String, Any>())
+    }
+
     private class TestController {
 
         @Endpoint("test", method = HttpMethod.GET)

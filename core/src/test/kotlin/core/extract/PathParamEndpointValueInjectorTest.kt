@@ -42,7 +42,12 @@ class PathParamEndpointValueInjectorTest {
         every { handlerMethod.path } returns PATH_PARAM_ENDPOINT_PATH
         every { request.path } returns "/path/paramValue"
 
-        val result = PathParamEndpointValueInjector.injectParamValues(request, handlerMethod, mapOf())
+        val pathParamParameter = TestController::class.java.methods[0].parameters[0]
+
+        val result = PathParamEndpointValueInjector.injectParamValues(
+            request,
+            handlerMethod,
+            mapOf("param" to pathParamParameter))
         assertThat(result).isEqualTo(mapOf("param" to "paramValue"))
     }
 

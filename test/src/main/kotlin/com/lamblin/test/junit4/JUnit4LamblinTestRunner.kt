@@ -22,14 +22,14 @@ private val LOGGER = LoggerFactory.getLogger(JUnit4LamblinTestRunner::class.java
 
 class JUnit4LamblinTestRunner constructor(private val testClass: Class<*>) : Runner() {
 
-    private val testRunnerConfigExtractor = TestRunnerConfigExtractor.default()
-    private val localRunner: LocalRunner
+    internal val testRunnerConfigExtractor = TestRunnerConfigExtractor.default()
+    internal val localRunner: LocalRunner
 
     init {
         localRunner = createLocalRunner()
     }
 
-    override fun getDescription() = Description.createSuiteDescription(testClass)
+    override fun getDescription(): Description = Description.createSuiteDescription(testClass)
 
     override fun run(notifier: RunNotifier) {
         Runner.run(localRunner, notifier, testClass)

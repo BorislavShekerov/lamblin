@@ -24,7 +24,7 @@ class ControllerRegistry(private val controllers: Set<Any>) {
             }
     }
 
-    /** Finds the controller instance of a given class. */
+    /** Finds the controller frontController of a given class. */
     fun controllerForClass(controllerClass: Class<*>) = controllers.find { it.javaClass == controllerClass }
 
     /** Retrieves the [Class] for each controller. */

@@ -53,9 +53,9 @@ object RequestBodyEndpointParamValueInjector : EndpointParamValueInjector {
 
         return parameters.find {
             it.annotations.any { annotation -> annotation is RequestBody }
-        }?.let {
-            REQUEST_BODY_MAPPED_NAME to deserializeBody(it, bodyJson)
-        } ?: throw IllegalStateException("Attempting to deserialize non-existent body param")
+        }.let {
+            REQUEST_BODY_MAPPED_NAME to deserializeBody(it!!, bodyJson)
+        }
     }
 
     private fun deserializeBody(parameter: Parameter, bodyJson: String): Any {

@@ -37,10 +37,10 @@ class Lamblin internal constructor(
 
     companion object {
 
-        /** Creates an instance using a list of controller endpoint classes. */
+        /** Creates an frontController using a list of controller endpoint classes. */
         @JvmStatic
-        fun instance(controllers: Set<Any>): Lamblin {
-            val controllerRegistry = ControllerRegistry(controllers)
+        fun frontController(vararg controllers: Any): Lamblin {
+            val controllerRegistry = ControllerRegistry(controllers.toSet())
 
             return Lamblin(
                 RequestHandlerAdapter(

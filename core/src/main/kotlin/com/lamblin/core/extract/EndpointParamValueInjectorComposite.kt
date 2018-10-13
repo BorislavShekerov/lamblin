@@ -18,7 +18,7 @@ private val LOGGER = LoggerFactory.getLogger(EndpointParamValueInjectorComposite
  * using the details in the [APIGatewayProxyRequestEvent] for the request being served.
  */
 internal class EndpointParamValueInjectorComposite internal constructor(
-    private val injectorEndpoints: List<EndpointParamValueInjector>
+    internal val injectorEndpoints: List<EndpointParamValueInjector>
 ) : EndpointParamValueInjector {
 
     companion object {

@@ -15,6 +15,7 @@ import com.lamblin.core.handler.RequestHandler
 import com.lamblin.core.handler.RequestHandlerAdapter
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.annotation.Controller
 import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.plugin.core.model.PluginExecutionResult
 import com.lamblin.plugin.core.model.PluginType
@@ -43,6 +44,13 @@ class LamblinTest {
 
         every { getHandlerMethod2.httpMethod } returns HttpMethod.GET
         every { postHandlerMethod2.httpMethod } returns HttpMethod.POST
+    }
+
+    @Test
+    fun `companion should create a valid instance`() {
+        val instance = Lamblin.frontController(TestControllerWithEndpoints1())
+
+        assertThat(instance).isNotNull
     }
 
     @Test
@@ -217,30 +225,31 @@ class LamblinTest {
         verify(exactly = 0) { pluginRegistryMock.executePlugin(PluginType.WARMUP, eventContents) }
         verify{ requestHandlerAdapter.handlerRequest(eventContents, any(), lamblin.httpMethodToHandlers)  }
     }
-
-
-    class TestControllerWithEndpoints1 {
-
-        @Endpoint(PATH_GET_1, method = HttpMethod.GET)
-        fun endpoint_get() {
-        }
-
-        @Endpoint(PATH_POST_1, method = HttpMethod.POST)
-        fun endpoint_post() {
-        }
-
-    }
-
-    class TestControllerWithEndpoints2 {
-
-        @Endpoint(PATH_GET_2, method = HttpMethod.GET)
-        fun endpoint_get() {
-        }
-
-        @Endpoint(PATH_POST_2, method = HttpMethod.POST)
-        fun endpoint_post() {
-        }
-    }
-
-    class TestControllerNoEndpoints
 }
+
+@Controller
+class TestControllerWithEndpoints1 {
+
+    @Endpoint(PATH_GET_1, method = HttpMethod.GET)
+    fun endpoint_get() {
+    }
+
+    @Endpoint(PATH_POST_1, method = HttpMethod.POST)
+    fun endpoint_post() {
+    }
+
+}
+
+@Controller
+class TestControllerWithEndpoints2 {
+
+    @Endpoint(PATH_GET_2, method = HttpMethod.GET)
+    fun endpoint_get() {
+    }
+
+    @Endpoint(PATH_POST_2, method = HttpMethod.POST)
+    fun endpoint_post() {
+    }
+}
+
+class TestControllerNoEndpoints

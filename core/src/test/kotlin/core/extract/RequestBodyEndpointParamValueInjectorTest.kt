@@ -15,6 +15,7 @@ import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.REQUEST_BODY_MAPPED_NAME
 import com.lamblin.core.model.annotation.Endpoint
+import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
 import io.mockk.every
 import io.mockk.mockk
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.assertThrows
 
 const val NO_BODY_PARAM_PATH = "no-body"
 const val BODY_PARAM_PRESENT_PATH = "body-param-present"
+const val QUERY_PARAM = "testQueryParam"
 
 class RequestBodyEndpointParamValueInjectorTest {
 
@@ -83,7 +85,9 @@ class RequestBodyEndpointParamValueInjectorTest {
             RequestBodyEndpointParamValueInjector.injectParamValues(
                 request,
                 handlerMethod,
-                mapOf(REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[0]))
+                mapOf(
+                    QUERY_PARAM to bodyParamMethod.parameters[0],
+                    REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[1]))
         }
     }
 
@@ -117,7 +121,9 @@ class RequestBodyEndpointParamValueInjectorTest {
         val result = RequestBodyEndpointParamValueInjector.injectParamValues(
             request,
             handlerMethod,
-            mapOf(REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[0]))
+            mapOf(
+                QUERY_PARAM to bodyParamMethod.parameters[0],
+                REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[1]))
 
         assertThat(result).isEqualTo(
             mapOf(
@@ -135,7 +141,10 @@ class RequestBodyEndpointParamValueInjectorTest {
         }
 
         @Endpoint(BODY_PARAM_PRESENT_PATH, method = HttpMethod.POST)
-        fun endpointWithBodyParam(@RequestBody body: TestBody): HttpResponse<String> {
+        fun endpointWithBodyParam(
+            @QueryParam(QUERY_PARAM) testQueryParam: String,
+            @RequestBody body: TestBody): HttpResponse<String> {
+
             return HttpResponse.ok(body.toString())
         }
     }
