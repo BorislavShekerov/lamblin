@@ -4,7 +4,7 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client;
+package com.lamblin.it.client;
 
 import com.lamblin.it.model.ExampleRequestBody;
 import com.lamblin.it.model.ResponseEntity;
@@ -13,33 +13,33 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.PUT;
+import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 import java.io.IOException;
 
-import static com.lamblin.it.controller.client.ClientUtils.createObjectMapper;
+import static com.lamblin.it.client.ClientUtils.createObjectMapper;
 import static com.lamblin.it.model.EndpointsKt.*;
 import static com.lamblin.it.model.TestUtilsKt.*;
 
-public class PutControllerClient {
+public class PatchControllerClient {
 
-    public static final PutControllerClient INSTANCE = new PutControllerClient();
-    private final PutControllerApi client;
+    public static final PatchControllerClient INSTANCE = new PatchControllerClient();
+    private final PatchControllerApi client;
 
-    private PutControllerClient() {
+    private PatchControllerClient() {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
                 .baseUrl(getServerBaseUrl())
                 .build();
 
-        this.client = retrofit.create(PutControllerApi.class);
+        this.client = retrofit.create(PatchControllerApi.class);
     }
 
-    public Response<ResponseEntity> callSimplePostNoParamsEndpoint() {
+    public Response<ResponseEntity> callSimplePatchNoParamsEndpoint() {
         try {
-            return client.callSimplePostNoParamsEndpoint().execute();
+            return client.callSimplePatchNoParamsEndpoint().execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -77,7 +77,7 @@ public class PutControllerClient {
         }
     }
 
-    public Response<ResponseEntity> callMultiPathParamEndpointWithQueryParamEndpoint(
+    public Response<ResponseEntity> callMultiPathParamEndpointWithQueryParam(
             String queryParam,
             String pathParam1,
             String pathParam2) {
@@ -98,33 +98,32 @@ public class PutControllerClient {
         }
     }
 
-    private interface PutControllerApi {
+    private interface PatchControllerApi {
 
-        @PUT(SIMPLE_PUT_ENDPOINT)
-        Call<ResponseEntity> callSimplePostNoParamsEndpoint();
+        @PATCH(SIMPLE_PATCH_ENDPOINT)
+        Call<ResponseEntity> callSimplePatchNoParamsEndpoint();
 
-        @PUT(QUERY_PARAM_PUT_ENDPOINT)
+        @PATCH(QUERY_PARAM_PATCH_ENDPOINT)
         Call<ResponseEntity> callSingleQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam);
 
-        @PUT(QUERY_PARAM_PUT_ENDPOINT)
+        @PATCH(QUERY_PARAM_PATCH_ENDPOINT)
         Call<ResponseEntity> callMultiQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam1,
                                                          @Query(QUERY_PARAM_2) String queryParam2);
 
-        @PUT(SINGLE_PATH_PARAM_PUT_ENDPOINT)
+        @PATCH(SINGLE_PATH_PARAM_PATCH_ENDPOINT)
         Call<ResponseEntity> callSinglePathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1);
 
-        @PUT(MULTI_PATH_PARAM_PUT_ENDPOINT)
+        @PATCH(MULTI_PATH_PARAM_PATCH_ENDPOINT)
         Call<ResponseEntity> callMultiPathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1,
                                                         @Path(PATH_PARAM_2) String pathParam2);
 
-        @PUT(MULTI_PATH_PARAM_PUT_ENDPOINT)
+        @PATCH(MULTI_PATH_PARAM_PATCH_ENDPOINT)
         Call<ResponseEntity> callMultiPathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1,
                                                         @Path(PATH_PARAM_2) String pathParam2,
                                                         @Query(QUERY_PARAM_1) String queryParam1);
 
-        @PUT(SIMPLE_REQUEST_BODY_PUT_ENDPOINT)
+        @PATCH(SIMPLE_REQUEST_BODY_PATCH_ENDPOINT)
         Call<ResponseEntity> callRequestBodyEndpoint(@Body ExampleRequestBody exampleRequestBody);
 
     }
-
 }

@@ -4,7 +4,7 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client
+package com.lamblin.it.client
 
 import com.lamblin.it.model.ExampleRequestBody
 import com.lamblin.it.model.MULTI_PATH_PARAM_PUT_ENDPOINT
@@ -15,7 +15,6 @@ import com.lamblin.it.model.QUERY_PARAM_2
 import com.lamblin.it.model.QUERY_PARAM_PUT_ENDPOINT
 import com.lamblin.it.model.ResponseEntity
 import com.lamblin.it.model.SIMPLE_PUT_ENDPOINT
-import com.lamblin.it.model.SIMPLE_REQUEST_BODY_POST_ENDPOINT
 import com.lamblin.it.model.SIMPLE_REQUEST_BODY_PUT_ENDPOINT
 import com.lamblin.it.model.SINGLE_PATH_PARAM_PUT_ENDPOINT
 import com.lamblin.it.model.getServerBaseUrl
@@ -37,7 +36,7 @@ object PutControllerClient {
             .baseUrl(getServerBaseUrl())
             .build()
 
-        this.client = retrofit.create(PutControllerApi::class.java)
+        client = retrofit.create(PutControllerApi::class.java)
     }
 
     fun callSimplePutNoParamsEndpoint() = client.callSimplePostNoParamsEndpoint().execute()

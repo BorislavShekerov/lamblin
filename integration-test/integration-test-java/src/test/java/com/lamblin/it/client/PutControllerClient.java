@@ -4,46 +4,37 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client;
+package com.lamblin.it.client;
 
 import com.lamblin.it.model.ExampleRequestBody;
 import com.lamblin.it.model.ResponseEntity;
-
-import java.io.IOException;
-
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import static com.lamblin.it.controller.client.ClientUtils.createObjectMapper;
-import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_POST_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_POST_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_POST_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_REQUEST_BODY_POST_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_POST_ENDPOINT;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.getServerBaseUrl;
+import java.io.IOException;
 
-public class PostControllerClient {
+import static com.lamblin.it.client.ClientUtils.createObjectMapper;
+import static com.lamblin.it.model.EndpointsKt.*;
+import static com.lamblin.it.model.TestUtilsKt.*;
 
-    public static final PostControllerClient INSTANCE = new PostControllerClient();
-    private final PostControllerApi client;
+public class PutControllerClient {
 
-    private PostControllerClient() {
+    public static final PutControllerClient INSTANCE = new PutControllerClient();
+    private final PutControllerApi client;
+
+    private PutControllerClient() {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
                 .baseUrl(getServerBaseUrl())
                 .build();
 
-        this.client = retrofit.create(PostControllerApi.class);
+        this.client = retrofit.create(PutControllerApi.class);
     }
 
     public Response<ResponseEntity> callSimplePostNoParamsEndpoint() {
@@ -86,7 +77,7 @@ public class PostControllerClient {
         }
     }
 
-    public Response<ResponseEntity> callMultiPathParamEndpointWithQueryParam(
+    public Response<ResponseEntity> callMultiPathParamEndpointWithQueryParamEndpoint(
             String queryParam,
             String pathParam1,
             String pathParam2) {
@@ -107,32 +98,33 @@ public class PostControllerClient {
         }
     }
 
-    private interface PostControllerApi {
+    private interface PutControllerApi {
 
-        @POST(SIMPLE_POST_ENDPOINT)
+        @PUT(SIMPLE_PUT_ENDPOINT)
         Call<ResponseEntity> callSimplePostNoParamsEndpoint();
 
-        @POST(QUERY_PARAM_POST_ENDPOINT)
+        @PUT(QUERY_PARAM_PUT_ENDPOINT)
         Call<ResponseEntity> callSingleQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam);
 
-        @POST(QUERY_PARAM_POST_ENDPOINT)
+        @PUT(QUERY_PARAM_PUT_ENDPOINT)
         Call<ResponseEntity> callMultiQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam1,
                                                          @Query(QUERY_PARAM_2) String queryParam2);
 
-        @POST(SINGLE_PATH_PARAM_POST_ENDPOINT)
+        @PUT(SINGLE_PATH_PARAM_PUT_ENDPOINT)
         Call<ResponseEntity> callSinglePathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1);
 
-        @POST(MULTI_PATH_PARAM_POST_ENDPOINT)
+        @PUT(MULTI_PATH_PARAM_PUT_ENDPOINT)
         Call<ResponseEntity> callMultiPathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1,
                                                         @Path(PATH_PARAM_2) String pathParam2);
 
-        @POST(MULTI_PATH_PARAM_POST_ENDPOINT)
+        @PUT(MULTI_PATH_PARAM_PUT_ENDPOINT)
         Call<ResponseEntity> callMultiPathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1,
                                                         @Path(PATH_PARAM_2) String pathParam2,
                                                         @Query(QUERY_PARAM_1) String queryParam1);
 
-        @POST(SIMPLE_REQUEST_BODY_POST_ENDPOINT)
+        @PUT(SIMPLE_REQUEST_BODY_PUT_ENDPOINT)
         Call<ResponseEntity> callRequestBodyEndpoint(@Body ExampleRequestBody exampleRequestBody);
 
     }
+
 }

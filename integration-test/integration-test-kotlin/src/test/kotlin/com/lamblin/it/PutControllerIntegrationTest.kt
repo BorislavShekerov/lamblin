@@ -1,6 +1,7 @@
-package com.lamblin.it.controller
+package com.lamblin.it
 
-import com.lamblin.it.controller.client.PutControllerClient
+import com.lamblin.it.controller.PutController
+import com.lamblin.it.client.PutControllerClient
 import com.lamblin.it.model.MULTI_PATH_PARAM_PUT_ENDPOINT
 import com.lamblin.it.model.QUERY_PARAM_PUT_ENDPOINT
 import com.lamblin.it.model.SIMPLE_PUT_ENDPOINT

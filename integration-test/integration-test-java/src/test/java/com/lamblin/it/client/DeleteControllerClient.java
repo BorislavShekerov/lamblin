@@ -4,7 +4,7 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client;
+package com.lamblin.it.client;
 
 import com.lamblin.it.model.ResponseEntity;
 
@@ -18,7 +18,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import static com.lamblin.it.controller.client.ClientUtils.createObjectMapper;
+import static com.lamblin.it.client.ClientUtils.createObjectMapper;
 import static com.lamblin.it.model.EndpointsKt.MULTIPLE_PATH_PARAM_DELETE_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_DELETE_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.SIMPLE_DELETE_ENDPOINT;

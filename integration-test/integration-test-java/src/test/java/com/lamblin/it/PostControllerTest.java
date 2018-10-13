@@ -1,8 +1,10 @@
-package com.lamblin.it.controller;
+package com.lamblin.it;
 
 import com.google.common.collect.ImmutableSet;
 
-import com.lamblin.it.controller.client.DeleteControllerClient;
+import com.lamblin.it.controller.PostController;
+import com.lamblin.it.client.PostControllerClient;
+import com.lamblin.it.model.ExampleRequestBody;
 import com.lamblin.test.config.LamblinTestConfig;
 import com.lamblin.test.config.annotation.LamblinTestRunnerConfig;
 import com.lamblin.test.junit4.JUnit4LamblinTestRunner;
@@ -12,40 +14,41 @@ import org.junit.runner.RunWith;
 
 import java.util.Set;
 
-import static com.lamblin.it.model.EndpointsKt.MULTIPLE_PATH_PARAM_DELETE_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_DELETE_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_DELETE_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_DELETE_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SIMPLE_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SIMPLE_REQUEST_BODY_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_POST_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;
 
 @RunWith(JUnit4LamblinTestRunner.class)
-@LamblinTestRunnerConfig(testConfigClass = DeleteControllerTest.TestConfiguration.class)
-public class DeleteControllerTest {
+@LamblinTestRunnerConfig(testConfigClass = PostControllerTest.TestConfiguration.class)
+public class PostControllerTest {
 
-    private static final DeleteControllerClient client = DeleteControllerClient.INSTANCE;
+    private static final PostControllerClient client = PostControllerClient.INSTANCE;
 
     @Test
-    public void shouldHandleDeleteRequestsWithNoParams() {
+    public void shouldHandlePostRequestsWithNoParams() {
         runRequestAndVerifyResponse(
-                client::callSimpleDeleteNoParamsEndpoint,
-                SIMPLE_DELETE_ENDPOINT);
+                client::callSimplePostNoParamsEndpoint,
+                SIMPLE_POST_ENDPOINT);
     }
 
     @Test
-    public void shouldHandleDeleteRequestsWithSingleQueryParam() {
+    public void shouldHandlePostRequestsWithSingleQueryParam() {
         String queryParamValue = "value";
 
         runRequestAndVerifyResponse(
                 () -> client.callSingleQueryParamEndpoint(queryParamValue),
                 format(
                         "{0}-{1}",
-                        QUERY_PARAM_DELETE_ENDPOINT,
+                        QUERY_PARAM_POST_ENDPOINT,
                         queryParamValue));
     }
 
     @Test
-    public void shouldHandleDeleteRequestsWithMultipleQueryParams() {
+    public void shouldHandlePostRequestsWithMultipleQueryParams() {
         String queryParam1Value = "value1";
         String queryParam2Value = "value2";
 
@@ -53,25 +56,25 @@ public class DeleteControllerTest {
                 () -> client.callMultiQueryParamEndpoint(queryParam1Value, queryParam2Value),
                 format(
                         "{0}-{1},{2}",
-                        QUERY_PARAM_DELETE_ENDPOINT,
+                        QUERY_PARAM_POST_ENDPOINT,
                         queryParam1Value,
                         queryParam2Value));
     }
 
     @Test
-    public void shouldHandleDeleteRequestsWithSinglePathParam() {
+    public void shouldHandlePostRequestsWithSinglePathParam() {
         String pathParamValue = "value";
 
         runRequestAndVerifyResponse(
                 () -> client.callSinglePathParamEndpoint(pathParamValue),
                 format(
                         "{0}-{1}",
-                        SINGLE_PATH_PARAM_DELETE_ENDPOINT,
+                        SINGLE_PATH_PARAM_POST_ENDPOINT,
                         pathParamValue));
     }
 
     @Test
-    public void shouldHandleDeleteRequestsWithMultiplePathParams() {
+    public void shouldHandlePostRequestsWithMultiplePathParams() {
         String pathParamValue1 = "value1";
         String pathParamValue2 = "value2";
 
@@ -79,32 +82,43 @@ public class DeleteControllerTest {
                 () -> client.callMultiPathParamEndpoint(pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2}",
-                        MULTIPLE_PATH_PARAM_DELETE_ENDPOINT,
+                        MULTI_PATH_PARAM_POST_ENDPOINT,
                         pathParamValue1,
                         pathParamValue2));
     }
 
     @Test
-    public void shouldHandleDeleteRequestsWithMultiplePathParamsAndQueryParams() {
+    public void shouldHandlePostRequestsWithMultiplePathParamsAndQueryParams() {
         String queryParamValue = "queryParamValue";
         String pathParamValue1 = "value1";
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                () -> client.callMultiPathParamWithQueryParamEndpoint(queryParamValue, pathParamValue1, pathParamValue2),
+                () -> client.callMultiPathParamEndpointWithQueryParam(queryParamValue, pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2},{3}",
-                        MULTIPLE_PATH_PARAM_DELETE_ENDPOINT,
+                        MULTI_PATH_PARAM_POST_ENDPOINT,
                         queryParamValue,
                         pathParamValue1,
                         pathParamValue2));
+    }
+
+
+    @Test
+    public void shouldHandlePostRequestsWithRequestBody() {
+        String bodyContent = "test";
+        ExampleRequestBody requestBody = new ExampleRequestBody(bodyContent);
+
+        runRequestAndVerifyResponse(
+                () -> client.callRequestBodyEndpoint(requestBody),
+                format("{0}-{1}", SIMPLE_REQUEST_BODY_POST_ENDPOINT, bodyContent));
     }
 
     public static class TestConfiguration implements LamblinTestConfig {
 
         @Override
         public Set<Object> controllers() {
-            return ImmutableSet.of(new DeleteController());
+            return ImmutableSet.of(new PostController());
         }
     }
 

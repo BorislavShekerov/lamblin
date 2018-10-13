@@ -1,8 +1,9 @@
-package com.lamblin.it.controller;
+package com.lamblin.it;
 
 import com.google.common.collect.ImmutableSet;
 
-import com.lamblin.it.controller.client.PatchControllerClient;
+import com.lamblin.it.controller.PutController;
+import com.lamblin.it.client.PutControllerClient;
 import com.lamblin.it.model.ExampleRequestBody;
 import com.lamblin.test.config.LamblinTestConfig;
 import com.lamblin.test.config.annotation.LamblinTestRunnerConfig;
@@ -13,41 +14,42 @@ import org.junit.runner.RunWith;
 
 import java.util.Set;
 
-import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_PATCH_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_PATCH_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_PATCH_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_REQUEST_BODY_PATCH_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_PATCH_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_PUT_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_PUT_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SIMPLE_PUT_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SIMPLE_REQUEST_BODY_PUT_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_PUT_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;
 
 @RunWith(JUnit4LamblinTestRunner.class)
-@LamblinTestRunnerConfig(testConfigClass = PatchControllerTest.TestConfiguration.class)
-public class PatchControllerTest {
+@LamblinTestRunnerConfig(testConfigClass = PutControllerTest.TestConfiguration.class)
+public class PutControllerTest {
 
-    private static final PatchControllerClient client = PatchControllerClient.INSTANCE;
+
+    private static final PutControllerClient client = PutControllerClient.INSTANCE;
 
     @Test
-    public void shouldHandlePatchRequestsWithNoParams() {
+    public void shouldHandlePutRequestsWithNoParams() {
         runRequestAndVerifyResponse(
-                client::callSimplePatchNoParamsEndpoint,
-                SIMPLE_PATCH_ENDPOINT);
+                client::callSimplePostNoParamsEndpoint,
+                SIMPLE_PUT_ENDPOINT);
     }
 
     @Test
-    public void shouldHandlePatchRequestsWithSingleQueryParam() {
+    public void shouldHandlePutRequestsWithSingleQueryParam() {
         String queryParamValue = "value";
 
         runRequestAndVerifyResponse(
                 () -> client.callSingleQueryParamEndpoint(queryParamValue),
                 format(
                         "{0}-{1}",
-                        QUERY_PARAM_PATCH_ENDPOINT,
+                        QUERY_PARAM_PUT_ENDPOINT,
                         queryParamValue));
     }
 
     @Test
-    public void shouldHandlePatchRequestsWithMultipleQueryParams() {
+    public void shouldHandlePutRequestsWithMultipleQueryParams() {
         String queryParam1Value = "value1";
         String queryParam2Value = "value2";
 
@@ -55,25 +57,25 @@ public class PatchControllerTest {
                 () -> client.callMultiQueryParamEndpoint(queryParam1Value, queryParam2Value),
                 format(
                         "{0}-{1},{2}",
-                        QUERY_PARAM_PATCH_ENDPOINT,
+                        QUERY_PARAM_PUT_ENDPOINT,
                         queryParam1Value,
                         queryParam2Value));
     }
 
     @Test
-    public void shouldHandlePatchRequestsWithSinglePathParam() {
+    public void shouldHandlePutRequestsWithSinglePathParam() {
         String pathParamValue = "value";
 
         runRequestAndVerifyResponse(
                 () -> client.callSinglePathParamEndpoint(pathParamValue),
                 format(
                         "{0}-{1}",
-                        SINGLE_PATH_PARAM_PATCH_ENDPOINT,
+                        SINGLE_PATH_PARAM_PUT_ENDPOINT,
                         pathParamValue));
     }
 
     @Test
-    public void shouldHandlePatchRequestsWithMultiplePathParams() {
+    public void shouldHandlePutRequestsWithMultiplePathParams() {
         String pathParamValue1 = "value1";
         String pathParamValue2 = "value2";
 
@@ -81,23 +83,22 @@ public class PatchControllerTest {
                 () -> client.callMultiPathParamEndpoint(pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2}",
-                        MULTI_PATH_PARAM_PATCH_ENDPOINT,
+                        MULTI_PATH_PARAM_PUT_ENDPOINT,
                         pathParamValue1,
                         pathParamValue2));
     }
 
     @Test
-    public void shouldHandlePatchRequestsWithMultiplePathParamsAndQueryParams() {
+    public void shouldHandlePostRequestsWithMultiplePathParamsAndQueryParams() {
         String queryParamValue = "queryParamValue";
         String pathParamValue1 = "value1";
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                () -> client
-                        .callMultiPathParamEndpointWithQueryParam(queryParamValue, pathParamValue1, pathParamValue2),
+                () -> client.callMultiPathParamEndpointWithQueryParamEndpoint(queryParamValue, pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2},{3}",
-                        MULTI_PATH_PARAM_PATCH_ENDPOINT,
+                        MULTI_PATH_PARAM_PUT_ENDPOINT,
                         queryParamValue,
                         pathParamValue1,
                         pathParamValue2));
@@ -105,20 +106,21 @@ public class PatchControllerTest {
 
 
     @Test
-    public void shouldHandlePatchRequestsWithRequestBody() {
+    public void shouldHandlePostRequestsWithRequestBody() {
         String bodyContent = "test";
         ExampleRequestBody requestBody = new ExampleRequestBody(bodyContent);
 
         runRequestAndVerifyResponse(
                 () -> client.callRequestBodyEndpoint(requestBody),
-                format("{0}-{1}", SIMPLE_REQUEST_BODY_PATCH_ENDPOINT, bodyContent));
+                format("{0}-{1}", SIMPLE_REQUEST_BODY_PUT_ENDPOINT, bodyContent));
     }
 
     public static class TestConfiguration implements LamblinTestConfig {
 
         @Override
         public Set<Object> controllers() {
-            return ImmutableSet.of(new PatchController());
+            return ImmutableSet.of(new PutController());
         }
     }
+
 }

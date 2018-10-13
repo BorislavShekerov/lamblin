@@ -1,8 +1,9 @@
-package com.lamblin.it.controller
+package com.lamblin.it
 
 import com.lamblin.core.Lamblin
 import com.lamblin.core.model.StatusCode
-import com.lamblin.it.controller.client.GetControllerClient
+import com.lamblin.it.controller.GetController
+import com.lamblin.it.client.GetControllerClient
 import com.lamblin.it.model.MULTI_PATH_PARAM_GET_ENDPOINT
 import com.lamblin.it.model.QUERY_PARAM_GET_ENDPOINT
 import com.lamblin.it.model.SIMPLE_GET_ENDPOINT

@@ -4,7 +4,7 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client
+package com.lamblin.it.client
 
 import com.lamblin.it.model.ExampleRequestBody
 import com.lamblin.it.model.MULTI_PATH_PARAM_PATCH_ENDPOINT
@@ -36,7 +36,7 @@ object PatchControllerClient {
             .baseUrl(getServerBaseUrl())
             .build()
 
-        this.client = retrofit.create(PatchControllerApi::class.java)
+        client = retrofit.create(PatchControllerApi::class.java)
     }
 
     fun callSimplePatchNoParamsEndpoint() = client.callSimplePatchNoParamsEndpoint().execute()

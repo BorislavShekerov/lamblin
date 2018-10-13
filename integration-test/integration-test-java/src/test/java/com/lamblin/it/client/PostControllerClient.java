@@ -4,8 +4,9 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client;
+package com.lamblin.it.client;
 
+import com.lamblin.it.model.ExampleRequestBody;
 import com.lamblin.it.model.ResponseEntity;
 
 import java.io.IOException;
@@ -14,39 +15,40 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-import retrofit2.http.GET;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import static com.lamblin.it.controller.client.ClientUtils.createObjectMapper;
-import static com.lamblin.it.model.EndpointsKt.CUSTOM_STATUS_CODE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_GET_ENDPOINT;
+import static com.lamblin.it.client.ClientUtils.createObjectMapper;
+import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SIMPLE_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SIMPLE_REQUEST_BODY_POST_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_POST_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
 import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
 import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
 import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
 import static com.lamblin.it.model.TestUtilsKt.getServerBaseUrl;
 
-public class GetControllerClient {
+public class PostControllerClient {
 
-    public static final GetControllerClient INSTANCE = new GetControllerClient();
-    private final GetControllerApi client;
+    public static final PostControllerClient INSTANCE = new PostControllerClient();
+    private final PostControllerApi client;
 
-    private GetControllerClient() {
+    private PostControllerClient() {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
                 .baseUrl(getServerBaseUrl())
                 .build();
 
-        this.client = retrofit.create(GetControllerApi.class);
+        this.client = retrofit.create(PostControllerApi.class);
     }
 
-    public Response<ResponseEntity> callSimpleGetNoParamsEndpoint() {
+    public Response<ResponseEntity> callSimplePostNoParamsEndpoint() {
         try {
-            return client.callSimpleGetNoParamsEndpoint().execute();
+            return client.callSimplePostNoParamsEndpoint().execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -54,7 +56,7 @@ public class GetControllerClient {
 
     public Response<ResponseEntity> callSingleQueryParamEndpoint(String queryParam) {
         try {
-            return client.callQueryParamEndpoint(queryParam, null).execute();
+            return client.callSingleQueryParamEndpoint(queryParam).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -62,7 +64,7 @@ public class GetControllerClient {
 
     public Response<ResponseEntity> callMultiQueryParamEndpoint(String queryParam1, String queryParam2) {
         try {
-            return client.callQueryParamEndpoint(queryParam1, queryParam2).execute();
+            return client.callMultiQueryParamEndpoint(queryParam1, queryParam2).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -84,7 +86,7 @@ public class GetControllerClient {
         }
     }
 
-    public Response<ResponseEntity> callMultiPathParamWithQueryParamEndpoint(
+    public Response<ResponseEntity> callMultiPathParamEndpointWithQueryParam(
             String queryParam,
             String pathParam1,
             String pathParam2) {
@@ -96,48 +98,41 @@ public class GetControllerClient {
         }
     }
 
-    public Response<Void> callCustomStatusCodeEndpoint() {
+    public Response<ResponseEntity> callRequestBodyEndpoint(ExampleRequestBody exampleRequestBod) {
+
         try {
-            return client.callCustomStatusCodeEndpoint().execute();
+            return client.callRequestBodyEndpoint(exampleRequestBod).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Response callUnknownEndpoint() {
-        try {
-            return client.callUnknownEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private interface PostControllerApi {
 
-    private interface GetControllerApi {
+        @POST(SIMPLE_POST_ENDPOINT)
+        Call<ResponseEntity> callSimplePostNoParamsEndpoint();
 
-        @GET(SIMPLE_GET_ENDPOINT)
-        Call<ResponseEntity> callSimpleGetNoParamsEndpoint();
+        @POST(QUERY_PARAM_POST_ENDPOINT)
+        Call<ResponseEntity> callSingleQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam);
 
-        @GET(QUERY_PARAM_GET_ENDPOINT)
-        Call<ResponseEntity> callQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam1,
-                                                    @Query(QUERY_PARAM_2) String queryParam2);
+        @POST(QUERY_PARAM_POST_ENDPOINT)
+        Call<ResponseEntity> callMultiQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam1,
+                                                         @Query(QUERY_PARAM_2) String queryParam2);
 
-        @GET(SINGLE_PATH_PARAM_GET_ENDPOINT)
+        @POST(SINGLE_PATH_PARAM_POST_ENDPOINT)
         Call<ResponseEntity> callSinglePathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1);
 
-        @GET(MULTI_PATH_PARAM_GET_ENDPOINT)
+        @POST(MULTI_PATH_PARAM_POST_ENDPOINT)
         Call<ResponseEntity> callMultiPathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1,
                                                         @Path(PATH_PARAM_2) String pathParam2);
 
-        @GET(MULTI_PATH_PARAM_GET_ENDPOINT)
+        @POST(MULTI_PATH_PARAM_POST_ENDPOINT)
         Call<ResponseEntity> callMultiPathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1,
                                                         @Path(PATH_PARAM_2) String pathParam2,
                                                         @Query(QUERY_PARAM_1) String queryParam1);
 
-        @GET(CUSTOM_STATUS_CODE_GET_ENDPOINT)
-        Call<Void> callCustomStatusCodeEndpoint();
-
-        @GET("/unknown")
-        Call<Void> callUnknownEndpoint();
+        @POST(SIMPLE_REQUEST_BODY_POST_ENDPOINT)
+        Call<ResponseEntity> callRequestBodyEndpoint(@Body ExampleRequestBody exampleRequestBody);
 
     }
 }

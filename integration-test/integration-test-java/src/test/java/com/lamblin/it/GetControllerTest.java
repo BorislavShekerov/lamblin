@@ -1,9 +1,10 @@
-package com.lamblin.it.controller;
+package com.lamblin.it;
 
 import com.google.common.collect.ImmutableSet;
 
-import com.lamblin.it.controller.client.PutControllerClient;
-import com.lamblin.it.model.ExampleRequestBody;
+import com.lamblin.core.model.StatusCode;
+import com.lamblin.it.controller.GetController;
+import com.lamblin.it.client.GetControllerClient;
 import com.lamblin.test.config.LamblinTestConfig;
 import com.lamblin.test.config.annotation.LamblinTestRunnerConfig;
 import com.lamblin.test.junit4.JUnit4LamblinTestRunner;
@@ -13,42 +14,40 @@ import org.junit.runner.RunWith;
 
 import java.util.Set;
 
-import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_PUT_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_PUT_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_PUT_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_REQUEST_BODY_PUT_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_PUT_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_GET_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_GET_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SIMPLE_GET_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_GET_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;
 
 @RunWith(JUnit4LamblinTestRunner.class)
-@LamblinTestRunnerConfig(testConfigClass = PutControllerTest.TestConfiguration.class)
-public class PutControllerTest {
+@LamblinTestRunnerConfig(testConfigClass = GetControllerTest.TestConfiguration.class)
+public class GetControllerTest {
 
-
-    private static final PutControllerClient client = PutControllerClient.INSTANCE;
+    private static final GetControllerClient client = GetControllerClient.INSTANCE;
 
     @Test
-    public void shouldHandlePutRequestsWithNoParams() {
+    public void shouldHandleGetRequestsWithNoParams() {
         runRequestAndVerifyResponse(
-                client::callSimplePostNoParamsEndpoint,
-                SIMPLE_PUT_ENDPOINT);
+                client::callSimpleGetNoParamsEndpoint,
+                SIMPLE_GET_ENDPOINT);
     }
 
     @Test
-    public void shouldHandlePutRequestsWithSingleQueryParam() {
+    public void shouldHandleGetRequestsWithSingleQueryParam() {
         String queryParamValue = "value";
 
         runRequestAndVerifyResponse(
                 () -> client.callSingleQueryParamEndpoint(queryParamValue),
                 format(
                         "{0}-{1}",
-                        QUERY_PARAM_PUT_ENDPOINT,
+                        QUERY_PARAM_GET_ENDPOINT,
                         queryParamValue));
     }
 
     @Test
-    public void shouldHandlePutRequestsWithMultipleQueryParams() {
+    public void shouldHandleGetRequestsWithMultipleQueryParams() {
         String queryParam1Value = "value1";
         String queryParam2Value = "value2";
 
@@ -56,25 +55,25 @@ public class PutControllerTest {
                 () -> client.callMultiQueryParamEndpoint(queryParam1Value, queryParam2Value),
                 format(
                         "{0}-{1},{2}",
-                        QUERY_PARAM_PUT_ENDPOINT,
+                        QUERY_PARAM_GET_ENDPOINT,
                         queryParam1Value,
                         queryParam2Value));
     }
 
     @Test
-    public void shouldHandlePutRequestsWithSinglePathParam() {
+    public void shouldHandleGetRequestsWithSinglePathParam() {
         String pathParamValue = "value";
 
         runRequestAndVerifyResponse(
                 () -> client.callSinglePathParamEndpoint(pathParamValue),
                 format(
                         "{0}-{1}",
-                        SINGLE_PATH_PARAM_PUT_ENDPOINT,
+                        SINGLE_PATH_PARAM_GET_ENDPOINT,
                         pathParamValue));
     }
 
     @Test
-    public void shouldHandlePutRequestsWithMultiplePathParams() {
+    public void shouldHandleGetRequestsWithMultiplePathParams() {
         String pathParamValue1 = "value1";
         String pathParamValue2 = "value2";
 
@@ -82,43 +81,48 @@ public class PutControllerTest {
                 () -> client.callMultiPathParamEndpoint(pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2}",
-                        MULTI_PATH_PARAM_PUT_ENDPOINT,
+                        MULTI_PATH_PARAM_GET_ENDPOINT,
                         pathParamValue1,
                         pathParamValue2));
     }
 
     @Test
-    public void shouldHandlePostRequestsWithMultiplePathParamsAndQueryParams() {
+    public void shouldHandleGetRequestsWithMultiplePathParamsAndQueryParams() {
         String queryParamValue = "queryParamValue";
         String pathParamValue1 = "value1";
         String pathParamValue2 = "value2";
 
         runRequestAndVerifyResponse(
-                () -> client.callMultiPathParamEndpointWithQueryParamEndpoint(queryParamValue, pathParamValue1, pathParamValue2),
+                () -> client.callMultiPathParamWithQueryParamEndpoint(queryParamValue, pathParamValue1, pathParamValue2),
                 format(
                         "{0}-{1},{2},{3}",
-                        MULTI_PATH_PARAM_PUT_ENDPOINT,
+                        MULTI_PATH_PARAM_GET_ENDPOINT,
                         queryParamValue,
                         pathParamValue1,
                         pathParamValue2));
     }
 
+    @Test
+    public void shouldReturn404ForUnknownRoutes() {
+        runRequestAndVerifyResponse(
+                client::callUnknownEndpoint,
+                null,
+                 StatusCode.NOT_FOUND.getCode());
+    }
 
     @Test
-    public void shouldHandlePostRequestsWithRequestBody() {
-        String bodyContent = "test";
-        ExampleRequestBody requestBody = new ExampleRequestBody(bodyContent);
-
+    public void shouldReturnStatusCodeReturnedFromEndpoint() {
         runRequestAndVerifyResponse(
-                () -> client.callRequestBodyEndpoint(requestBody),
-                format("{0}-{1}", SIMPLE_REQUEST_BODY_PUT_ENDPOINT, bodyContent));
+                client::callCustomStatusCodeEndpoint,
+                null,
+                StatusCode.ACCEPTED.getCode());
     }
 
     public static class TestConfiguration implements LamblinTestConfig {
 
         @Override
         public Set<Object> controllers() {
-            return ImmutableSet.of(new PutController());
+            return ImmutableSet.of(new GetController());
         }
     }
 

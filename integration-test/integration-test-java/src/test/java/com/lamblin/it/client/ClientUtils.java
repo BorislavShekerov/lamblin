@@ -4,17 +4,17 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client;
+package com.lamblin.it.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.kotlin.KotlinModule;
 
-public class ClientUtils {
+class ClientUtils {
 
     private ClientUtils() {
     }
 
-    public static ObjectMapper createObjectMapper() {
+    static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new KotlinModule());
 

@@ -1,6 +1,7 @@
-package com.lamblin.it.controller
+package com.lamblin.it
 
-import com.lamblin.it.controller.client.PostControllerClient
+import com.lamblin.it.controller.PostController
+import com.lamblin.it.client.PostControllerClient
 import com.lamblin.it.model.ExampleRequestBody
 import com.lamblin.it.model.MULTI_PATH_PARAM_POST_ENDPOINT
 import com.lamblin.it.model.QUERY_PARAM_POST_ENDPOINT

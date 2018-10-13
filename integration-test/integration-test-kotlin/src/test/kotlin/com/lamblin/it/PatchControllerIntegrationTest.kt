@@ -1,6 +1,7 @@
-package com.lamblin.it.controller
+package com.lamblin.it
 
-import com.lamblin.it.controller.client.PatchControllerClient
+import com.lamblin.it.controller.PatchController
+import com.lamblin.it.client.PatchControllerClient
 import com.lamblin.it.model.ExampleRequestBody
 import com.lamblin.it.model.MULTI_PATH_PARAM_PATCH_ENDPOINT
 import com.lamblin.it.model.QUERY_PARAM_PATCH_ENDPOINT

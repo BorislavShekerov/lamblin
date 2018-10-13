@@ -4,7 +4,7 @@
  * Licensed under Apache 2.0: https://github.com/BorislavShekerov/lamblin/blob/master/LICENSE
  */
 
-package com.lamblin.it.controller.client
+package com.lamblin.it.client
 
 import com.lamblin.it.model.ExampleRequestBody
 import com.lamblin.it.model.MULTI_PATH_PARAM_POST_ENDPOINT
@@ -35,7 +35,7 @@ object PostControllerClient {
             .baseUrl(getServerBaseUrl())
             .build()
 
-        this.client = retrofit.create(PostControllerApi::class.java)
+        client = retrofit.create(PostControllerApi::class.java)
     }
 
     fun callSimplePostNoParamsEndpoint() = client.callSimplePostNoParamsEndpoint().execute()

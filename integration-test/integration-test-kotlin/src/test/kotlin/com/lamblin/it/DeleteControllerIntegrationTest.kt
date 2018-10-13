@@ -1,6 +1,7 @@
-package com.lamblin.it.controller
+package com.lamblin.it
 
-import com.lamblin.it.controller.client.DeleteControllerClient
+import com.lamblin.it.controller.DeleteController
+import com.lamblin.it.client.DeleteControllerClient
 import com.lamblin.it.model.MULTIPLE_PATH_PARAM_DELETE_ENDPOINT
 import com.lamblin.it.model.QUERY_PARAM_DELETE_ENDPOINT
 import com.lamblin.it.model.SIMPLE_DELETE_ENDPOINT
