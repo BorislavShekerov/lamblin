@@ -8,12 +8,12 @@
     <packaging>pom</packaging>
     <version>0.0.2-SNAPSHOT</version>
     <modules>
-        <module>plugin</module>
-        <module>core</module>
-        <module>integration-test</module>
-        <module>test</module>
-        <module>local-runner</module>
-        <module>example</module>
+        <module>lamblin-plugin</module>
+        <module>lamblin-core</module>
+        <module>lamblin-integration-test</module>
+        <module>lamblin-test</module>
+        <module>lamblin-local-runner</module>
+        <module>lamblin-example</module>
     </modules>
     <name>lamblin-parent</name>
 
