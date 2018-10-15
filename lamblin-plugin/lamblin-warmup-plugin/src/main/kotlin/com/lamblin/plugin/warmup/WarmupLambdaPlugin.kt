@@ -16,8 +16,7 @@ private val LOGGER = LoggerFactory.getLogger(WarmupLambdaPlugin::class.java)
 
 /** Defines the plugin handling warmup events. */
 class WarmupLambdaPlugin(
-    private val warmupEventKey: String = DEFAULT_WARMUP_EVENT_KEY
-) : ExecutableLamblinPlugin {
+    private val warmupEventKey: String = DEFAULT_WARMUP_EVENT_KEY) : ExecutableLamblinPlugin {
 
     override fun getPluginType() = PluginType.WARMUP
 
