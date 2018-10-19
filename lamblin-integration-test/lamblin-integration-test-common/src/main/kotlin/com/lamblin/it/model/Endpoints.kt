@@ -9,6 +9,7 @@ package com.lamblin.it.model
 const val CUSTOM_STATUS_CODE_GET_ENDPOINT = "/get/custom-status-code"
 const val SIMPLE_GET_ENDPOINT = "/get/simple"
 const val QUERY_PARAM_GET_ENDPOINT = "/get/query-param"
+const val QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT = "/get/query-param/default-value"
 const val SINGLE_PATH_PARAM_GET_ENDPOINT = "/get/path/{$PATH_PARAM_1}"
 const val MULTI_PATH_PARAM_GET_ENDPOINT = "/get/path/{$PATH_PARAM_1}/foo/{$PATH_PARAM_2}"
 

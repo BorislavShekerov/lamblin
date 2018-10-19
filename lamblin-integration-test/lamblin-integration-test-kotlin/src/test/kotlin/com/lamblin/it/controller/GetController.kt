@@ -19,20 +19,24 @@ import com.lamblin.it.model.*
 class GetController {
 
     @Endpoint(SIMPLE_GET_ENDPOINT, method = HttpMethod.GET)
-    fun simpleGetNoParams(): HttpResponse<ResponseEntity> {
+    fun simpleGetNoParamsPath(): HttpResponse<ResponseEntity> {
         return HttpResponse.ok(ResponseEntity(SIMPLE_GET_ENDPOINT))
     }
 
     @Endpoint(QUERY_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
-    fun signleQueryParamTest(@QueryParam(QUERY_PARAM_1) queryParam: String): HttpResponse<ResponseEntity> {
+    fun signleQueryParamPath(@QueryParam(QUERY_PARAM_1) queryParam: String): HttpResponse<ResponseEntity> {
         return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_GET_ENDPOINT-$queryParam"))
+    }
+
+    @Endpoint(QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT, method = HttpMethod.GET)
+    fun queryParamDefaultValuePath(@QueryParam(QUERY_PARAM_1, defaultValue = DEFAULT_QUERY_PARAM_VALUE) queryParam: String): HttpResponse<ResponseEntity> {
+        return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT-$queryParam"))
     }
 
     @Endpoint(QUERY_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     fun multipleQueryParamTest(
         @QueryParam(QUERY_PARAM_1) queryParam1: String,
-        @QueryParam(QUERY_PARAM_2) queryParam2: String
-    ): HttpResponse<ResponseEntity> {
+        @QueryParam(QUERY_PARAM_2) queryParam2: String): HttpResponse<ResponseEntity> {
 
         return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_GET_ENDPOINT-$queryParam1,$queryParam2"))
     }

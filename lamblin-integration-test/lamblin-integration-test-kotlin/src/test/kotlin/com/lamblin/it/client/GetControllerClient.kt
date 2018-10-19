@@ -6,23 +6,15 @@
 
 package com.lamblin.it.client
 
-import com.lamblin.it.model.CUSTOM_STATUS_CODE_GET_ENDPOINT
-import com.lamblin.it.model.MULTI_PATH_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.PATH_PARAM_1
-import com.lamblin.it.model.PATH_PARAM_2
-import com.lamblin.it.model.QUERY_PARAM_1
-import com.lamblin.it.model.QUERY_PARAM_2
-import com.lamblin.it.model.QUERY_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.ResponseEntity
-import com.lamblin.it.model.SIMPLE_GET_ENDPOINT
-import com.lamblin.it.model.SINGLE_PATH_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.getServerBaseUrl
+import com.lamblin.it.model.*
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 object GetControllerClient {
 
@@ -32,6 +24,9 @@ object GetControllerClient {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
             .baseUrl(getServerBaseUrl())
+                .client(OkHttpClient.Builder()
+                        .readTimeout(1, TimeUnit.HOURS)
+                        .build())
             .build()
 
         client = retrofit.create(GetControllerApi::class.java)
@@ -39,10 +34,12 @@ object GetControllerClient {
 
     fun callSimpleGetNoParamsEndpoint() = client.callSimpleGetNoParamsEndpoint().execute()
 
-    fun callSingleQueryParamEndpoint(queryParam: String) = client.callQueryParamEndpoint(queryParam, null).execute()
+    fun callSingleQueryParamEndpoint(queryParam: String) = client.callQuerySingleParamEndpoint(queryParam).execute()
+
+    fun callQueryParamDefaultValueEndpoint() = client.callQueryParamDefaultValueEndpoint().execute()
 
     fun callMultiQueryParamEndpoint(queryParam1: String, queryParam2: String) =
-        client.callQueryParamEndpoint(queryParam1, queryParam2).execute()
+        client.callMultiQueryParamEndpoint(queryParam1, queryParam2).execute()
 
     fun callSinglePathParamEndpoint(pathParam: String) = client.callSinglePathParamEndpoint(pathParam).execute()
 
@@ -65,10 +62,15 @@ object GetControllerClient {
         fun callSimpleGetNoParamsEndpoint(): Call<ResponseEntity>
 
         @GET(QUERY_PARAM_GET_ENDPOINT)
-        fun callQueryParamEndpoint(
+        fun callQuerySingleParamEndpoint(@Query(QUERY_PARAM_1) queryParam1: String): Call<ResponseEntity>
+
+        @GET(QUERY_PARAM_GET_ENDPOINT)
+        fun callMultiQueryParamEndpoint(
             @Query(QUERY_PARAM_1) queryParam1: String,
-            @Query(QUERY_PARAM_2) queryParam2: String?
-        ): Call<ResponseEntity>
+            @Query(QUERY_PARAM_2) queryParam2: String): Call<ResponseEntity>
+
+        @GET(QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT)
+        fun callQueryParamDefaultValueEndpoint(): Call<ResponseEntity>
 
         @GET(SINGLE_PATH_PARAM_GET_ENDPOINT)
         fun callSinglePathParamEndpoint(@Path(PATH_PARAM_1) pathParam1: String): Call<ResponseEntity>

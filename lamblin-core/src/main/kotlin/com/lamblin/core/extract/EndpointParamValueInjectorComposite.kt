@@ -18,8 +18,7 @@ private val LOGGER = LoggerFactory.getLogger(EndpointParamValueInjectorComposite
  * using the details in the [APIGatewayProxyRequestEvent] for the request being served.
  */
 internal class EndpointParamValueInjectorComposite internal constructor(
-    internal val injectorEndpoints: List<EndpointParamValueInjector>
-) : EndpointParamValueInjector {
+    internal val injectorEndpoints: List<EndpointParamValueInjector>) : EndpointParamValueInjector {
 
     companion object {
         fun instance(): EndpointParamValueInjectorComposite = EndpointParamValueInjectorComposite(
@@ -32,8 +31,7 @@ internal class EndpointParamValueInjectorComposite internal constructor(
     override fun injectParamValues(
         request: APIGatewayProxyRequestEvent,
         handlerMethod: HandlerMethod,
-        paramAnnotationMappedNameToParam: Map<String, Parameter>
-    ): Map<String, Any> {
+        paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any?> {
 
         LOGGER.debug("Extracting param values from request ${request.path}")
 
@@ -41,14 +39,14 @@ internal class EndpointParamValueInjectorComposite internal constructor(
             it.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
         }.reduceRight { a, b -> a + b }
 
-        val result = linkedMapOf<String, Any>()
+        val result = linkedMapOf<String, Any?>()
 
         return handlerMethod.method.parameters
             .map {
                 handlerMethod.paramNameToParam[it.name]
                         ?: throw IllegalStateException("Param not found for ${it.name}")
             }
-            .map { it.annotationMappedName to paramAnnotationMappedNameToValue[it.annotationMappedName]!! }
+            .map { it.annotationMappedName to paramAnnotationMappedNameToValue[it.annotationMappedName] }
             .toMap(result)
     }
 

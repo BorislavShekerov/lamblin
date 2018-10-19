@@ -55,11 +55,19 @@ data class HandlerMethodParameter(
             name: String,
             type: Class<*>,
             param: QueryParam
-        ): HandlerMethodParameter = HandlerMethodParameter(
-            annotationMappedName = param.value,
-            required = param.required,
-            name = name,
-            type = type)
+        ): HandlerMethodParameter {
+
+            val defaultValue = if (param.defaultValue.isEmpty()) {
+                null
+            } else param.defaultValue
+
+            return HandlerMethodParameter(
+                annotationMappedName = param.value,
+                required = param.required,
+                name = name,
+                type = type,
+                defaultValue = defaultValue)
+        }
 
         fun of(
             name: String,

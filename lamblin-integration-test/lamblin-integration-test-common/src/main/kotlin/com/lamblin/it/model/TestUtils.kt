@@ -6,20 +6,14 @@
 
 package com.lamblin.it.model
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.lamblin.core.model.StatusCode
 import org.assertj.core.api.Assertions.assertThat
 import retrofit2.Response
 
-val OBJECT_MAPPER = ObjectMapper().apply {
-    registerModule(JavaTimeModule())
-    registerModule(KotlinModule())
-}
-
 const val QUERY_PARAM_1 = "query_1"
 const val QUERY_PARAM_2 = "query_2"
+
+const val DEFAULT_QUERY_PARAM_VALUE = "default-value"
 
 const val PATH_PARAM_1 = "path_param_1"
 const val PATH_PARAM_2 = "path_param_2"

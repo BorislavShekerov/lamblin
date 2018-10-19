@@ -17,6 +17,8 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
+const val DEFAULT_PARAM_VALUE = "default"
+
 class QueryEndpointParamValueInjectorTest {
 
     @Test
@@ -25,30 +27,54 @@ class QueryEndpointParamValueInjectorTest {
         every { request.queryStringParameters } returns mapOf("query1" to "value1")
 
         val result = QueryEndpointParamValueInjector.injectParamValues(
-            request,
-            mockk(),
-            mapOf("query1" to TestController::class.java.declaredMethods[0].parameters[0]))
+                request,
+                mockk(),
+                mapOf("query1" to TestController::class.java.declaredMethods
+                        .find { it.name === "endpoint" }!!
+                        .parameters[0]))
 
         assertThat(result).isEqualTo(mapOf("query1" to "value1"))
     }
 
     @Test
-    fun `should return empty map if no query string params`() {
+    fun `should return empty map if no query string params and default value not defined in @QueryParam`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns null
 
         val result = QueryEndpointParamValueInjector.injectParamValues(
-            request,
-            mockk(),
-            mapOf("query1" to TestController::class.java.declaredMethods[0].parameters[0]))
+                request,
+                mockk(),
+                mapOf("query1" to TestController::class.java.declaredMethods
+                        .find { it.name === "endpoint" }!!
+                        .parameters[0]))
 
-        assertThat(result).isEqualTo(mapOf<String, Any>())
+        assertThat(result).isEqualTo(mapOf("query1" to null))
+    }
+
+    @Test
+    fun `should return default value if query param not present and default value defined in @QuaryParam`() {
+        val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
+        every { request.queryStringParameters } returns null
+
+        val result = QueryEndpointParamValueInjector.injectParamValues(
+                request,
+                mockk(),
+                mapOf("query1" to TestController::class.java.declaredMethods
+                        .find { it.name === "endpointWithDefaultQueryParam" }!!
+                        .parameters[0]))
+
+        assertThat(result).isEqualTo(mapOf("query1" to DEFAULT_PARAM_VALUE))
     }
 
     private class TestController {
 
         @Endpoint("test", method = HttpMethod.GET)
         fun endpoint(@QueryParam("query1") queryParam: String): HttpResponse<String> {
+            return HttpResponse.ok(queryParam)
+        }
+
+        @Endpoint("test", method = HttpMethod.GET)
+        fun endpointWithDefaultQueryParam(@QueryParam("query1", defaultValue = DEFAULT_PARAM_VALUE) queryParam: String): HttpResponse<String> {
             return HttpResponse.ok(queryParam)
         }
     }

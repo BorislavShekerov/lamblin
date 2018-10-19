@@ -33,7 +33,11 @@ class LamblinLocalRunner internal constructor(
             vararg controllers: Any
         ): LamblinLocalRunner {
 
-            val server = Javalin.create().port(port)
+            val server = Javalin.create()
+                    .port(port)
+                    .disableStartupBanner()
+                    .enableCorsForOrigin("*")
+
             val frontControllerDelegator = LamblinDelegator(Lamblin.frontController(*controllers))
 
             val endpointRegistrator = EndpointRegistrator(server, frontControllerDelegator)

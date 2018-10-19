@@ -36,8 +36,7 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
      */
     fun handle(
         request: APIGatewayProxyRequestEvent,
-        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
-    ): APIGatewayProxyResponseEvent {
+        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>): APIGatewayProxyResponseEvent {
 
         return try {
             LOGGER.debug("Handling request to [{}]", request.path)
@@ -55,8 +54,7 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
 
     private fun handlerRequest(
         request: APIGatewayProxyRequestEvent,
-        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>
-    ): APIGatewayProxyResponseEvent {
+        httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>): APIGatewayProxyResponseEvent {
 
         val handlersForHttpMethod = httpMethodToHandlers[HttpMethod.valueOf(request.httpMethod)]
                 ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
@@ -79,6 +77,7 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
     private fun createApiGatewayResponseEvent(
         response: HttpResponse<*>
     ): APIGatewayProxyResponseEvent =
+
         if (response.statusCode === StatusCode.OK) {
             APIGatewayProxyResponseEvent().apply {
                 withStatusCode(response.statusCode.code)

@@ -1,14 +1,9 @@
 package com.lamblin.it
 
-import com.lamblin.core.Lamblin
 import com.lamblin.core.model.StatusCode
-import com.lamblin.it.controller.GetController
 import com.lamblin.it.client.GetControllerClient
-import com.lamblin.it.model.MULTI_PATH_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.QUERY_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.SIMPLE_GET_ENDPOINT
-import com.lamblin.it.model.SINGLE_PATH_PARAM_GET_ENDPOINT
-import com.lamblin.it.model.runRequestAndVerifyResponse
+import com.lamblin.it.controller.GetController
+import com.lamblin.it.model.*
 import com.lamblin.test.config.LamblinTestConfig
 import com.lamblin.test.config.annotation.LamblinTestRunnerConfig
 import com.lamblin.test.junit5.JUnit5LamblinExtension
@@ -33,6 +28,13 @@ class GetControllerIntegrationTest {
         runRequestAndVerifyResponse(
             { GetControllerClient.callSingleQueryParamEndpoint(queryParamValue) },
             "$QUERY_PARAM_GET_ENDPOINT-$queryParamValue")
+    }
+
+    @Test
+    fun `should handle GET requests with query param with default value`() {
+        runRequestAndVerifyResponse(
+                { GetControllerClient.callQueryParamDefaultValueEndpoint() },
+                "$QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT-$DEFAULT_QUERY_PARAM_VALUE")
     }
 
     @Test
