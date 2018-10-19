@@ -6,6 +6,7 @@
 
 package com.lamblin.core.model
 
+import com.lamblin.core.model.annotation.Header
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
@@ -50,6 +51,16 @@ data class HandlerMethodParameter(
             name = name,
             type = type)
 
+        /** Creates a parameter targeting a header. */
+        fun headerParam(
+            name: String,
+            type: Class<*>,
+            param: Header
+        ): HandlerMethodParameter = HandlerMethodParameter(
+            annotationMappedName = param.value,
+            name = name,
+            type = type)
+
         /** Creates a parameter targeting a query parameter. */
         fun queryParam(
             name: String,
@@ -77,6 +88,7 @@ data class HandlerMethodParameter(
             when (annotation) {
                 is PathParam -> pathParam(name, type, annotation)
                 is QueryParam -> queryParam(name, type, annotation)
+                is Header -> headerParam(name, type, annotation)
                 is RequestBody -> requestBodyParam(name, type)
                 else -> throw IllegalArgumentException("Annotation $annotation not supported")
             }

@@ -18,6 +18,9 @@ const val DEFAULT_QUERY_PARAM_VALUE = "default-value"
 const val PATH_PARAM_1 = "path_param_1"
 const val PATH_PARAM_2 = "path_param_2"
 
+const val AUTHORIZATION_HEADER = "Authorization"
+const val AUTHORIZATION_HEADER_VALUE = "Bearer xxx"
+
 const val DEFAULT_LOCALHOST_URL = "http://localhost:8080"
 
 @JvmOverloads

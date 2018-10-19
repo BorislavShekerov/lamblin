@@ -12,7 +12,7 @@ import com.lamblin.core.model.HandlerMethod.Companion.isPathParamSection
 import java.lang.reflect.Parameter
 
 /** Defines a mechanism for deciding the values of path parameters (i.e. parameters annotated with [PathParam]). */
-object PathParamEndpointValueInjector : EndpointParamValueInjector {
+object PathParamValueInjector : EndpointParamValueInjector {
 
     override fun injectParamValues(
         request: APIGatewayProxyRequestEvent,

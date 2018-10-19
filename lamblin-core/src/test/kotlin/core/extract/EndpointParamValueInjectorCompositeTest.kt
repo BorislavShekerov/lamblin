@@ -7,10 +7,7 @@
 package core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.lamblin.core.extract.EndpointParamValueInjectorComposite
-import com.lamblin.core.extract.PathParamEndpointValueInjector
-import com.lamblin.core.extract.QueryEndpointParamValueInjector
-import com.lamblin.core.extract.RequestBodyEndpointParamValueInjector
+import com.lamblin.core.extract.*
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
@@ -30,7 +27,7 @@ import java.lang.IllegalStateException
 class EndpointParamValueInjectorCompositeTest {
 
     private val queryParamValueInjector: QueryEndpointParamValueInjector = mockk(relaxed = true)
-    private val pathParamValueInjector: PathParamEndpointValueInjector = mockk(relaxed = true)
+    private val pathParamValueInjector: PathParamValueInjector = mockk(relaxed = true)
     private val endpointParamValueInjectorComposite = EndpointParamValueInjectorComposite(
         listOf(queryParamValueInjector, pathParamValueInjector)
     )
@@ -58,10 +55,11 @@ class EndpointParamValueInjectorCompositeTest {
     fun `instance should contain all value injectors`() {
         val instance = EndpointParamValueInjectorComposite.instance()
 
-        assertThat(instance.injectorEndpoints).hasSize(3)
-        assertThat(instance.injectorEndpoints).contains(PathParamEndpointValueInjector)
+        assertThat(instance.injectorEndpoints).hasSize(4)
+        assertThat(instance.injectorEndpoints).contains(PathParamValueInjector)
         assertThat(instance.injectorEndpoints).contains(QueryEndpointParamValueInjector)
         assertThat(instance.injectorEndpoints).contains(RequestBodyEndpointParamValueInjector)
+        assertThat(instance.injectorEndpoints).contains(HeaderValueInjector)
     }
 
     @Test

@@ -14,10 +14,8 @@ import org.junit.runner.RunWith;
 
 import java.util.Set;
 
-import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_GET_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.*;
+import static com.lamblin.it.model.TestUtilsKt.DEFAULT_QUERY_PARAM_VALUE;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;
 
@@ -44,6 +42,16 @@ public class GetControllerTest {
                         "{0}-{1}",
                         QUERY_PARAM_GET_ENDPOINT,
                         queryParamValue));
+    }
+
+    @Test
+    public void shouldHandleGetRequestsWithQueryParamWithDefaultValue() {
+        runRequestAndVerifyResponse(
+                client::callQueryParamDefaultValueEndpoint,
+                format(
+                        "{0}-{1}",
+                        QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT,
+                        DEFAULT_QUERY_PARAM_VALUE));
     }
 
     @Test
@@ -100,22 +108,6 @@ public class GetControllerTest {
                         queryParamValue,
                         pathParamValue1,
                         pathParamValue2));
-    }
-
-    @Test
-    public void shouldReturn404ForUnknownRoutes() {
-        runRequestAndVerifyResponse(
-                client::callUnknownEndpoint,
-                null,
-                 StatusCode.NOT_FOUND.getCode());
-    }
-
-    @Test
-    public void shouldReturnStatusCodeReturnedFromEndpoint() {
-        runRequestAndVerifyResponse(
-                client::callCustomStatusCodeEndpoint,
-                null,
-                StatusCode.ACCEPTED.getCode());
     }
 
     public static class TestConfiguration implements LamblinTestConfig {

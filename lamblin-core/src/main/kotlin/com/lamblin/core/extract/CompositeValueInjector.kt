@@ -23,9 +23,10 @@ internal class EndpointParamValueInjectorComposite internal constructor(
     companion object {
         fun instance(): EndpointParamValueInjectorComposite = EndpointParamValueInjectorComposite(
             listOf(
-                PathParamEndpointValueInjector,
+                PathParamValueInjector,
                 QueryEndpointParamValueInjector,
-                RequestBodyEndpointParamValueInjector))
+                RequestBodyEndpointParamValueInjector,
+                HeaderValueInjector))
     }
 
     override fun injectParamValues(

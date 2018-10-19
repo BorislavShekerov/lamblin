@@ -32,6 +32,11 @@ public class GetController {
         return HttpResponse.ok(new ResponseEntity(format("{0}-{1}", QUERY_PARAM_GET_ENDPOINT, queryParam)));
     }
 
+    @Endpoint(path = QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT, method = HttpMethod.GET)
+    public HttpResponse<ResponseEntity> queryParamDefaultValuePath(@QueryParam(value = QUERY_PARAM_1, defaultValue = DEFAULT_QUERY_PARAM_VALUE) String queryParam) {
+        return HttpResponse.ok(new ResponseEntity(format("{0}-{1}", QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT, queryParam)));
+    }
+
     @Endpoint(path = QUERY_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     public HttpResponse<ResponseEntity> multipleQueryParamTest(
             @QueryParam(QUERY_PARAM_1) String queryParam1,
@@ -74,7 +79,7 @@ public class GetController {
 
     @Endpoint(path = MULTI_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     public HttpResponse<ResponseEntity> multiplePathParamWithQueryParamsPath(
-            @QueryParam(value = QUERY_PARAM_1, required = false) String queryParam,
+            @QueryParam(value = QUERY_PARAM_1) String queryParam,
             @PathParam(PATH_PARAM_1) String pathParamOne,
             @PathParam(PATH_PARAM_2) String pathParamTwo) {
 
@@ -86,11 +91,6 @@ public class GetController {
                                 queryParam,
                                 pathParamOne,
                                 pathParamTwo)));
-    }
-
-    @Endpoint(path = CUSTOM_STATUS_CODE_GET_ENDPOINT, method = HttpMethod.GET)
-    public HttpResponse<Object> customStatusCodeEndpoint() {
-        return HttpResponse.withCode(StatusCode.ACCEPTED);
     }
 
 }

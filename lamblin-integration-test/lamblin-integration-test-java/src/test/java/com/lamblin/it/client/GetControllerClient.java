@@ -10,6 +10,7 @@ import com.lamblin.it.model.ResponseEntity;
 
 import java.io.IOException;
 
+import com.lamblin.plugin.core.ExecutableLamblinPlugin;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -19,11 +20,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 import static com.lamblin.it.client.ClientUtils.createObjectMapper;
-import static com.lamblin.it.model.EndpointsKt.CUSTOM_STATUS_CODE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.MULTI_PATH_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SIMPLE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.SINGLE_PATH_PARAM_GET_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.*;
 import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
 import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
 import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
@@ -47,6 +44,14 @@ public class GetControllerClient {
     public Response<ResponseEntity> callSimpleGetNoParamsEndpoint() {
         try {
             return client.callSimpleGetNoParamsEndpoint().execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Response<ResponseEntity> callQueryParamDefaultValueEndpoint() {
+        try {
+            return client.callQueryParamDefaultValueEndpoint().execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -96,21 +101,7 @@ public class GetControllerClient {
         }
     }
 
-    public Response<Void> callCustomStatusCodeEndpoint() {
-        try {
-            return client.callCustomStatusCodeEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    public Response callUnknownEndpoint() {
-        try {
-            return client.callUnknownEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private interface GetControllerApi {
 
@@ -120,6 +111,9 @@ public class GetControllerClient {
         @GET(QUERY_PARAM_GET_ENDPOINT)
         Call<ResponseEntity> callQueryParamEndpoint(@Query(QUERY_PARAM_1) String queryParam1,
                                                     @Query(QUERY_PARAM_2) String queryParam2);
+
+        @GET(QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT)
+        Call<ResponseEntity> callQueryParamDefaultValueEndpoint();
 
         @GET(SINGLE_PATH_PARAM_GET_ENDPOINT)
         Call<ResponseEntity> callSinglePathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1);
@@ -132,12 +126,6 @@ public class GetControllerClient {
         Call<ResponseEntity> callMultiPathParamEndpoint(@Path(PATH_PARAM_1) String pathParam1,
                                                         @Path(PATH_PARAM_2) String pathParam2,
                                                         @Query(QUERY_PARAM_1) String queryParam1);
-
-        @GET(CUSTOM_STATUS_CODE_GET_ENDPOINT)
-        Call<Void> callCustomStatusCodeEndpoint();
-
-        @GET("/unknown")
-        Call<Void> callUnknownEndpoint();
 
     }
 }

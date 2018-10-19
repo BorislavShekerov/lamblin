@@ -12,6 +12,7 @@ const val QUERY_PARAM_GET_ENDPOINT = "/get/query-param"
 const val QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT = "/get/query-param/default-value"
 const val SINGLE_PATH_PARAM_GET_ENDPOINT = "/get/path/{$PATH_PARAM_1}"
 const val MULTI_PATH_PARAM_GET_ENDPOINT = "/get/path/{$PATH_PARAM_1}/foo/{$PATH_PARAM_2}"
+const val HEADER_GET_ENDPOINT = "/get/header"
 
 const val SIMPLE_DELETE_ENDPOINT = "/delete/simple"
 const val QUERY_PARAM_DELETE_ENDPOINT = "/delete/query-param"

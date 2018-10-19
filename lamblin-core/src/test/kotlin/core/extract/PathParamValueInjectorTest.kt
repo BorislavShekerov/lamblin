@@ -7,7 +7,7 @@
 package core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.lamblin.core.extract.PathParamEndpointValueInjector
+import com.lamblin.core.extract.PathParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 
 const val PATH_PARAM_ENDPOINT_PATH = "/path/{param}"
 
-class PathParamEndpointValueInjectorTest {
+class PathParamValueInjectorTest {
 
     @Test
     fun `should return empty map if no path parameters in handler method`() {
@@ -30,7 +30,7 @@ class PathParamEndpointValueInjectorTest {
         every { handlerMethod.path } returns "/path"
         every { request.path } returns "/path"
 
-        val result = PathParamEndpointValueInjector.injectParamValues(request, handlerMethod, mapOf())
+        val result = PathParamValueInjector.injectParamValues(request, handlerMethod, mapOf())
         assertThat(result).isEmpty()
     }
 
@@ -44,7 +44,7 @@ class PathParamEndpointValueInjectorTest {
 
         val pathParamParameter = TestController::class.java.methods[0].parameters[0]
 
-        val result = PathParamEndpointValueInjector.injectParamValues(
+        val result = PathParamValueInjector.injectParamValues(
             request,
             handlerMethod,
             mapOf("param" to pathParamParameter))

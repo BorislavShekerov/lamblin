@@ -2,6 +2,7 @@ package core.model
 
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.REQUEST_BODY_MAPPED_NAME
+import com.lamblin.core.model.annotation.Header
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
@@ -13,6 +14,7 @@ private const val PATH_PARAM_VALUE = "param"
 private const val QUERY_PARAM_WITH_DEFAULT_VALUE_MAPPED_NAME= "queryParam"
 private const val QUERY_PARAM_WITHOUT_DEFAULT_VALUE_MAPPED_NAME= "queryParam"
 private const val QUERY_PARAM_DEFAULT_VALUE = "defaultValue"
+private const val HEADER_NAME = "headerName"
 
 class HandlerMethodParameterTest {
 
@@ -76,13 +78,26 @@ class HandlerMethodParameterTest {
     }
 
     @Test
+    fun `should create header param`() {
+        val paramName = "test"
+        val param = HandlerMethodParameter.of(
+            paramName,
+            String::class.java,
+            TestController::class.java.methods[0].parameters[4].getAnnotation(Header::class.java))
+
+        assertThat(param.name).isEqualTo(paramName)
+        assertThat(param.type).isEqualTo(String::class.java)
+        assertThat(param.annotationMappedName).isEqualTo(HEADER_NAME)
+    }
+
+    @Test
     fun `should throw IllegalArgumentException if annotation not PathParam, QueryParam or RequestBody `() {
         val paramName = "test"
         assertThrows<IllegalArgumentException> {
             HandlerMethodParameter.of(
                 paramName,
                 String::class.java,
-                TestController::class.java.methods[0].parameters[4].getAnnotation(IllegalAnnotation::class.java))
+                TestController::class.java.methods[0].parameters[5].getAnnotation(IllegalAnnotation::class.java))
         }
     }
 
@@ -96,6 +111,7 @@ class HandlerMethodParameterTest {
                 defaultValue = QUERY_PARAM_DEFAULT_VALUE) queryParamWithDefaultValue: String,
             @QueryParam(QUERY_PARAM_WITHOUT_DEFAULT_VALUE_MAPPED_NAME) queryParamWithoutDefaultValue: String,
             @RequestBody requestBody: String,
+            @Header(HEADER_NAME) header: String,
             @IllegalAnnotation test: String) {
         }
 
