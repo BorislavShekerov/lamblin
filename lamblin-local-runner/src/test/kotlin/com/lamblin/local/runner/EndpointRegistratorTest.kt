@@ -68,25 +68,19 @@ class EndpointRegistratorTest {
 
     @Test
     fun `should format path params before registering endpoint`() {
-        val getHandlerMethod: HandlerMethod = mockk(relaxed = true)
-
-        every { lamblin.httpMethodToHandlers } returns mapOf(HttpMethod.GET to setOf(getHandlerMethod))
-        every { getHandlerMethod.httpMethod } returns HttpMethod.GET
-        val testPathWithPathParam = "/foo/{param}/bar"
-        every { getHandlerMethod.path } returns testPathWithPathParam
-
-        endpointRegistrator.registerEndpoints()
+        setUpForMethodAndRegister(HttpMethod.GET, "/foo/{param}/bar")
 
         verify { server.get("/foo/:param/bar", any()) }
     }
 
-    private fun setUpForMethodAndRegister(httpMethod: HttpMethod) {
+    private fun setUpForMethodAndRegister(httpMethod: HttpMethod, path: String = testPath) {
         val getHandlerMethod: HandlerMethod = mockk(relaxed = true)
 
         every { lamblin.httpMethodToHandlers } returns mapOf(httpMethod to setOf(getHandlerMethod))
-        every { getHandlerMethod.httpMethod } returns httpMethod
+        every { getHandlerMethod.component2() } returns httpMethod
         val testPath = "testPath"
-        every { getHandlerMethod.path } returns testPath
+        every { getHandlerMethod.component1() } returns path
+        every { getHandlerMethod.path } returns path
 
         endpointRegistrator.registerEndpoints()
     }

@@ -26,29 +26,16 @@ class EndpointRegistrator(
     }
 
     private fun createRoute(handlerMethod: HandlerMethod) {
-        LOGGER.info("Creating route [{}] [{}]", handlerMethod.httpMethod, handlerMethod.path)
+        val (path , httpMethod) = handlerMethod
 
-        when (handlerMethod.httpMethod) {
-            HttpMethod.GET ->
-                server.get(
-                    formatPath(handlerMethod.path)
-                ) { lamblinDelegator.delegateToController(it) }
-            HttpMethod.POST ->
-                server.post(
-                    formatPath(handlerMethod.path)
-                ) { lamblinDelegator.delegateToController(it) }
-            HttpMethod.DELETE ->
-                server.delete(
-                    formatPath(handlerMethod.path)
-                ) { lamblinDelegator.delegateToController(it) }
-            HttpMethod.PUT ->
-                server.put(
-                    formatPath(handlerMethod.path)
-                ) { lamblinDelegator.delegateToController(it) }
-            HttpMethod.PATCH ->
-                server.patch(
-                    formatPath(handlerMethod.path)
-                ) { lamblinDelegator.delegateToController(it) }
+        LOGGER.info("Creating route [{}] [{}]", httpMethod, path)
+
+        when (httpMethod) {
+            HttpMethod.GET -> server.get(formatPath(path)) { lamblinDelegator.delegateToController(it) }
+            HttpMethod.POST -> server.post(formatPath(path)) { lamblinDelegator.delegateToController(it) }
+            HttpMethod.DELETE -> server.delete(formatPath(path)) { lamblinDelegator.delegateToController(it) }
+            HttpMethod.PUT -> server.put(formatPath(path)) { lamblinDelegator.delegateToController(it) }
+            HttpMethod.PATCH -> server.patch(formatPath(path)) { lamblinDelegator.delegateToController(it) }
         }
     }
 
