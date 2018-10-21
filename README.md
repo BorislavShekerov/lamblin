@@ -5,6 +5,6 @@
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
 # lamblin
-A REST Framework for Java applications deployed as AWS Lambdas.
+A REST Framework for Kotlin or Java applications deployed as AWS Lambdas.
 
 # In Progress...
