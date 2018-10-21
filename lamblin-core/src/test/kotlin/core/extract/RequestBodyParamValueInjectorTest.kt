@@ -9,7 +9,7 @@ package core.extract
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lamblin.core.exception.RequestPayloadParseException
-import com.lamblin.core.extract.RequestBodyEndpointParamValueInjector
+import com.lamblin.core.extract.RequestBodyParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
@@ -27,7 +27,7 @@ const val NO_BODY_PARAM_PATH = "no-body"
 const val BODY_PARAM_PRESENT_PATH = "body-param-present"
 const val QUERY_PARAM = "testQueryParam"
 
-class RequestBodyEndpointParamValueInjectorTest {
+class RequestBodyParamValueInjectorTest {
 
     @Test
     fun `should return empty map when request not post`() {
@@ -35,7 +35,7 @@ class RequestBodyEndpointParamValueInjectorTest {
 
         every { handlerMethod.httpMethod } returns HttpMethod.GET
 
-        val result = RequestBodyEndpointParamValueInjector.injectParamValues(mockk(), handlerMethod, mapOf())
+        val result = RequestBodyParamValueInjector.injectParamValues(mockk(), handlerMethod, mapOf())
         assertThat(result).isEmpty()
     }
 
@@ -49,7 +49,7 @@ class RequestBodyEndpointParamValueInjectorTest {
             noBodyParamMethod,
             TestController::class.java)
 
-        val result = RequestBodyEndpointParamValueInjector.injectParamValues(mockk(), handlerMethod, mapOf())
+        val result = RequestBodyParamValueInjector.injectParamValues(mockk(), handlerMethod, mapOf())
         assertThat(result).isEmpty()
     }
 
@@ -64,7 +64,7 @@ class RequestBodyEndpointParamValueInjectorTest {
             TestController::class.java)
 
         val result =
-            RequestBodyEndpointParamValueInjector.injectParamValues(mockk(relaxed = true), handlerMethod, mapOf())
+            RequestBodyParamValueInjector.injectParamValues(mockk(relaxed = true), handlerMethod, mapOf())
         assertThat(result).isEmpty()
     }
 
@@ -82,7 +82,7 @@ class RequestBodyEndpointParamValueInjectorTest {
         every { request.body } returns """{ "content": }"""
 
         assertThrows<RequestPayloadParseException> {
-            RequestBodyEndpointParamValueInjector.injectParamValues(
+            RequestBodyParamValueInjector.injectParamValues(
                 request,
                 handlerMethod,
                 mapOf(
@@ -118,7 +118,7 @@ class RequestBodyEndpointParamValueInjectorTest {
         val request: APIGatewayProxyRequestEvent = mockk()
         every { request.body } returns """{ "content": "test"}"""
 
-        val result = RequestBodyEndpointParamValueInjector.injectParamValues(
+        val result = RequestBodyParamValueInjector.injectParamValues(
             request,
             handlerMethod,
             mapOf(

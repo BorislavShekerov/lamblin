@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import java.util.Set;
 
 import static com.lamblin.it.model.EndpointsKt.HEADER_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.QUERY_PARAM_GET_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.AUTHORIZATION_HEADER_VALUE;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
 import static java.text.MessageFormat.format;

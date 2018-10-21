@@ -11,7 +11,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.lamblin.core.ControllerRegistry
 import com.lamblin.core.EndpointInvoker
 import com.lamblin.core.OBJECT_MAPPER
-import com.lamblin.core.extract.EndpointParamValueInjectorComposite
+import com.lamblin.core.extract.CompositeParamValueInjector
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodComparator
 import com.lamblin.core.model.HttpMethod
@@ -26,7 +26,7 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
     companion object {
         internal fun instance(controllerRegistry: ControllerRegistry) = RequestHandler(
             EndpointInvoker(
-                EndpointParamValueInjectorComposite.instance(),
+                CompositeParamValueInjector.instance(),
                 controllerRegistry))
     }
 

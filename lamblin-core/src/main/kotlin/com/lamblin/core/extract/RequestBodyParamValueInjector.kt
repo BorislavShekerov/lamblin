@@ -17,11 +17,11 @@ import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.lang.reflect.Parameter
 
-private val LOGGER = LoggerFactory.getLogger(RequestBodyEndpointParamValueInjector::class.java)
+private val LOGGER = LoggerFactory.getLogger(RequestBodyParamValueInjector::class.java)
 
 
 /** Defines a mechanism for deciding the values of request body (i.e. parameters annotated with [RequestBody]). */
-object RequestBodyEndpointParamValueInjector : EndpointParamValueInjector {
+object RequestBodyParamValueInjector : EndpointParamValueInjector {
 
     private val requestBodyEnabledHttpMethods = setOf(HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH)
 

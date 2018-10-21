@@ -12,10 +12,10 @@ import com.lamblin.core.model.annotation.QueryParam
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Parameter
 
-private val LOGGER = LoggerFactory.getLogger(QueryEndpointParamValueInjector::class.java)
+private val LOGGER = LoggerFactory.getLogger(QueryParamValueInjector::class.java)
 
-/** Defines a mechanismQueryEndpointParamValueInjector for deciding the values of query parameters (i.e. parameters annotated with [QueryParam]). */
-object QueryEndpointParamValueInjector : EndpointParamValueInjector {
+/** Defines a mechanismQueryEndpointParamValueInjector for deciding the values of query parameters. */
+object QueryParamValueInjector : EndpointParamValueInjector {
 
     override fun injectParamValues(
             request: APIGatewayProxyRequestEvent,

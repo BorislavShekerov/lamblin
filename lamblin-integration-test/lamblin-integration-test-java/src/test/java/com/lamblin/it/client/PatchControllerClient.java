@@ -17,9 +17,8 @@ import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import java.io.IOException;
-
 import static com.lamblin.it.client.ClientUtils.createObjectMapper;
+import static com.lamblin.it.client.ClientUtils.executeRequest;
 import static com.lamblin.it.model.EndpointsKt.*;
 import static com.lamblin.it.model.TestUtilsKt.*;
 
@@ -38,43 +37,23 @@ public class PatchControllerClient {
     }
 
     public Response<ResponseEntity> callSimplePatchNoParamsEndpoint() {
-        try {
-            return client.callSimplePatchNoParamsEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(client::callSimplePatchNoParamsEndpoint);
     }
 
     public Response<ResponseEntity> callSingleQueryParamEndpoint(String queryParam) {
-        try {
-            return client.callSingleQueryParamEndpoint(queryParam).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() ->  client.callSingleQueryParamEndpoint(queryParam));
     }
 
     public Response<ResponseEntity> callMultiQueryParamEndpoint(String queryParam1, String queryParam2) {
-        try {
-            return client.callMultiQueryParamEndpoint(queryParam1, queryParam2).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callMultiQueryParamEndpoint(queryParam1, queryParam2));
     }
 
     public Response<ResponseEntity> callSinglePathParamEndpoint(String pathParam) {
-        try {
-            return client.callSinglePathParamEndpoint(pathParam).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callSinglePathParamEndpoint(pathParam));
     }
 
     public Response<ResponseEntity> callMultiPathParamEndpoint(String pathParam1, String pathParam2) {
-        try {
-            return client.callMultiPathParamEndpoint(pathParam1, pathParam2).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callMultiPathParamEndpoint(pathParam1, pathParam2));
     }
 
     public Response<ResponseEntity> callMultiPathParamEndpointWithQueryParam(
@@ -82,20 +61,11 @@ public class PatchControllerClient {
             String pathParam1,
             String pathParam2) {
 
-        try {
-            return client.callMultiPathParamEndpoint(pathParam1, pathParam2, queryParam).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callMultiPathParamEndpoint(pathParam1, pathParam2, queryParam));
     }
 
     public Response<ResponseEntity> callRequestBodyEndpoint(ExampleRequestBody exampleRequestBod) {
-
-        try {
-            return client.callRequestBodyEndpoint(exampleRequestBod).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callRequestBodyEndpoint(exampleRequestBod));
     }
 
     private interface PatchControllerApi {

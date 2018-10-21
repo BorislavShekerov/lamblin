@@ -8,9 +8,8 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 
-import java.io.IOException;
-
 import static com.lamblin.it.client.ClientUtils.createObjectMapper;
+import static com.lamblin.it.client.ClientUtils.executeRequest;
 import static com.lamblin.it.model.EndpointsKt.CUSTOM_STATUS_CODE_GET_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.HEADER_GET_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.AUTHORIZATION_HEADER;
@@ -31,27 +30,15 @@ public class MiscellaneousControllerClient {
     }
 
     public Response<ResponseEntity> callHeaderInjectionEndpoint(String authorizationHeaderValue) {
-        try {
-            return client.callHeaderInjectionEndpoint(authorizationHeaderValue).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callHeaderInjectionEndpoint(authorizationHeaderValue));
     }
 
     public Response<Void> callCustomStatusCodeEndpoint() {
-        try {
-            return client.callCustomStatusCodeEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(client::callCustomStatusCodeEndpoint);
     }
 
     public Response callUnknownEndpoint() {
-        try {
-            return client.callUnknownEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(client::callUnknownEndpoint);
     }
 
 

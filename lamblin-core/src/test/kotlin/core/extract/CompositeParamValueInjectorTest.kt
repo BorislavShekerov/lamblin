@@ -24,11 +24,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.lang.IllegalStateException
 
-class EndpointParamValueInjectorCompositeTest {
+class CompositeParamValueInjectorTest {
 
-    private val queryParamValueInjector: QueryEndpointParamValueInjector = mockk(relaxed = true)
+    private val queryParamValueInjector: QueryParamValueInjector = mockk(relaxed = true)
     private val pathParamValueInjector: PathParamValueInjector = mockk(relaxed = true)
-    private val endpointParamValueInjectorComposite = EndpointParamValueInjectorComposite(
+    private val endpointParamValueInjectorComposite = CompositeParamValueInjector(
         listOf(queryParamValueInjector, pathParamValueInjector)
     )
 
@@ -53,13 +53,13 @@ class EndpointParamValueInjectorCompositeTest {
 
     @Test
     fun `instance should contain all value injectors`() {
-        val instance = EndpointParamValueInjectorComposite.instance()
+        val instance = CompositeParamValueInjector.instance()
 
         assertThat(instance.injectorEndpoints).hasSize(4)
         assertThat(instance.injectorEndpoints).contains(PathParamValueInjector)
-        assertThat(instance.injectorEndpoints).contains(QueryEndpointParamValueInjector)
-        assertThat(instance.injectorEndpoints).contains(RequestBodyEndpointParamValueInjector)
-        assertThat(instance.injectorEndpoints).contains(HeaderValueInjector)
+        assertThat(instance.injectorEndpoints).contains(QueryParamValueInjector)
+        assertThat(instance.injectorEndpoints).contains(RequestBodyParamValueInjector)
+        assertThat(instance.injectorEndpoints).contains(HeaderParamValueInjector)
     }
 
     @Test

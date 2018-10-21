@@ -11,22 +11,22 @@ import com.lamblin.core.model.HandlerMethod
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Parameter
 
-private val LOGGER = LoggerFactory.getLogger(EndpointParamValueInjectorComposite::class.java)
+private val LOGGER = LoggerFactory.getLogger(CompositeParamValueInjector::class.java)
 
 /**
  * Defines the mechanism which assigns a value to each parameter of the [HandlerMethod]
  * using the details in the [APIGatewayProxyRequestEvent] for the request being served.
  */
-internal class EndpointParamValueInjectorComposite internal constructor(
+internal class CompositeParamValueInjector internal constructor(
     internal val injectorEndpoints: List<EndpointParamValueInjector>) : EndpointParamValueInjector {
 
     companion object {
-        fun instance(): EndpointParamValueInjectorComposite = EndpointParamValueInjectorComposite(
+        fun instance(): CompositeParamValueInjector = CompositeParamValueInjector(
             listOf(
                 PathParamValueInjector,
-                QueryEndpointParamValueInjector,
-                RequestBodyEndpointParamValueInjector,
-                HeaderValueInjector))
+                QueryParamValueInjector,
+                RequestBodyParamValueInjector,
+                HeaderParamValueInjector))
     }
 
     override fun injectParamValues(

@@ -6,7 +6,7 @@ import com.lamblin.core.model.annotation.Header
 import java.lang.reflect.Parameter
 
 /** Defines a mechanism for deciding the values of header parameters (i.e. parameters annotated with [Header]). */
-object HeaderValueInjector : EndpointParamValueInjector {
+object HeaderParamValueInjector : EndpointParamValueInjector {
 
     override fun injectParamValues(
         request: APIGatewayProxyRequestEvent,

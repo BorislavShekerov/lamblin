@@ -7,7 +7,7 @@
 package core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.lamblin.core.extract.QueryEndpointParamValueInjector
+import com.lamblin.core.extract.QueryParamValueInjector
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.annotation.Endpoint
@@ -19,14 +19,14 @@ import org.junit.jupiter.api.Test
 
 const val DEFAULT_PARAM_VALUE = "default"
 
-class QueryEndpointParamValueInjectorTest {
+class QueryParamValueInjectorTest {
 
     @Test
     fun `should return the value for each query param`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns mapOf("query1" to "value1")
 
-        val result = QueryEndpointParamValueInjector.injectParamValues(
+        val result = QueryParamValueInjector.injectParamValues(
                 request,
                 mockk(),
                 mapOf("query1" to TestController::class.java.declaredMethods
@@ -41,7 +41,7 @@ class QueryEndpointParamValueInjectorTest {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns null
 
-        val result = QueryEndpointParamValueInjector.injectParamValues(
+        val result = QueryParamValueInjector.injectParamValues(
                 request,
                 mockk(),
                 mapOf("query1" to TestController::class.java.declaredMethods
@@ -56,7 +56,7 @@ class QueryEndpointParamValueInjectorTest {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns null
 
-        val result = QueryEndpointParamValueInjector.injectParamValues(
+        val result = QueryParamValueInjector.injectParamValues(
                 request,
                 mockk(),
                 mapOf("query1" to TestController::class.java.declaredMethods

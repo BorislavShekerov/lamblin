@@ -7,10 +7,6 @@
 package com.lamblin.it.client;
 
 import com.lamblin.it.model.ResponseEntity;
-
-import java.io.IOException;
-
-import com.lamblin.plugin.core.ExecutableLamblinPlugin;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -20,12 +16,9 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 import static com.lamblin.it.client.ClientUtils.createObjectMapper;
+import static com.lamblin.it.client.ClientUtils.executeRequest;
 import static com.lamblin.it.model.EndpointsKt.*;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.PATH_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_1;
-import static com.lamblin.it.model.TestUtilsKt.QUERY_PARAM_2;
-import static com.lamblin.it.model.TestUtilsKt.getServerBaseUrl;
+import static com.lamblin.it.model.TestUtilsKt.*;
 
 public class GetControllerClient {
 
@@ -42,51 +35,27 @@ public class GetControllerClient {
     }
 
     public Response<ResponseEntity> callSimpleGetNoParamsEndpoint() {
-        try {
-            return client.callSimpleGetNoParamsEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(client::callSimpleGetNoParamsEndpoint);
     }
 
     public Response<ResponseEntity> callQueryParamDefaultValueEndpoint() {
-        try {
-            return client.callQueryParamDefaultValueEndpoint().execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(client::callQueryParamDefaultValueEndpoint);
     }
 
     public Response<ResponseEntity> callSingleQueryParamEndpoint(String queryParam) {
-        try {
-            return client.callQueryParamEndpoint(queryParam, null).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callQueryParamEndpoint(queryParam, null));
     }
 
     public Response<ResponseEntity> callMultiQueryParamEndpoint(String queryParam1, String queryParam2) {
-        try {
-            return client.callQueryParamEndpoint(queryParam1, queryParam2).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callQueryParamEndpoint(queryParam1, queryParam2));
     }
 
     public Response<ResponseEntity> callSinglePathParamEndpoint(String pathParam) {
-        try {
-            return client.callSinglePathParamEndpoint(pathParam).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callSinglePathParamEndpoint(pathParam));
     }
 
     public Response<ResponseEntity> callMultiPathParamEndpoint(String pathParam1, String pathParam2) {
-        try {
-            return client.callMultiPathParamEndpoint(pathParam1, pathParam2).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callMultiPathParamEndpoint(pathParam1, pathParam2));
     }
 
     public Response<ResponseEntity> callMultiPathParamWithQueryParamEndpoint(
@@ -94,11 +63,7 @@ public class GetControllerClient {
             String pathParam1,
             String pathParam2) {
 
-        try {
-            return client.callMultiPathParamEndpoint(pathParam1, pathParam2, queryParam).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return executeRequest(() -> client.callMultiPathParamEndpoint(pathParam1, pathParam2, queryParam));
     }
 
 

@@ -8,6 +8,11 @@ package com.lamblin.it.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.kotlin.KotlinModule;
+import retrofit2.Call;
+import retrofit2.Response;
+
+import java.io.IOException;
+import java.util.function.Supplier;
 
 class ClientUtils {
 
@@ -19,5 +24,13 @@ class ClientUtils {
         objectMapper.registerModule(new KotlinModule());
 
         return objectMapper;
+    }
+
+    static <T> Response<T> executeRequest(Supplier<Call<T>> requestCallSupplier) {
+        try {
+            return requestCallSupplier.get().execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

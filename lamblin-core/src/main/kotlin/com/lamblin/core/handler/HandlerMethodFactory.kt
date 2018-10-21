@@ -37,7 +37,7 @@ private val LOGGER = LoggerFactory.getLogger(DefaultHandlerMethodFactory::class.
  */
 internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
 
-    /** Creates a [HandlerMethod] frontController using the details(annotations and parameters) of the input [KCallable]. */
+    /** Creates a [HandlerMethod] frontController using the details(annotations and parameters) of the [KCallable]. */
     override fun method(method: Method, controllerClass: Class<out Any>): HandlerMethod {
         val endpointAnnotation = method.annotations.find { it is Endpoint } as? Endpoint
 
