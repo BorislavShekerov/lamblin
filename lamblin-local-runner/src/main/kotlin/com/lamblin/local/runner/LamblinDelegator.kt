@@ -38,7 +38,7 @@ class LamblinDelegator(
                 APIGatewayProxyResponseEvent::class.java)
 
             context.status(response.statusCode)
-            response?.headers?.forEach { context.header(it.key, it.value) }
+            response.headers?.forEach { context.header(it.key, it.value) }
             response.body?.let { context.result(it) }
         } catch (e: RuntimeException) {
             LOGGER.error("Error occurred while handling request", e)
