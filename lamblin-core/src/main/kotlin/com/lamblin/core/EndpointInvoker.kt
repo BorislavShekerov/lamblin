@@ -40,7 +40,13 @@ internal class EndpointInvoker(
             val controller = controllerRegistry.controllerForClass(controllerClass)
                 ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.canonicalName}]")
 
-            return invokeControllerMethod(handlerMethod, request, method, parameters, controller)
+            return invokeControllerMethod(
+                MethodInvocationDetails(
+                    handlerMethod,
+                    request,
+                    method,
+                    parameters.toList(),
+                    controller))
         } catch (e: IllegalAccessException) {
             LOGGER.error("Handler methods should have a public accessor modifier.", e)
             throw e
@@ -51,31 +57,26 @@ internal class EndpointInvoker(
 
     }
 
-    private fun invokeControllerMethod(
-        handlerMethod: HandlerMethod,
-        request: APIGatewayProxyRequestEvent,
-        method: Method,
-        parameters: Array<Parameter>,
-        controller: Any
-    ): HttpResponse<*> =
-
-        try {
-            if (parameters.isEmpty())
-                method.invoke(controller) as HttpResponse<*>
+    private fun invokeControllerMethod(methodInvocationDetails: MethodInvocationDetails): HttpResponse<*> {
+        return try {
+            if (methodInvocationDetails.parameters.isEmpty())
+                methodInvocationDetails.method.invoke(methodInvocationDetails.controller) as HttpResponse<*>
             else {
                 val paramValues = endpointParamValueInjector
                     .injectParamValues(
-                        request,
-                        handlerMethod,
-                        handlerMethod.annotationMappedNameToParam())
+                        methodInvocationDetails.request,
+                        methodInvocationDetails.handlerMethod,
+                        methodInvocationDetails.handlerMethod.annotationMappedNameToParam())
                     .values.toTypedArray()
 
-                method.invoke(controller, *paramValues) as HttpResponse<*>
+                methodInvocationDetails.method.invoke(methodInvocationDetails.controller, *paramValues)
+                        as HttpResponse<*>
             }
         } catch (e: InvocationTargetException) {
             LOGGER.error("Exception occurred while executing handler.")
             throw e
         }
+    }
 }
 
 fun HandlerMethod.annotationMappedNameToParam(): Map<String, Parameter> {
@@ -89,3 +90,10 @@ fun HandlerMethod.annotationMappedNameToParam(): Map<String, Parameter> {
                 ?: throw IllegalStateException("Param not found for name ${it.name}"))
         }.toMap()
 }
+
+private data class MethodInvocationDetails(
+    val handlerMethod: HandlerMethod,
+    val request: APIGatewayProxyRequestEvent,
+    val method: Method,
+    val parameters: List<Parameter>,
+    val controller: Any)

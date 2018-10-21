@@ -6,7 +6,6 @@
 
 package com.lamblin.core.handler
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
@@ -16,7 +15,6 @@ import com.lamblin.core.model.HttpMethod.PATCH
 import com.lamblin.core.model.HttpMethod.POST
 import com.lamblin.core.model.HttpMethod.PUT
 import com.lamblin.core.model.annotation.Endpoint
-import com.lamblin.core.model.annotation.PathParam
 import org.slf4j.LoggerFactory
 import java.lang.IllegalStateException
 import java.lang.reflect.Method
@@ -40,37 +38,12 @@ private val LOGGER = LoggerFactory.getLogger(DefaultHandlerMethodFactory::class.
 internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
 
     /** Creates a [HandlerMethod] frontController using the details(annotations and parameters) of the [KCallable]. */
-    override fun method(method: Method, controllerClass: Class<out Any>): HandlerMethod {
+    override fun method(method: Method, controller: Class<out Any>): HandlerMethod {
         val endpointAnnotation = method.annotations.find { it is Endpoint } as? Endpoint
 
-        return when (endpointAnnotation?.method) {
-            POST -> createHandlerMethod(
-                POST,
-                endpointAnnotation.path,
-                method,
-                controllerClass)
-            GET -> createHandlerMethod(
-                GET,
-                endpointAnnotation.path,
-                method,
-                controllerClass)
-            PUT -> createHandlerMethod(
-                PUT,
-                endpointAnnotation.path,
-                method,
-                controllerClass)
-            PATCH -> createHandlerMethod(
-                PATCH,
-                endpointAnnotation.path,
-                method,
-                controllerClass)
-            DELETE -> createHandlerMethod(
-                DELETE,
-                endpointAnnotation.path,
-                method,
-                controllerClass)
-            else -> throw IllegalStateException("Http Method ${endpointAnnotation?.method} not supported.")
-        }
+        return endpointAnnotation?.method?.let {
+            createHandlerMethod(it, endpointAnnotation.path, method, controller)
+        } ?: throw IllegalStateException("Endpoint annotation not present on ${method.name}")
     }
 
     private fun createHandlerMethod(
