@@ -16,12 +16,14 @@ import com.lamblin.it.model.ResponseEntity
 import com.lamblin.it.model.SIMPLE_DELETE_ENDPOINT
 import com.lamblin.it.model.SINGLE_PATH_PARAM_DELETE_ENDPOINT
 import com.lamblin.it.model.getServerBaseUrl
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import retrofit2.http.DELETE
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 object DeleteControllerClient {
 
@@ -30,6 +32,10 @@ object DeleteControllerClient {
     init {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(1, TimeUnit.HOURS)
+                    .build())
             .baseUrl(getServerBaseUrl())
             .build()
         client = retrofit.create(DeleteControllerApi::class.java)

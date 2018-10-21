@@ -55,11 +55,12 @@ class CompositeParamValueInjectorTest {
     fun `instance should contain all value injectors`() {
         val instance = CompositeParamValueInjector.instance()
 
-        assertThat(instance.injectorEndpoints).hasSize(4)
+        assertThat(instance.injectorEndpoints).hasSize(5)
         assertThat(instance.injectorEndpoints).contains(PathParamValueInjector)
         assertThat(instance.injectorEndpoints).contains(QueryParamValueInjector)
         assertThat(instance.injectorEndpoints).contains(RequestBodyParamValueInjector)
         assertThat(instance.injectorEndpoints).contains(HeaderParamValueInjector)
+        assertThat(instance.injectorEndpoints).contains(ApiGatewayRequestParamValueInjector)
     }
 
     @Test

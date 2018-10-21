@@ -1,6 +1,7 @@
 package com.lamblin.it.client;
 
 import com.lamblin.it.model.ResponseEntity;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -8,8 +9,11 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.lamblin.it.client.ClientUtils.createObjectMapper;
 import static com.lamblin.it.client.ClientUtils.executeRequest;
+import static com.lamblin.it.model.EndpointsKt.API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.CUSTOM_STATUS_CODE_GET_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.HEADER_GET_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.AUTHORIZATION_HEADER;
@@ -23,6 +27,10 @@ public class MiscellaneousControllerClient {
     private MiscellaneousControllerClient() {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
+                .client(
+                        new OkHttpClient.Builder()
+                                .readTimeout(1, TimeUnit.HOURS)
+                                .build())
                 .baseUrl(getServerBaseUrl())
                 .build();
 
@@ -41,11 +49,18 @@ public class MiscellaneousControllerClient {
         return executeRequest(client::callUnknownEndpoint);
     }
 
+    public Response callApiGatewayRequestEventEndpoint() {
+        return executeRequest(client::callApiGatewayRequestInjectionEndpoint);
+    }
+
 
     private interface MiscellaneousControllerApi {
 
         @GET(HEADER_GET_ENDPOINT)
         Call<ResponseEntity> callHeaderInjectionEndpoint(@Header(AUTHORIZATION_HEADER) String header);
+
+        @GET(API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT)
+        Call<ResponseEntity> callApiGatewayRequestInjectionEndpoint();
 
         @GET(CUSTOM_STATUS_CODE_GET_ENDPOINT)
         Call<Void> callCustomStatusCodeEndpoint();

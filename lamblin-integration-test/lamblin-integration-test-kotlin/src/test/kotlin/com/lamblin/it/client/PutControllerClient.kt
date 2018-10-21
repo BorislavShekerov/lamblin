@@ -18,6 +18,7 @@ import com.lamblin.it.model.SIMPLE_PUT_ENDPOINT
 import com.lamblin.it.model.SIMPLE_REQUEST_BODY_PUT_ENDPOINT
 import com.lamblin.it.model.SINGLE_PATH_PARAM_PUT_ENDPOINT
 import com.lamblin.it.model.getServerBaseUrl
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
@@ -25,6 +26,7 @@ import retrofit2.http.Body
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 object PutControllerClient {
 
@@ -33,6 +35,10 @@ object PutControllerClient {
     init {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(1, TimeUnit.HOURS)
+                    .build())
             .baseUrl(getServerBaseUrl())
             .build()
 

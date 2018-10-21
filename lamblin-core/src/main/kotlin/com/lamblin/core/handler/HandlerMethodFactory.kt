@@ -6,6 +6,7 @@
 
 package com.lamblin.core.handler
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
@@ -15,6 +16,7 @@ import com.lamblin.core.model.HttpMethod.PATCH
 import com.lamblin.core.model.HttpMethod.POST
 import com.lamblin.core.model.HttpMethod.PUT
 import com.lamblin.core.model.annotation.Endpoint
+import com.lamblin.core.model.annotation.PathParam
 import org.slf4j.LoggerFactory
 import java.lang.IllegalStateException
 import java.lang.reflect.Method
@@ -79,8 +81,11 @@ internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
     ): HandlerMethod {
 
         val paramNameToParam = method.parameters.asSequence()
-            .filter { !it.annotations.isEmpty() }
-            .map { it.name!! to HandlerMethodParameter.of(it.name!!, it.type, it.annotations[0]) }
+            .map { parameter ->
+                parameter.name!! to HandlerMethodParameter.of(
+                    parameter.name!!,
+                    parameter.type,
+                    parameter.annotations.firstOrNull()) }
             .toMap()
 
         LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.canonicalName, method.name)

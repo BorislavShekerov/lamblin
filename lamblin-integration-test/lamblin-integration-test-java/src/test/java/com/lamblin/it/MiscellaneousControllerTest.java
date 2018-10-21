@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import java.util.Set;
 
+import static com.lamblin.it.model.EndpointsKt.API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT;
 import static com.lamblin.it.model.EndpointsKt.HEADER_GET_ENDPOINT;
 import static com.lamblin.it.model.TestUtilsKt.AUTHORIZATION_HEADER_VALUE;
 import static com.lamblin.it.model.TestUtilsKt.runRequestAndVerifyResponse;
@@ -19,7 +20,6 @@ import static java.text.MessageFormat.format;
 
 @RunWith(JUnit4LamblinTestRunner.class)
 @LamblinTestRunnerConfig(testConfigClass = MiscellaneousControllerTest.TestConfiguration.class)
-
 public class MiscellaneousControllerTest {
 
     private static final MiscellaneousControllerClient client = MiscellaneousControllerClient.INSTANCE;
@@ -48,6 +48,16 @@ public class MiscellaneousControllerTest {
                 client::callCustomStatusCodeEndpoint,
                 null,
                 StatusCode.ACCEPTED.getCode());
+    }
+
+    @Test
+    public void shouldReturnHandleApiGatewayRequestEventInjection() {
+        runRequestAndVerifyResponse(
+                client::callApiGatewayRequestEventEndpoint,
+                format(
+                        "{0}-{1}",
+                        API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT,
+                        API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT));
     }
 
     public static class TestConfiguration implements LamblinTestConfig {

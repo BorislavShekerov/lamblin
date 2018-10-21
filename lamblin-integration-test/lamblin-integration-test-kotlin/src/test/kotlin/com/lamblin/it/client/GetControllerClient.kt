@@ -23,10 +23,11 @@ object GetControllerClient {
     init {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(1, TimeUnit.HOURS)
+                    .build())
             .baseUrl(getServerBaseUrl())
-                .client(OkHttpClient.Builder()
-                        .readTimeout(1, TimeUnit.HOURS)
-                        .build())
             .build()
 
         client = retrofit.create(GetControllerApi::class.java)

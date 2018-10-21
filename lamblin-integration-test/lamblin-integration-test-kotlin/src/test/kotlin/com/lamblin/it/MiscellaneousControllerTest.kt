@@ -3,10 +3,7 @@ package com.lamblin.it
 import com.lamblin.core.model.StatusCode
 import com.lamblin.it.client.MiscellaneousControllerClient
 import com.lamblin.it.controller.MiscellaneousController
-import com.lamblin.it.model.AUTHORIZATION_HEADER_VALUE
-import com.lamblin.it.model.HEADER_GET_ENDPOINT
-import com.lamblin.it.model.ResponseEntity
-import com.lamblin.it.model.runRequestAndVerifyResponse
+import com.lamblin.it.model.*
 import com.lamblin.test.config.LamblinTestConfig
 import com.lamblin.test.config.annotation.LamblinTestRunnerConfig
 import com.lamblin.test.junit5.JUnit5LamblinExtension
@@ -17,18 +14,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 @LamblinTestRunnerConfig(testConfigClass = MiscellaneousControllerTest.MiscellaneousTestConfiguration::class)
 class MiscellaneousControllerTest {
 
-
     private val client = MiscellaneousControllerClient
 
     @Test
-    fun shouldHandlePathWithHeaderInjection() {
+    fun `should handler Header injection`() {
         runRequestAndVerifyResponse<ResponseEntity>(
             { client.callHeaderInjectionEndpoint(AUTHORIZATION_HEADER_VALUE) },
                 "$HEADER_GET_ENDPOINT-$AUTHORIZATION_HEADER_VALUE")
     }
 
     @Test
-    fun shouldReturn404ForUnknownRoutes() {
+    fun `should return 404 for unknown routes`() {
         runRequestAndVerifyResponse<Void>(
             { client.callUnknownEndpoint() },
             null,
@@ -36,7 +32,14 @@ class MiscellaneousControllerTest {
     }
 
     @Test
-    fun shouldReturnStatusCodeReturnedFromEndpoint() {
+    fun `should handle APIGatewayProxyRequestEvent params`() {
+        runRequestAndVerifyResponse<ResponseEntity>(
+            { client.callApiGatewayRequestEventEndpoint() },
+            "$API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT-$API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT")
+    }
+
+    @Test
+    fun `should return custom status code if defined in HttpResponse`() {
         runRequestAndVerifyResponse<Void>(
             { client.callCustomStatusCodeEndpoint() },
             null,

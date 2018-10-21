@@ -26,7 +26,8 @@ internal class CompositeParamValueInjector internal constructor(
                 PathParamValueInjector,
                 QueryParamValueInjector,
                 RequestBodyParamValueInjector,
-                HeaderParamValueInjector))
+                HeaderParamValueInjector,
+                ApiGatewayRequestParamValueInjector))
     }
 
     override fun injectParamValues(

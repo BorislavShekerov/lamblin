@@ -15,7 +15,7 @@ import java.lang.reflect.Parameter
 private val LOGGER = LoggerFactory.getLogger(QueryParamValueInjector::class.java)
 
 /** Defines a mechanismQueryEndpointParamValueInjector for deciding the values of query parameters. */
-object QueryParamValueInjector : EndpointParamValueInjector {
+internal object QueryParamValueInjector : EndpointParamValueInjector {
 
     override fun injectParamValues(
             request: APIGatewayProxyRequestEvent,

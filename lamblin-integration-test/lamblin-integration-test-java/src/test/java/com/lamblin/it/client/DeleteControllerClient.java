@@ -7,6 +7,7 @@
 package com.lamblin.it.client;
 
 import com.lamblin.it.model.ResponseEntity;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -14,6 +15,8 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.DELETE;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.lamblin.it.client.ClientUtils.createObjectMapper;
 import static com.lamblin.it.client.ClientUtils.executeRequest;
@@ -28,6 +31,10 @@ public final class DeleteControllerClient {
     private DeleteControllerClient() {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create(createObjectMapper()))
+                .client(
+                        new OkHttpClient.Builder()
+                                .readTimeout(1, TimeUnit.HOURS)
+                                .build())
                 .baseUrl(getServerBaseUrl())
                 .build();
 

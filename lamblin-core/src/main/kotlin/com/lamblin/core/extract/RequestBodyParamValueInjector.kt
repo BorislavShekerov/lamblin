@@ -21,7 +21,7 @@ private val LOGGER = LoggerFactory.getLogger(RequestBodyParamValueInjector::clas
 
 
 /** Defines a mechanism for deciding the values of request body (i.e. parameters annotated with [RequestBody]). */
-object RequestBodyParamValueInjector : EndpointParamValueInjector {
+internal object RequestBodyParamValueInjector : EndpointParamValueInjector {
 
     private val requestBodyEnabledHttpMethods = setOf(HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH)
 

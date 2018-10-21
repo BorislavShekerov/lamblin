@@ -6,6 +6,7 @@
 
 package com.lamblin.core.model
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.model.annotation.Header
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
@@ -80,17 +81,25 @@ data class HandlerMethodParameter(
                 defaultValue = defaultValue)
         }
 
+        fun apiGatewayProxyRequestEventParam(name: String) = HandlerMethodParameter(
+            annotationMappedName = name,
+            name = name,
+            type = APIGatewayProxyRequestEvent::class.java)
+
         fun of(
             name: String,
             type: Class<*>,
-            annotation: Annotation
+            annotation: Annotation?
         ): HandlerMethodParameter =
             when (annotation) {
                 is PathParam -> pathParam(name, type, annotation)
                 is QueryParam -> queryParam(name, type, annotation)
                 is Header -> headerParam(name, type, annotation)
                 is RequestBody -> requestBodyParam(name, type)
-                else -> throw IllegalArgumentException("Annotation $annotation not supported")
+                else -> {
+                    if (type == APIGatewayProxyRequestEvent::class.java)  apiGatewayProxyRequestEventParam(name)
+                    else throw IllegalArgumentException("Annotation $annotation not supported")
+                }
             }
     }
 }
