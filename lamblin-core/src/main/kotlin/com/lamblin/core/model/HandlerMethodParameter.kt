@@ -52,16 +52,6 @@ data class HandlerMethodParameter(
             name = name,
             type = type)
 
-        /** Creates a parameter targeting a header. */
-        fun headerParam(
-            name: String,
-            type: Class<*>,
-            param: Header
-        ): HandlerMethodParameter = HandlerMethodParameter(
-            annotationMappedName = param.value,
-            name = name,
-            type = type)
-
         /** Creates a parameter targeting a query parameter. */
         fun queryParam(
             name: String,
@@ -81,7 +71,17 @@ data class HandlerMethodParameter(
                 defaultValue = defaultValue)
         }
 
-        fun apiGatewayProxyRequestEventParam(name: String) = HandlerMethodParameter(
+        /** Creates a parameter targeting a header. */
+        private fun headerParam(
+            name: String,
+            type: Class<*>,
+            param: Header
+        ): HandlerMethodParameter = HandlerMethodParameter(
+            annotationMappedName = param.value,
+            name = name,
+            type = type)
+
+        private fun apiGatewayProxyRequestEventParam(name: String) = HandlerMethodParameter(
             annotationMappedName = name,
             name = name,
             type = APIGatewayProxyRequestEvent::class.java)
