@@ -34,20 +34,6 @@ class JUnit4LamblinTestRunnerTest {
         assertThat(description).isEqualTo(Description.createSuiteDescription(TestClass::class.java))
     }
 
-    @org.junit.jupiter.api.Test
-    fun `should run local runner before test and stop after tests are done`() {
-        JUnit4LamblinTestRunner.Runner.run(localRunner, notifier, TestClass::class.java)
-
-        val description =
-            Description.createTestDescription(TestClass::class.java, TestClass::class.java.methods[0].name)
-
-        verifySequence {
-            localRunner.run()
-            notifier.fireTestStarted(description)
-            notifier.fireTestFinished(description)
-            localRunner.stop()
-        }
-    }
 }
 
 @LamblinTestRunnerConfig(serverPort = PORT, testConfigClass = TestConfiguration::class)
