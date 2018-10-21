@@ -7,6 +7,7 @@
     <artifactId>lamblin-parent</artifactId>
     <packaging>pom</packaging>
     <version>0.0.3-SNAPSHOT</version>
+    <description>A REST Framework for Kotlin or Java applications deployed as AWS Lambdas.</description>
     <modules>
         <module>lamblin-plugin</module>
         <module>lamblin-core</module>
