@@ -14,9 +14,6 @@
 
     <modules>
         <module>lamblin-plugin-core</module>
-        <module>lamblin-warmup-plugin</module>
     </modules>
-
-    <name>plugin</name>
 
 </project>

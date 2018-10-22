@@ -8,9 +8,8 @@
         <version>0.0.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>integration-test-java</artifactId>
+    <artifactId>lamblin-integration-test-java</artifactId>
     <packaging>jar</packaging>
-    <name>integration-test-java</name>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -20,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>org.lamblin</groupId>
-            <artifactId>integration-test-common</artifactId>
+            <artifactId>lamblin-integration-test-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 

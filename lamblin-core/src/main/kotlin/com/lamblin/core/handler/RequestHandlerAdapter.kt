@@ -7,12 +7,15 @@
 package com.lamblin.core.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.databind.JsonMappingException
 import com.lamblin.core.OBJECT_MAPPER
-import com.lamblin.core.exception.EventDeserializationException
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
+import org.slf4j.LoggerFactory
+import java.io.InputStream
 import java.io.OutputStream
+
+private val LOGGER = LoggerFactory.getLogger(RequestHandlerAdapter::class.java)
 
 /**
  * Defines an adapter on top of [RequestHandler] which deals with raw input and out streams.
@@ -24,24 +27,24 @@ internal class RequestHandlerAdapter internal constructor(private val requestHan
      * and then writing the result [ApiGatewayProxyResponseEvent] to the output
      */
     fun handlerRequest(
-        requestContents: Map<String, Any>,
+        eventInputStream: InputStream,
         output: OutputStream,
         httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>) {
 
-        val request = transformRequestContentsToAwsProxyRequest(requestContents)
+        val request = transformRequestContentsToAwsProxyRequest(eventInputStream)
 
-        val response = requestHandler.handle(request, httpMethodToHandlers)
-
-        output.write(OBJECT_MAPPER.writeValueAsBytes(response))
+        request?.let {
+            val response = requestHandler.handle(request, httpMethodToHandlers)
+            output.write(OBJECT_MAPPER.writeValueAsBytes(response))
+        }
     }
 
-    private fun transformRequestContentsToAwsProxyRequest(requestContents: Map<String, Any>) =
-        APIGatewayProxyRequestEvent().apply {
-            path = requestContents["path"] as? String
-            httpMethod = requestContents["httpMethod"] as? String
-            headers = requestContents["headers"] as? Map<String, String>
-            queryStringParameters = requestContents["queryStringParameters"] as? Map<String, String>
-            body = requestContents["body"] as? String
+    private fun transformRequestContentsToAwsProxyRequest(eventInputStream: InputStream) =
+        try {
+            OBJECT_MAPPER.readValue(eventInputStream, APIGatewayProxyRequestEvent::class.java)
+        } catch (e: JsonMappingException) {
+            LOGGER.warn("Event received not a valid API Gateway proxy request.")
+            null
         }
 
 }

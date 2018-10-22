@@ -56,24 +56,7 @@ class Lamblin internal constructor(
      * a suitable [HandlerMethod] and then delegating the execution to it.
      */
     fun handlerRequest(input: InputStream, output: OutputStream) {
-        val eventContents = deserializeEventContents(input)
-
-        if (pluginRegistry.isPluginRegistered(PluginType.WARMUP)) {
-            val executionResult = pluginRegistry.executePlugin(PluginType.WARMUP, eventContents)
-
-            if (executionResult == PluginExecutionResult.SUCCESS) {
-                return
-            }
-        }
-
-        requestHandler.handlerRequest(eventContents, output, httpMethodToHandlers)
-    }
-
-    private fun deserializeEventContents(event: InputStream): Map<String, Any> {
-        val typeRef = object : TypeReference<HashMap<String, Any>>() {
-        }
-
-        return OBJECT_MAPPER.readValue(event, typeRef)
+        requestHandler.handlerRequest(input, output, httpMethodToHandlers)
     }
 
     fun registerPlugin(plugin: ExecutableLamblinPlugin) {

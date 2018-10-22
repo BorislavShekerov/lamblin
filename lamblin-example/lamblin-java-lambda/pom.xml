@@ -10,8 +10,6 @@
 
     <artifactId>lamblin-java-lambda</artifactId>
 
-    <name>java-lambda</name>
-
     <properties>
         <aws-lambda-java-core.version>1.2.0</aws-lambda-java-core.version>
         <lambda-logging.version>1.0.0</lambda-logging.version>

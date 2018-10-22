@@ -17,6 +17,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayInputStream
 import java.io.OutputStream
 
 class RequestHandlerAdapterTest {
@@ -33,10 +34,11 @@ class RequestHandlerAdapterTest {
     @Test
     fun `should write response to output stream`() {
         val queryParams =  mapOf("query1" to "value1")
-
         val request = APIGatewayProxyRequestEvent().apply {
             queryStringParameters = queryParams
         }
+
+        val requestEventStream = ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(request))
 
         val output: OutputStream = mockk(relaxed = true)
         val response = APIGatewayProxyResponseEvent().apply {
@@ -46,10 +48,25 @@ class RequestHandlerAdapterTest {
         every { requestHandler.handle(request, mapOf()) } returns response
 
         requestHandlerAdapter.handlerRequest(
-            mapOf("queryStringParameters" to queryParams),
+            requestEventStream,
             output,
             mapOf())
 
         verify { output.write(OBJECT_MAPPER.writeValueAsBytes(response)) }
+    }
+
+    @Test
+    fun `should not handle request if request event not a valid APIGatewayProxyRequestEvent`() {
+        val request = """{"event": "testEvent"}"""
+        val requestEventStream = ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(request))
+
+        val output: OutputStream = mockk(relaxed = true)
+
+        requestHandlerAdapter.handlerRequest(
+            requestEventStream,
+            output,
+            mapOf())
+
+        verify(exactly = 0) { requestHandler.handle(any(), any()) }
     }
 }

@@ -8,11 +8,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>integration-test-kotlin</artifactId>
+    <artifactId>lamblin-integration-test-kotlin</artifactId>
     <packaging>jar</packaging>
-
-    <name>integration-test-kotlin</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -21,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>org.lamblin</groupId>
-            <artifactId>integration-test-common</artifactId>
+            <artifactId>lamblin-integration-test-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
