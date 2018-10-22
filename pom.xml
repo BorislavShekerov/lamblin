@@ -17,7 +17,7 @@
         <module>lamblin-example</module>
     </modules>
     <name>lamblin-parent</name>
-
+    <url>http://lamblin.org</url>
 
     <licenses>
         <license>
