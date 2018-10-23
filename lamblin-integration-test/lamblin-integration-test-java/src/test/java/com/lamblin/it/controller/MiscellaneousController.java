@@ -7,10 +7,17 @@ import com.lamblin.core.model.StatusCode;
 import com.lamblin.core.model.annotation.Controller;
 import com.lamblin.core.model.annotation.Endpoint;
 import com.lamblin.core.model.annotation.Header;
+import com.lamblin.core.security.AccessControl;
+import com.lamblin.core.security.RequestAuthorizer;
 import com.lamblin.it.model.ResponseEntity;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.stream.Stream;
 
 import static com.lamblin.it.model.EndpointsKt.*;
 import static com.lamblin.it.model.TestUtilsKt.AUTHORIZATION_HEADER;
+import static com.lamblin.it.model.TestUtilsKt.AUTHORIZED_ROLE;
+import static com.lamblin.it.model.TestUtilsKt.UNAUTHORIZED_ROLE;
 import static java.text.MessageFormat.format;
 
 @Controller
@@ -43,4 +50,23 @@ public class MiscellaneousController {
         return HttpResponse.withCode(StatusCode.ACCEPTED);
     }
 
+    @AccessControl(roles = { AUTHORIZED_ROLE }, authorizer = Authorizer.class)
+    @Endpoint(path = ACCESS_CONTROL_AUTHORIZED_GET_ENDPOINT, method = HttpMethod.GET)
+    public HttpResponse<Void> accessControlAuthorized() {
+        return HttpResponse.ok();
+    }
+
+    @AccessControl(roles = { AUTHORIZED_ROLE }, authorizer = Authorizer.class)
+    @Endpoint(path = ACCESS_CONTROL_UNAUTHORIZED_GET_ENDPOINT, method = HttpMethod.GET)
+    public HttpResponse<Void> accessControlUnauthorized() {
+        return HttpResponse.ok();
+    }
+
+    public static class Authorizer implements RequestAuthorizer {
+
+        @Override
+        public boolean isRequestAuthorized(@NotNull String[] roles, @NotNull APIGatewayProxyRequestEvent request) {
+            return request.getPath().equals(ACCESS_CONTROL_AUTHORIZED_GET_ENDPOINT);
+        }
+    }
 }

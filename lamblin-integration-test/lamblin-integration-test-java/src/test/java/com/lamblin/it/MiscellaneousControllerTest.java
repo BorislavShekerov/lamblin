@@ -60,6 +60,23 @@ public class MiscellaneousControllerTest {
                         API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT));
     }
 
+    @Test
+    public void shouldHandleRequestWhenAuthorizationPassed() {
+        runRequestAndVerifyResponse(
+                client::callAccessControlAuthorizedEndpoint,
+                null,
+                StatusCode.OK.getCode());
+    }
+
+    @Test
+    public void shouldReturn403WhenUnauthorizedEndpointCalled() {
+        runRequestAndVerifyResponse(
+                client::callAccessControlUnauthorizedEndpoint,
+                null,
+                StatusCode.UNAUTHORIZED.getCode());
+    }
+
+
     public static class TestConfiguration implements LamblinTestConfig {
 
         @Override

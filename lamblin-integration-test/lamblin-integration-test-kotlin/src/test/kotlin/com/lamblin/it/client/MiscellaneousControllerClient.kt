@@ -35,6 +35,10 @@ object MiscellaneousControllerClient {
 
     fun callApiGatewayRequestEventEndpoint() = client.callApiGatewayRequestInjectionEndpoint().execute()
 
+    fun callAccessControlAuthorizedEndpoint() = client.callAccessControlAuthorizedEndpoint().execute()
+
+    fun callAccessControlUnauthorizedEndpoint() = client.callAccessControlUnauthorizedEndpoint().execute()
+
     private interface MiscellaneousControllerApi {
         @GET(HEADER_GET_ENDPOINT)
         fun callHeaderInjectionEndpoint(@Header(AUTHORIZATION_HEADER) header: String): Call<ResponseEntity>
@@ -44,6 +48,12 @@ object MiscellaneousControllerClient {
 
         @GET(CUSTOM_STATUS_CODE_GET_ENDPOINT)
         fun callCustomStatusCodeEndpoint(): Call<Void>
+
+        @GET(ACCESS_CONTROL_AUTHORIZED_GET_ENDPOINT)
+        fun callAccessControlAuthorizedEndpoint(): Call<Void>
+
+        @GET(ACCESS_CONTROL_UNAUTHORIZED_GET_ENDPOINT)
+        fun callAccessControlUnauthorizedEndpoint(): Call<Void>
 
         @GET("/unknown")
         fun callUnknownEndpoint(): Call<Void>

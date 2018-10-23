@@ -1,6 +1,7 @@
 package com.lamblin.it
 
-import com.lamblin.core.model.StatusCode
+import com.lamblin.core.model.ACCEPTED_CODE
+import com.lamblin.core.model.NOT_FOUND_CODE
 import com.lamblin.it.client.GetControllerClient
 import com.lamblin.it.controller.GetController
 import com.lamblin.it.model.*
@@ -86,7 +87,7 @@ class GetControllerIntegrationTest {
     fun `should return 404 for unknown routes`() {
         runRequestAndVerifyResponse(
             GetControllerClient::callUnknownEndpoint,
-            expectedStatusCode = StatusCode.NOT_FOUND.code
+            expectedStatusCode = NOT_FOUND_CODE
         )
     }
 
@@ -94,7 +95,7 @@ class GetControllerIntegrationTest {
     fun `should return status code returned from endpoint`() {
         runRequestAndVerifyResponse(
             GetControllerClient::callCustomStatusCodeEndpoint,
-            expectedStatusCode = StatusCode.ACCEPTED.code)
+            expectedStatusCode = ACCEPTED_CODE)
     }
 
     class TestConfiguration : LamblinTestConfig {

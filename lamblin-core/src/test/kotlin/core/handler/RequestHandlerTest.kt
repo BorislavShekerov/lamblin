@@ -9,13 +9,13 @@ package core.handler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.EndpointInvoker
 import com.lamblin.core.handler.RequestHandler
-import com.lamblin.core.model.HandlerMethod
-import com.lamblin.core.model.HttpMethod
-import com.lamblin.core.model.HttpResponse
-import com.lamblin.core.model.StatusCode
+import com.lamblin.core.model.*
+import com.lamblin.core.security.AccessControl
+import com.lamblin.core.security.EndpointAuthorizationChecker
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test
 class RequestHandlerTest {
 
     private val endpointInvoker: EndpointInvoker = mockk()
-    private val requestHandler = RequestHandler(endpointInvoker)
+    private val endpointAuthorizationChecker: EndpointAuthorizationChecker = mockk(relaxed = true)
+    private val requestHandler = RequestHandler(endpointInvoker, endpointAuthorizationChecker)
 
     private val apiGatewayProxyRequestEvent: APIGatewayProxyRequestEvent = mockk(relaxed = true)
 
     @BeforeEach
     fun setUp() {
-        clearMocks(endpointInvoker, apiGatewayProxyRequestEvent)
+        clearMocks(endpointInvoker, apiGatewayProxyRequestEvent, endpointAuthorizationChecker)
 
         every { apiGatewayProxyRequestEvent.httpMethod } returns "GET"
     }
@@ -66,6 +67,7 @@ class RequestHandlerTest {
 
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
+        every { handlerMethodMock.accessControl } returns null
         every {
             endpointInvoker.invoke(
                 handlerMethodMock,
@@ -87,6 +89,7 @@ class RequestHandlerTest {
 
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
+        every { handlerMethodMock.accessControl } returns null
         every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse(
             body = Result(true))
 
@@ -121,6 +124,26 @@ class RequestHandlerTest {
     }
 
     @Test
+    fun `should return 403 status code when handler authorization fails`() {
+        val requestPath = "path"
+        every { apiGatewayProxyRequestEvent.path } returns requestPath
+        every { apiGatewayProxyRequestEvent.queryStringParameters } returns mapOf()
+
+        val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
+        every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
+        val accessControl: AccessControl = mockk()
+        every { handlerMethodMock.accessControl } returns accessControl
+        every { endpointAuthorizationChecker.isRequestAuthorized(apiGatewayProxyRequestEvent, accessControl) } returns false
+
+        val response = requestHandler.handle(
+            apiGatewayProxyRequestEvent,
+            mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
+
+        verify(exactly = 0) { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) }
+        assertThat(response.statusCode).isEqualTo(UNAUTHORIZED_CODE)
+    }
+
+    @Test
     fun `should return headers returned handler`() {
         val requestPath = "path"
         every { apiGatewayProxyRequestEvent.path } returns requestPath
@@ -128,6 +151,8 @@ class RequestHandlerTest {
 
         val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
         every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
+        every { handlerMethodMock.accessControl } returns null
+
         val headers = mapOf("Authorization" to "Token")
         every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse<Any>(
             statusCode = StatusCode.FORBIDDEN,

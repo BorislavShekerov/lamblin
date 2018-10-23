@@ -13,9 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.lamblin.it.client.ClientUtils.createObjectMapper;
 import static com.lamblin.it.client.ClientUtils.executeRequest;
-import static com.lamblin.it.model.EndpointsKt.API_GATEWAY_REQUEST_EVENT_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.CUSTOM_STATUS_CODE_GET_ENDPOINT;
-import static com.lamblin.it.model.EndpointsKt.HEADER_GET_ENDPOINT;
+import static com.lamblin.it.model.EndpointsKt.*;
 import static com.lamblin.it.model.TestUtilsKt.AUTHORIZATION_HEADER;
 import static com.lamblin.it.model.TestUtilsKt.getServerBaseUrl;
 
@@ -53,6 +51,13 @@ public class MiscellaneousControllerClient {
         return executeRequest(client::callApiGatewayRequestInjectionEndpoint);
     }
 
+    public Response callAccessControlAuthorizedEndpoint() {
+        return executeRequest(client::callAccessControlAuthorizedEndpoint);
+    }
+
+    public Response callAccessControlUnauthorizedEndpoint() {
+        return executeRequest(client::callAccessControlUnauthorizedEndpoint);
+    }
 
     private interface MiscellaneousControllerApi {
 
@@ -64,6 +69,12 @@ public class MiscellaneousControllerClient {
 
         @GET(CUSTOM_STATUS_CODE_GET_ENDPOINT)
         Call<Void> callCustomStatusCodeEndpoint();
+
+        @GET(ACCESS_CONTROL_AUTHORIZED_GET_ENDPOINT)
+        Call<Void> callAccessControlAuthorizedEndpoint();
+
+        @GET(ACCESS_CONTROL_UNAUTHORIZED_GET_ENDPOINT)
+        Call<Void> callAccessControlUnauthorizedEndpoint();
 
         @GET("/unknown")
         Call<Void> callUnknownEndpoint();

@@ -1,6 +1,9 @@
 package com.lamblin.it
 
-import com.lamblin.core.model.StatusCode
+import com.lamblin.core.model.ACCEPTED_CODE
+import com.lamblin.core.model.NOT_FOUND_CODE
+import com.lamblin.core.model.OK_CODE
+import com.lamblin.core.model.UNAUTHORIZED_CODE
 import com.lamblin.it.client.MiscellaneousControllerClient
 import com.lamblin.it.controller.MiscellaneousController
 import com.lamblin.it.model.*
@@ -28,7 +31,7 @@ class MiscellaneousControllerTest {
         runRequestAndVerifyResponse<Void>(
             { client.callUnknownEndpoint() },
             null,
-            StatusCode.NOT_FOUND.code)
+            NOT_FOUND_CODE)
     }
 
     @Test
@@ -43,7 +46,23 @@ class MiscellaneousControllerTest {
         runRequestAndVerifyResponse<Void>(
             { client.callCustomStatusCodeEndpoint() },
             null,
-            StatusCode.ACCEPTED.code)
+            ACCEPTED_CODE)
+    }
+
+    @Test
+    fun `should return 403 if request not authorized`() {
+        runRequestAndVerifyResponse<Void>(
+            client::callAccessControlUnauthorizedEndpoint,
+            null,
+            UNAUTHORIZED_CODE)
+    }
+
+    @Test
+    fun `should handle authorized requests`() {
+        runRequestAndVerifyResponse<Void>(
+            client::callAccessControlAuthorizedEndpoint,
+            null,
+            OK_CODE)
     }
 
     class MiscellaneousTestConfiguration : LamblinTestConfig {

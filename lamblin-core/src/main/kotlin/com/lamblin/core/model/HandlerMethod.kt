@@ -6,6 +6,7 @@
 
 package com.lamblin.core.model
 
+import com.lamblin.core.security.AccessControl
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 
@@ -26,7 +27,10 @@ data class HandlerMethod(
         val method: Method,
 
         /** The reference to the method container class. */
-        val controllerClass: Class<out Any>) {
+        val controllerClass: Class<out Any>,
+
+        /** Defines the access control details for the handler. */
+        val accessControl: AccessControl? = null) {
 
     companion object {
 

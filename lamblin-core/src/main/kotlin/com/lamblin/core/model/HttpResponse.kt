@@ -23,6 +23,9 @@ data class HttpResponse<T>(
         fun ok() = HttpResponse<Void>()
 
         @JvmStatic
+        fun unauthorized() = HttpResponse<Void>(statusCode = StatusCode.UNAUTHORIZED)
+
+        @JvmStatic
         fun withCode(statusCode: StatusCode) = HttpResponse<Any>(statusCode = statusCode)
     }
 }

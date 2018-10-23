@@ -9,14 +9,9 @@ package com.lamblin.core.handler
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
-import com.lamblin.core.model.HttpMethod.DELETE
-import com.lamblin.core.model.HttpMethod.GET
-import com.lamblin.core.model.HttpMethod.PATCH
-import com.lamblin.core.model.HttpMethod.POST
-import com.lamblin.core.model.HttpMethod.PUT
 import com.lamblin.core.model.annotation.Endpoint
+import com.lamblin.core.security.AccessControl
 import org.slf4j.LoggerFactory
-import java.lang.IllegalStateException
 import java.lang.reflect.Method
 import kotlin.reflect.KCallable
 
@@ -63,6 +58,14 @@ internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
 
         LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.canonicalName, method.name)
 
-        return HandlerMethod(path, httpMethod, paramNameToParam, method, controllerClass)
+        val accessControl = method.annotations.find { it is AccessControl }
+
+        return HandlerMethod(
+            path,
+            httpMethod,
+            paramNameToParam,
+            method,
+            controllerClass,
+            accessControl as? AccessControl)
     }
 }

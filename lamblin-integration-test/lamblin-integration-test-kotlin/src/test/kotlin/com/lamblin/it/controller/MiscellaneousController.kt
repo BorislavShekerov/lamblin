@@ -7,6 +7,8 @@ import com.lamblin.core.model.StatusCode
 import com.lamblin.core.model.annotation.Controller
 import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.model.annotation.Header
+import com.lamblin.core.security.AccessControl
+import com.lamblin.core.security.RequestAuthorizer
 import com.lamblin.it.model.*
 
 @Controller
@@ -29,6 +31,25 @@ class MiscellaneousController {
     @Endpoint(path = CUSTOM_STATUS_CODE_GET_ENDPOINT, method = HttpMethod.GET)
     fun customStatusCodeEndpoint(): HttpResponse<Any> {
         return HttpResponse.withCode(StatusCode.ACCEPTED)
+    }
+
+    @AccessControl([AUTHORIZED_ROLE], Authorizer::class)
+    @Endpoint(path = ACCESS_CONTROL_AUTHORIZED_GET_ENDPOINT, method = HttpMethod.GET)
+    fun accessControlAuthorized(): HttpResponse<Void> {
+        return HttpResponse.ok()
+    }
+
+    @AccessControl([AUTHORIZED_ROLE], Authorizer::class)
+    @Endpoint(ACCESS_CONTROL_UNAUTHORIZED_GET_ENDPOINT, HttpMethod.GET)
+    fun accessControlUnauthorized(): HttpResponse<Void> {
+        return HttpResponse.ok()
+    }
+
+    class Authorizer : RequestAuthorizer {
+
+        override fun isRequestAuthorized(roles: Array<String>, request: APIGatewayProxyRequestEvent): Boolean {
+            return request.path == ACCESS_CONTROL_AUTHORIZED_GET_ENDPOINT
+        }
     }
 
 }

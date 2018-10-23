@@ -6,6 +6,7 @@
 
 package core.handler
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.handler.DefaultHandlerMethodFactory
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
@@ -14,6 +15,8 @@ import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
+import com.lamblin.core.security.AccessControl
+import com.lamblin.core.security.RequestAuthorizer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -131,12 +134,23 @@ class DefaultHandlerMethodFactoryTest {
             HttpMethod.DELETE)
     }
 
+    @Test
+    fun `should create set handler AccessControl when @AccessControlPresentOnRequest`() {
+        val accessControlMethod =
+            TestController::class.java.declaredMethods.find { it.name === "testAccessControlEndpoint" }!!
+
+        verifyCorrectMethodHandlerCreated(
+            accessControlMethod,
+            HttpMethod.DELETE,
+            accessControl =accessControlMethod.annotations.find { it is AccessControl } as AccessControl)
+    }
+
     private fun verifyCorrectMethodHandlerCreated(
         endpointMethod: Method,
         httpMethod: HttpMethod,
         path: String = "path",
-        paramNameToParam: Map<String, HandlerMethodParameter> = mapOf()
-    ) {
+        paramNameToParam: Map<String, HandlerMethodParameter> = mapOf(),
+        accessControl: AccessControl? = null) {
 
         val handlerMethod = DefaultHandlerMethodFactory.method(
             endpointMethod,
@@ -150,6 +164,7 @@ class DefaultHandlerMethodFactoryTest {
         assertThat(handlerMethod.httpMethod).isEqualTo(httpMethod)
         assertThat(handlerMethod.path).isEqualTo(path)
         assertThat(handlerMethod.paramNameToParam).isEqualTo(paramNameToParam)
+        assertThat(handlerMethod.accessControl).isEqualTo(accessControl)
     }
 
     private class TestController {
@@ -206,5 +221,19 @@ class DefaultHandlerMethodFactoryTest {
         fun testEndpointDelete(): HttpResponse<Void> {
             return HttpResponse()
         }
+
+        @AccessControl(["test"], Authorizer::class)
+        @Endpoint(path = "path", method = HttpMethod.DELETE)
+        fun testAccessControlEndpoint(): HttpResponse<Void> {
+            return HttpResponse()
+        }
+    }
+
+    class Authorizer: RequestAuthorizer {
+
+        override fun isRequestAuthorized(roles: Array<String>, request: APIGatewayProxyRequestEvent): Boolean {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
     }
 }

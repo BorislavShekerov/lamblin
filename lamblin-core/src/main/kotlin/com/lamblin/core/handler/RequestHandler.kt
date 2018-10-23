@@ -17,17 +17,22 @@ import com.lamblin.core.model.HandlerMethodComparator
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.StatusCode
+import com.lamblin.core.security.DefaultEndpointAuthorizationChecker
+import com.lamblin.core.security.EndpointAuthorizationChecker
 import org.slf4j.LoggerFactory
 
 private val LOGGER = LoggerFactory.getLogger(RequestHandler::class.java)
 
-internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
+internal class RequestHandler(
+    private val endpointInvoker: EndpointInvoker,
+    private val endpointAuthorizationChecker: EndpointAuthorizationChecker) {
 
     companion object {
         internal fun instance(controllerRegistry: ControllerRegistry) = RequestHandler(
             EndpointInvoker(
                 CompositeParamValueInjector.instance(),
-                controllerRegistry))
+                controllerRegistry),
+            DefaultEndpointAuthorizationChecker)
     }
 
     /**
@@ -57,21 +62,29 @@ internal class RequestHandler(private val endpointInvoker: EndpointInvoker) {
         httpMethodToHandlers: Map<HttpMethod, Set<HandlerMethod>>): APIGatewayProxyResponseEvent {
 
         val handlersForHttpMethod = httpMethodToHandlers[HttpMethod.valueOf(request.httpMethod)]
-                ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
+            ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
 
         val requestHandlerMethod = handlersForHttpMethod.asSequence()
             .sortedWith(HandlerMethodComparator())
             .find { it.matches(request.path, request.queryStringParameters) }
-                ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
+            ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
 
         LOGGER.debug(
             "Handler method [{}] in [{}] selected",
             requestHandlerMethod.httpMethod.name,
             requestHandlerMethod.controllerClass.canonicalName)
 
-        val response = endpointInvoker.invoke(requestHandlerMethod, request)
+        val requestAuthorized = requestHandlerMethod.accessControl?.let {
+            endpointAuthorizationChecker.isRequestAuthorized(request, it)
+        } ?: true
 
-        return createApiGatewayResponseEvent(response)
+        return if (requestAuthorized) {
+            val response = endpointInvoker.invoke(requestHandlerMethod, request)
+
+            createApiGatewayResponseEvent(response)
+        } else {
+            createApiGatewayResponseEvent(HttpResponse.unauthorized())
+        }
     }
 
     private fun createApiGatewayResponseEvent(
