@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lamblin-integration-test</artifactId>
         <groupId>org.lamblin</groupId>
-        <version>0.1.5-SNAPSHOT</version>
+        <version>0.1.5</version>
     </parent>
 
     <artifactId>lamblin-integration-test-java</artifactId>

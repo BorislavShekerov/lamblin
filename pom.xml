@@ -6,7 +6,7 @@
     <groupId>org.lamblin</groupId>
     <artifactId>lamblin-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.1.5</version>
     <name>lamblin-parent</name>
     <url>http://lamblin.org</url>
     <description>A REST Framework for Kotlin or Java applications deployed as AWS Lambdas.</description>
