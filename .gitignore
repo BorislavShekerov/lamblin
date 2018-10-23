@@ -3,3 +3,4 @@
 target/
 detekt/
 .serverless/
+pom.xml.versionsBackup

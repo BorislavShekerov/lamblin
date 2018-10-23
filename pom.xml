@@ -6,18 +6,10 @@
     <groupId>org.lamblin</groupId>
     <artifactId>lamblin-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <name>lamblin-parent</name>
     <url>http://lamblin.org</url>
     <description>A REST Framework for Kotlin or Java applications deployed as AWS Lambdas.</description>
-    <modules>
-        <module>lamblin-plugin</module>
-        <module>lamblin-core</module>
-        <module>lamblin-integration-test</module>
-        <module>lamblin-test</module>
-        <module>lamblin-local-runner</module>
-        <module>lamblin-example</module>
-    </modules>
 
 
     <licenses>
@@ -211,7 +203,24 @@
 
     <profiles>
         <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>lamblin-plugin</module>
+                <module>lamblin-core</module>
+                <module>lamblin-integration-test</module>
+                <module>lamblin-test</module>
+                <module>lamblin-local-runner</module>
+                <module>lamblin-example</module>
+            </modules>
+        </profile>
+        <profile>
             <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
             <modules>
                 <module>lamblin-plugin</module>
                 <module>lamblin-core</module>
