@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 class DefaultEndpointAuthorizationCheckerTest {
 
     @Test
-    fun `should use authorizer in @AccessControl to check if request authorized, authorized`() {
+    fun `should use authorizer in @AccessControl to check if request authorized, authorized expected`() {
         val isAuthorized = DefaultEndpointAuthorizationChecker.isRequestAuthorized(
             APIGatewayProxyRequestEvent(),
             TestController::class.java.methods.find { it.name == "testEndpointWithPassingAccessControl"}!!.annotations[0] as AccessControl)
@@ -20,7 +20,16 @@ class DefaultEndpointAuthorizationCheckerTest {
     }
 
     @Test
-    fun `should use authorizer in @AccessControl to check if request authorized, unauthorized`() {
+    fun `should use singleton authorizer in @AccessControl to check if request authorized, authorized expected`() {
+        val isAuthorized = DefaultEndpointAuthorizationChecker.isRequestAuthorized(
+            APIGatewayProxyRequestEvent(),
+            TestController::class.java.methods.find { it.name == "testEndpointWithPassingAccessControlAuthorizerSingleton"}!!.annotations[0] as AccessControl)
+
+        assertTrue { isAuthorized }
+    }
+
+    @Test
+    fun `should use authorizer in @AccessControl to check if request authorized, unauthorized expected`() {
         val isAuthorized = DefaultEndpointAuthorizationChecker.isRequestAuthorized(
             APIGatewayProxyRequestEvent(),
             TestController::class.java.methods.find { it.name == "testEndpointWithFailingAccessControl"}!!.annotations[0] as AccessControl)
@@ -30,16 +39,27 @@ class DefaultEndpointAuthorizationCheckerTest {
 
     private class TestController {
 
-        @AccessControl(["user"], Authorizor::class)
+        @AccessControl(["user"], AuthorizorClass::class)
         fun testEndpointWithPassingAccessControl() {
         }
 
-        @AccessControl(["guest"], Authorizor::class)
+        @AccessControl(["user"], AuthorizorSingleton::class)
+        fun testEndpointWithPassingAccessControlAuthorizerSingleton() {
+        }
+
+        @AccessControl(["guest"], AuthorizorClass::class)
         fun testEndpointWithFailingAccessControl() {
         }
     }
 
-    class Authorizor: RequestAuthorizer {
+    object AuthorizorSingleton: RequestAuthorizer {
+
+        override fun isRequestAuthorized(roles: Array<String>, request: APIGatewayProxyRequestEvent): Boolean {
+            return "user" in roles
+        }
+    }
+
+    class AuthorizorClass: RequestAuthorizer {
 
         override fun isRequestAuthorized(roles: Array<String>, request: APIGatewayProxyRequestEvent): Boolean {
             return "user" in roles

@@ -13,7 +13,10 @@ internal interface EndpointAuthorizationChecker {
 object DefaultEndpointAuthorizationChecker: EndpointAuthorizationChecker {
 
     override fun isRequestAuthorized(request: APIGatewayProxyRequestEvent, accessControl: AccessControl): Boolean {
-        val requestAuthorizer = accessControl.authorizer.createInstance()
+        val authorizerClass = accessControl.authorizer
+
+        // Request authorizer can be a singleton
+        val requestAuthorizer = authorizerClass.objectInstance ?: authorizerClass.createInstance()
 
         return requestAuthorizer.isRequestAuthorized(accessControl.roles, request)
     }
