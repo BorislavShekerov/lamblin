@@ -1,3 +1,4 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.lamblin/lamblin-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser)
 [![Chat at https://gitter.im/org-lamblin/general](https://badges.gitter.im/org-lamblin/general.svg)](https://gitter.im/org-lamblin/general)
 [![CircleCI](https://circleci.com/gh/BorislavShekerov/lamblin.svg?style=shield)](https://circleci.com/gh/BorislavShekerov/lamblin)
 [![codebeat badge](https://codebeat.co/badges/23c4a019-76f3-4999-af29-66a9fd188d19)](https://codebeat.co/projects/github-com-borislavshekerov-lamblin-master)
