@@ -7,4 +7,55 @@
 # lamblin
 A REST Framework for Kotlin or Java applications deployed as AWS Lambdas.
 
-# In Progress...
+## Examples
+This examples to follow are in written in Kotlin only, however you can find their Java versions and more at [docs](http://lamblin.org).
+
+## Quickstart
+
+### Add dependency
+
+```xml
+<dependency>
+    <groupId>org.lamblin</groupId>
+    <artifactId>lamblin-core</artifactId>
+    <version>0.1.6</version>
+</dependency>
+
+// or gradle, if you must
+compile 'org.lamblin:lamblin-core:0.1.6'
+```
+
+
+### Define your controller
+```kotlin
+@Controller
+class TodoListController(private val dataService: DataService) {
+
+    @Endpoint("/todo-lists", HttpMethod.GET)
+    fun todoLists() = HttpResponse.ok(dataService.fetchAll())
+
+    @Endpoint("/todo-lists/{id}", HttpMethod.GET)
+    fun getTodoList(@PathParam("id") listId: String) =
+        HttpResponse.ok(dataService.fetchList(listId))
+}
+```
+
+### Delegate the routing logic to Kotlin
+```kotlin
+// Developers are responsible for injecting their controller dependencies
+val dataService = DataService.inMemory()
+val lamblin = Lamblin.frontController(TodoListController(dataService))
+
+class LambdaHandler : RequestStreamHandler {
+
+  override fun handleRequest(input: InputStream, output: OutputStream, p2: Context) {
+      lamblin.handlerRequest(input, output)
+  }
+}
+```
+
+## Anotations
+
+Lamblin provides a set of standard annotations which you can use in your endpoints to drive routing, inject specific request arguments, implement access control etc.
+
+
