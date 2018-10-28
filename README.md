@@ -5,8 +5,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
-:star:
-# lamblin
 :star: __Lamblin__ :star: is a simple and lightweight web-framework for __AWS Lambda__ functions written in __Kotlin__ or __Java__.
   Unlike the other traditional _JVM_ web-frameworks (e.g <a href="https://spring.io/projects/spring-boot">Spring</a>, <a href="https://www.playframework.com">Play</a>, <a href="http://sparkjava.com">Spark</a>) which targeted an execution model where our application was deployed to an HTTP application container (e.g _Apache_, _Jetty_), Lamblin was developed to target the AWS Lambda execution environment specifically.
   
