@@ -13,16 +13,18 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
+private const val TEST_PORT = 8080
+
 @ExtendWith(JUnit5LamblinExtension::class)
-@LamblinTestRunnerConfig(serverPort = PORT, testConfigClass = TestConfiguration::class)
+@LamblinTestRunnerConfig(serverPort = TEST_PORT, testConfigClass = TestConfiguration::class)
 class JUnit5LamblinTestRunnerIntegrationTest {
 
     private val objectMapper = ObjectMapper().apply {
         registerModule(KotlinModule())
     }
 
-    private val controller1Client = Controller1Client.create("http://localhost:$PORT", objectMapper)
-    private val controller2Client = Controller2Client.create("http://localhost:$PORT", objectMapper)
+    private val controller1Client = Controller1Client.create("http://localhost:$TEST_PORT", objectMapper)
+    private val controller2Client = Controller2Client.create("http://localhost:$TEST_PORT", objectMapper)
 
     @Test
     fun `should have the server started and controller1 endpoint should be accessible`() {
