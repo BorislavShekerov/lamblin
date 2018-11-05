@@ -12,8 +12,9 @@ import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpResponse
 import org.slf4j.LoggerFactory
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Method
-import java.lang.reflect.Parameter
+import kotlin.reflect.KCallable
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.valueParameters
 
 private val LOGGER = LoggerFactory.getLogger(EndpointInvoker::class.java)
 
@@ -38,14 +39,14 @@ internal class EndpointInvoker(
 
         try {
             val controller = controllerRegistry.controllerForClass(controllerClass)
-                ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.canonicalName}]")
+                ?: throw IllegalStateException("Controller not found for class [ ${controllerClass.simpleName}]")
 
             return invokeControllerMethod(
                 MethodInvocationDetails(
                     handlerMethod,
                     request,
                     method,
-                    parameters.toList(),
+                    parameters,
                     controller))
         } catch (e: IllegalAccessException) {
             LOGGER.error("Handler methods should have a public accessor modifier.", e)
@@ -60,7 +61,7 @@ internal class EndpointInvoker(
     private fun invokeControllerMethod(methodInvocationDetails: MethodInvocationDetails): HttpResponse<*> {
         return try {
             if (methodInvocationDetails.parameters.isEmpty())
-                methodInvocationDetails.method.invoke(methodInvocationDetails.controller) as HttpResponse<*>
+                methodInvocationDetails.method.call()
             else {
                 val paramValues = endpointParamValueInjector
                     .injectParamValues(
@@ -69,8 +70,7 @@ internal class EndpointInvoker(
                         methodInvocationDetails.handlerMethod.annotationMappedNameToParam())
                     .values.toTypedArray()
 
-                methodInvocationDetails.method.invoke(methodInvocationDetails.controller, *paramValues)
-                        as HttpResponse<*>
+                methodInvocationDetails.method.call(methodInvocationDetails.controller, *paramValues)
             }
         } catch (e: InvocationTargetException) {
             LOGGER.error("Exception occurred while executing handler.")
@@ -79,8 +79,8 @@ internal class EndpointInvoker(
     }
 }
 
-fun HandlerMethod.annotationMappedNameToParam(): Map<String, Parameter> {
-    val nameToParam = method.parameters
+fun HandlerMethod.annotationMappedNameToParam(): Map<String, KParameter> {
+    val nameToParam = method.valueParameters
         .map { it.name to it }
         .toMap()
 
@@ -94,6 +94,6 @@ fun HandlerMethod.annotationMappedNameToParam(): Map<String, Parameter> {
 private data class MethodInvocationDetails(
     val handlerMethod: HandlerMethod,
     val request: APIGatewayProxyRequestEvent,
-    val method: Method,
-    val parameters: List<Parameter>,
+    val method: KCallable<HttpResponse<*>>,
+    val parameters: List<KParameter>,
     val controller: Any)

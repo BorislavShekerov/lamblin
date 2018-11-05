@@ -11,6 +11,7 @@ import com.lamblin.core.model.annotation.Header
 import com.lamblin.core.model.annotation.PathParam
 import com.lamblin.core.model.annotation.QueryParam
 import com.lamblin.core.model.annotation.RequestBody
+import kotlin.reflect.KClass
 
 internal const val REQUEST_BODY_MAPPED_NAME = "REQUEST_BODY"
 
@@ -29,14 +30,14 @@ data class HandlerMethodParameter(
     val defaultValue: Any? = null,
 
     /** The type of the parameter. */
-    val type: Class<*>) {
+    val type: KClass<*>) {
 
     companion object {
 
         /** Creates a parameter which is neither a query nor a path param. */
         fun requestBodyParam(
             name: String,
-            type: Class<*>
+            type: KClass<*>
         ): HandlerMethodParameter = HandlerMethodParameter(
             annotationMappedName = REQUEST_BODY_MAPPED_NAME,
             name = name,
@@ -45,7 +46,7 @@ data class HandlerMethodParameter(
         /** Creates a parameter targeting a path parameter. */
         fun pathParam(
             name: String,
-            type: Class<*>,
+            type: KClass<*>,
             param: PathParam
         ): HandlerMethodParameter = HandlerMethodParameter(
             annotationMappedName = param.value,
@@ -55,7 +56,7 @@ data class HandlerMethodParameter(
         /** Creates a parameter targeting a query parameter. */
         fun queryParam(
             name: String,
-            type: Class<*>,
+            type: KClass<*>,
             param: QueryParam
         ): HandlerMethodParameter {
 
@@ -74,7 +75,7 @@ data class HandlerMethodParameter(
         /** Creates a parameter targeting a header. */
         private fun headerParam(
             name: String,
-            type: Class<*>,
+            type: KClass<*>,
             param: Header
         ): HandlerMethodParameter = HandlerMethodParameter(
             annotationMappedName = param.value,
@@ -84,11 +85,11 @@ data class HandlerMethodParameter(
         private fun apiGatewayProxyRequestEventParam(name: String) = HandlerMethodParameter(
             annotationMappedName = name,
             name = name,
-            type = APIGatewayProxyRequestEvent::class.java)
+            type = APIGatewayProxyRequestEvent::class)
 
         fun of(
             name: String,
-            type: Class<*>,
+            type: KClass<*>,
             annotation: Annotation?
         ): HandlerMethodParameter =
             when (annotation) {
@@ -97,7 +98,7 @@ data class HandlerMethodParameter(
                 is Header -> headerParam(name, type, annotation)
                 is RequestBody -> requestBodyParam(name, type)
                 else -> {
-                    if (type == APIGatewayProxyRequestEvent::class.java)  apiGatewayProxyRequestEventParam(name)
+                    if (type == APIGatewayProxyRequestEvent::class)  apiGatewayProxyRequestEventParam(name)
                     else throw IllegalArgumentException("Annotation $annotation not supported")
                 }
             }

@@ -8,8 +8,8 @@ package com.lamblin.core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.model.HandlerMethod
-import org.slf4j.LoggerFactory
-import java.lang.reflect.Parameter
+import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
 
 /** Defines the mechanism for injecting the values into the endpoint params, based on the request details. */
 internal interface EndpointParamValueInjector {
@@ -21,14 +21,14 @@ internal interface EndpointParamValueInjector {
     fun injectParamValues(
         request: APIGatewayProxyRequestEvent,
         handlerMethod: HandlerMethod,
-        paramAnnotationMappedNameToParam: Map<String, Parameter>
+        paramAnnotationMappedNameToParam: Map<String, KParameter>
     ): Map<String, Any?>
 
-    fun castParamToRequiredType(paramType: Class<*>?, paramValue: Any) = when (paramType) {
-        Int::class.java -> (paramValue as String).toInt()
-        Long::class.java -> (paramValue as String).toLong()
-        Double::class.java -> (paramValue as String).toDouble()
-        Boolean::class.java -> (paramValue as String).toBoolean()
+    fun castParamToRequiredType(paramType: KClass<*>?, paramValue: Any) = when (paramType) {
+        Int::class -> (paramValue as String).toInt()
+        Long::class -> (paramValue as String).toLong()
+        Double::class -> (paramValue as String).toDouble()
+        Boolean::class -> (paramValue as String).toBoolean()
         else -> paramValue
     }
 }

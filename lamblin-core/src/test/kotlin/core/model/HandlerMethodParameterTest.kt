@@ -10,6 +10,8 @@ import com.lamblin.core.model.annotation.RequestBody
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.Objects.nonNull
+import kotlin.reflect.full.findAnnotation
 
 private const val PATH_PARAM_VALUE = "param"
 private const val QUERY_PARAM_WITH_DEFAULT_VALUE_MAPPED_NAME = "queryParam"
@@ -22,12 +24,14 @@ class HandlerMethodParameterTest {
     @Test
     fun `should handle request path param`() {
         val paramName = "test"
+        val pathParamParameter = TestController::class.members.find { it.name == "test endpoint" }!!.parameters.find { nonNull(it.findAnnotation<PathParam>()) }
+
         val param = HandlerMethodParameter.of(
             paramName,
-            String::class.java,
-            TestController::class.java.methods[0].parameters[0].getAnnotation(PathParam::class.java))
+            String::class,
+            pathParamParameter!!.findAnnotation<PathParam>())
 
-        assertThat(param.type).isEqualTo(String::class.java)
+        assertThat(param.type).isEqualTo(String::class)
         assertThat(param.name).isEqualTo(paramName)
         assertThat(param.annotationMappedName).isEqualTo(PATH_PARAM_VALUE)
     }
@@ -36,12 +40,14 @@ class HandlerMethodParameterTest {
     @Test
     fun `should handle request query param with default value`() {
         val paramName = "test"
+        val queryParamParameter = TestController::class.members.find { it.name == "test endpoint" }!!.parameters.find { it.name == "queryParamWithDefaultValue" }
+
         val param = HandlerMethodParameter.of(
             paramName,
-            String::class.java,
-            TestController::class.java.methods[0].parameters[1].getAnnotation(QueryParam::class.java))
+            String::class,
+            queryParamParameter!!.findAnnotation<QueryParam>())
 
-        assertThat(param.type).isEqualTo(String::class.java)
+        assertThat(param.type).isEqualTo(String::class)
         assertThat(param.name).isEqualTo(paramName)
         assertThat(param.annotationMappedName).isEqualTo(QUERY_PARAM_WITH_DEFAULT_VALUE_MAPPED_NAME)
         assertThat(param.required).isEqualTo(true)
@@ -51,12 +57,14 @@ class HandlerMethodParameterTest {
     @Test
     fun `should handle request query param without default value`() {
         val paramName = "test"
+        val queryParamParameter = TestController::class.members.find { it.name == "test endpoint" }!!.parameters.find { it.name == "queryParamWithoutDefaultValue" }
+
         val param = HandlerMethodParameter.of(
             paramName,
-            String::class.java,
-            TestController::class.java.methods[0].parameters[2].getAnnotation(QueryParam::class.java))
+            String::class,
+            queryParamParameter!!.findAnnotation<QueryParam>())
 
-        assertThat(param.type).isEqualTo(String::class.java)
+        assertThat(param.type).isEqualTo(String::class)
         assertThat(param.name).isEqualTo(paramName)
         assertThat(param.annotationMappedName).isEqualTo(QUERY_PARAM_WITHOUT_DEFAULT_VALUE_MAPPED_NAME)
         assertThat(param.required).isEqualTo(true)
@@ -66,26 +74,30 @@ class HandlerMethodParameterTest {
     @Test
     fun `should handle request body param`() {
         val paramName = "test"
+        val requestBodyParameter = TestController::class.members.find { it.name == "test endpoint" }!!.parameters.find { nonNull(it.findAnnotation<RequestBody>()) }
+
         val param = HandlerMethodParameter.of(
             paramName,
-            String::class.java,
-            TestController::class.java.methods[0].parameters[3].getAnnotation(RequestBody::class.java))
+            String::class,
+            requestBodyParameter!!.findAnnotation<RequestBody>())
 
         assertThat(param.name).isEqualTo(paramName)
-        assertThat(param.type).isEqualTo(String::class.java)
+        assertThat(param.type).isEqualTo(String::class)
         assertThat(param.annotationMappedName).isEqualTo(REQUEST_BODY_MAPPED_NAME)
     }
 
     @Test
     fun `should handle header param`() {
         val paramName = "test"
+        val headerParam = TestController::class.members.find { it.name == "test endpoint" }!!.parameters.find { nonNull(it.findAnnotation<Header>()) }
+
         val param = HandlerMethodParameter.of(
             paramName,
-            String::class.java,
-            TestController::class.java.methods[0].parameters[4].getAnnotation(Header::class.java))
+            String::class,
+            headerParam!!.findAnnotation<Header>())
 
         assertThat(param.name).isEqualTo(paramName)
-        assertThat(param.type).isEqualTo(String::class.java)
+        assertThat(param.type).isEqualTo(String::class)
         assertThat(param.annotationMappedName).isEqualTo(HEADER_NAME)
     }
 
@@ -94,11 +106,11 @@ class HandlerMethodParameterTest {
         val paramName = "test"
         val param = HandlerMethodParameter.of(
             paramName,
-            APIGatewayProxyRequestEvent::class.java,
+            APIGatewayProxyRequestEvent::class,
             null)
 
         assertThat(param.name).isEqualTo(paramName)
-        assertThat(param.type).isEqualTo(APIGatewayProxyRequestEvent::class.java)
+        assertThat(param.type).isEqualTo(APIGatewayProxyRequestEvent::class)
         assertThat(param.annotationMappedName).isEqualTo(paramName)
     }
 
@@ -108,7 +120,7 @@ class HandlerMethodParameterTest {
         assertThrows<IllegalArgumentException> {
             HandlerMethodParameter.of(
                 paramName,
-                String::class.java,
+                String::class,
                 TestController::class.java.methods[0].parameters[5].getAnnotation(IllegalAnnotation::class.java))
         }
     }

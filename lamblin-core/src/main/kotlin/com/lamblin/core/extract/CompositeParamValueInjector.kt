@@ -9,7 +9,8 @@ package com.lamblin.core.extract
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.model.HandlerMethod
 import org.slf4j.LoggerFactory
-import java.lang.reflect.Parameter
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.valueParameters
 
 private val LOGGER = LoggerFactory.getLogger(CompositeParamValueInjector::class.java)
 
@@ -33,7 +34,7 @@ internal class CompositeParamValueInjector internal constructor(
     override fun injectParamValues(
         request: APIGatewayProxyRequestEvent,
         handlerMethod: HandlerMethod,
-        paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any?> {
+        paramAnnotationMappedNameToParam: Map<String, KParameter>): Map<String, Any?> {
 
         LOGGER.debug("Extracting param values from request ${request.path}")
 
@@ -43,7 +44,7 @@ internal class CompositeParamValueInjector internal constructor(
 
         val result = linkedMapOf<String, Any?>()
 
-        return handlerMethod.method.parameters
+        return handlerMethod.method.valueParameters.asSequence()
             .map {
                 handlerMethod.paramNameToParam[it.name]
                         ?: throw IllegalStateException("Param not found for ${it.name}")

@@ -23,6 +23,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.lang.IllegalStateException
+import kotlin.reflect.KCallable
+import kotlin.reflect.full.valueParameters
 
 class CompositeParamValueInjectorTest {
 
@@ -44,8 +46,8 @@ class CompositeParamValueInjectorTest {
             HandlerMethod(
                 "",
                 HttpMethod.GET,
-                method = TestController::class.java.declaredMethods.find { it.name === "endpointNoParams" }!!,
-                controllerClass = TestController::class.java),
+                method = TestController::class.members.find { it.name == "endpointNoParams" } as KCallable<HttpResponse<*>>,
+                controllerClass = TestController::class),
             mapOf())
 
         assertThat(result).isEmpty()
@@ -66,27 +68,27 @@ class CompositeParamValueInjectorTest {
     @Test
     fun `should return ordered param value for each param`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
-        val method = TestController::class.java.declaredMethods.find { it.name === "endpointWithParam" }!!
+        val method = TestController::class.members.find { it.name == "endpointWithParam" }
 
         val handlerMethod = HandlerMethod(
             "endpointWithParam/{pathParam}",
             HttpMethod.GET,
             mapOf(
-                "arg0" to HandlerMethodParameter(
+                "queryParam" to HandlerMethodParameter(
                     annotationMappedName = "queryParam",
-                    name = "arg0",
-                    type = String::class.java),
-                "arg1" to HandlerMethodParameter(
+                    name = "queryParam",
+                    type = String::class),
+                "pathParam" to HandlerMethodParameter(
                     annotationMappedName = "pathParam",
-                    name = "arg1",
-                    type = String::class.java)),
-            method,
-            TestController::class.java)
+                    name = "pathParam",
+                    type = String::class)),
+            method as KCallable<HttpResponse<*>>,
+            TestController::class)
 
 
         val paramAnnotationMappedNameToParam = mapOf(
-            "queryParam" to method.parameters[0],
-            "pathParam" to method.parameters[0])
+            "queryParam" to method.valueParameters[0],
+            "pathParam" to method.valueParameters[0])
 
         every {
             queryParamValueInjector.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
@@ -106,27 +108,27 @@ class CompositeParamValueInjectorTest {
     @Test
     fun `should return ordered param value for each param, flipped params`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
-        val method = TestController::class.java.declaredMethods.find { it.name === "endpointWithParamsFlipped" }!!
+        val method = TestController::class.members.find { it.name == "endpointWithParamsFlipped" }!!
 
         val handlerMethod = HandlerMethod(
             "endpointWithParam/{pathParam}",
             HttpMethod.GET,
             mapOf(
-                "arg0" to HandlerMethodParameter(
+                "pathParam" to HandlerMethodParameter(
                     annotationMappedName = "pathParam",
-                    name = "arg1",
-                    type = String::class.java),
-                "arg1" to HandlerMethodParameter(
+                    name = "pathParam",
+                    type = String::class),
+                "queryParam" to HandlerMethodParameter(
                     annotationMappedName = "queryParam",
-                    name = "arg0",
-                    type = String::class.java)),
-            method,
-            TestController::class.java)
+                    name = "queryParam",
+                    type = String::class)),
+            method as KCallable<HttpResponse<*>>,
+            TestController::class)
 
 
         val paramAnnotationMappedNameToParam = mapOf(
-            "queryParam" to method.parameters[0],
-            "pathParam" to method.parameters[1])
+            "queryParam" to method.valueParameters[1],
+            "pathParam" to method.valueParameters[0])
 
         every {
             queryParamValueInjector.injectParamValues(request, handlerMethod, paramAnnotationMappedNameToParam)
@@ -146,23 +148,23 @@ class CompositeParamValueInjectorTest {
     @Test
     fun `should throw IllegalStateException if param not found for a give name`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
-        val method = TestController::class.java.declaredMethods.find { it.name === "endpointWithParamsFlipped" }!!
+        val method = TestController::class.members.find { it.name == "endpointWithParamsFlipped" }!!
 
         val handlerMethod = HandlerMethod(
             "endpointWithParam/{pathParam}",
             HttpMethod.GET,
             mapOf(
-                "arg1" to HandlerMethodParameter(
+                "queryParam" to HandlerMethodParameter(
                     annotationMappedName = "queryParam",
-                    name = "arg0",
-                    type = String::class.java)),
-            method,
-            TestController::class.java)
+                    name = "queryParam",
+                    type = String::class)),
+            method as KCallable<HttpResponse<*>>,
+            TestController::class)
 
 
         val paramAnnotationMappedNameToParam = mapOf(
-            "queryParam" to method.parameters[0],
-            "pathParam" to method.parameters[1])
+            "queryParam" to method.valueParameters[1],
+            "pathParam" to method.valueParameters[0])
 
         assertThrows<IllegalStateException> {
             endpointParamValueInjectorComposite.injectParamValues(

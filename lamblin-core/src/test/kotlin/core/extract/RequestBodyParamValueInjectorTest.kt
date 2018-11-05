@@ -22,6 +22,8 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.reflect.KCallable
+import kotlin.reflect.full.valueParameters
 
 const val NO_BODY_PARAM_PATH = "no-body"
 const val BODY_PARAM_PRESENT_PATH = "body-param-present"
@@ -41,13 +43,13 @@ class RequestBodyParamValueInjectorTest {
 
     @Test
     fun `should return empty map when no params`() {
-        val noBodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointNoBodyParam" }!!
+        val noBodyParamMethod = TestController::class.members.find { it.name == "endpointNoBodyParam" }!!
         val handlerMethod = HandlerMethod(
             NO_BODY_PARAM_PATH,
             HttpMethod.POST,
             mapOf(),
-            noBodyParamMethod,
-            TestController::class.java)
+            noBodyParamMethod as KCallable<HttpResponse<*>>,
+            TestController::class)
 
         val result = RequestBodyParamValueInjector.injectParamValues(mockk(), handlerMethod, mapOf())
         assertThat(result).isEmpty()
@@ -55,13 +57,13 @@ class RequestBodyParamValueInjectorTest {
 
     @Test
     fun `should return empty map if request body empty and RequestBody param present`() {
-        val bodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointWithBodyParam" }!!
+        val bodyParamMethod = TestController::class.members.find { it.name == "endpointWithBodyParam" }!!
         val handlerMethod = HandlerMethod(
             NO_BODY_PARAM_PATH,
             HttpMethod.POST,
             mapOf(),
-            bodyParamMethod,
-            TestController::class.java)
+            bodyParamMethod as KCallable<HttpResponse<*>>,
+            TestController::class)
 
         val result =
             RequestBodyParamValueInjector.injectParamValues(mockk(relaxed = true), handlerMethod, mapOf())
@@ -70,13 +72,13 @@ class RequestBodyParamValueInjectorTest {
 
     @Test
     fun `should throw RequestPayloadParseException exception when JSON malformed`() {
-        val bodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointWithBodyParam" }!!
+        val bodyParamMethod = TestController::class.members.find { it.name == "endpointWithBodyParam" }!!
         val handlerMethod = HandlerMethod(
             NO_BODY_PARAM_PATH,
             HttpMethod.POST,
             mapOf(),
-            bodyParamMethod,
-            TestController::class.java)
+            bodyParamMethod as KCallable<HttpResponse<*>>,
+            TestController::class)
 
         val request: APIGatewayProxyRequestEvent = mockk()
         every { request.body } returns """{ "content": }"""
@@ -86,8 +88,8 @@ class RequestBodyParamValueInjectorTest {
                 request,
                 handlerMethod,
                 mapOf(
-                    QUERY_PARAM to bodyParamMethod.parameters[0],
-                    REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[1]))
+                    QUERY_PARAM to bodyParamMethod.valueParameters[0],
+                    REQUEST_BODY_MAPPED_NAME to bodyParamMethod.valueParameters[1]))
         }
     }
 
@@ -107,13 +109,13 @@ class RequestBodyParamValueInjectorTest {
     }
 
     private fun verifyThatRequestBodyWasExtractedFromValidRequest(httpMethod: HttpMethod) {
-        val bodyParamMethod = TestController::class.java.declaredMethods.find { it.name === "endpointWithBodyParam" }!!
+        val bodyParamMethod = TestController::class.members.find { it.name == "endpointWithBodyParam" }!!
         val handlerMethod = HandlerMethod(
             NO_BODY_PARAM_PATH,
             httpMethod,
             mapOf(),
-            bodyParamMethod,
-            TestController::class.java)
+            bodyParamMethod as KCallable<HttpResponse<*>>,
+            TestController::class)
 
         val request: APIGatewayProxyRequestEvent = mockk()
         every { request.body } returns """{ "content": "test"}"""
@@ -122,8 +124,8 @@ class RequestBodyParamValueInjectorTest {
             request,
             handlerMethod,
             mapOf(
-                QUERY_PARAM to bodyParamMethod.parameters[0],
-                REQUEST_BODY_MAPPED_NAME to bodyParamMethod.parameters[1]))
+                QUERY_PARAM to bodyParamMethod.valueParameters[0],
+                REQUEST_BODY_MAPPED_NAME to bodyParamMethod.valueParameters[1]))
 
         assertThat(result).isEqualTo(
             mapOf(

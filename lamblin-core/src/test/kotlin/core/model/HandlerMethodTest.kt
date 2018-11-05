@@ -9,8 +9,10 @@ package core.model
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.HttpResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import kotlin.reflect.KCallable
 
 class HandlerMethodTest {
 
@@ -58,7 +60,7 @@ class HandlerMethodTest {
                 "param" to HandlerMethodParameter(
                     annotationMappedName = "param",
                     name = "param",
-                    type = String::class.java)))
+                    type = String::class)))
 
         val result = handlerMethod.matches("/path/foo", mapOf())
 
@@ -73,7 +75,7 @@ class HandlerMethodTest {
                 "param" to HandlerMethodParameter(
                     annotationMappedName = "param",
                     name = "param",
-                    type = String::class.java)))
+                    type = String::class)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -88,12 +90,12 @@ class HandlerMethodTest {
                 "param" to HandlerMethodParameter(
                     annotationMappedName = "param",
                     name = "param",
-                    type = String::class.java),
+                    type = String::class),
                 "query" to HandlerMethodParameter(
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -108,12 +110,12 @@ class HandlerMethodTest {
                 "param" to HandlerMethodParameter(
                     annotationMappedName = "param",
                     name = "param",
-                    type = String::class.java),
+                    type = String::class),
                 "query" to HandlerMethodParameter(
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java,
+                    type = String::class,
                     defaultValue = "test")))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
@@ -129,12 +131,12 @@ class HandlerMethodTest {
                 "param" to HandlerMethodParameter(
                     annotationMappedName = "param",
                     name = "param",
-                    type = String::class.java),
+                    type = String::class),
                 "query" to HandlerMethodParameter(
                     annotationMappedName = "query",
                     name = "query",
                     required = false,
-                    type = String::class.java)))
+                    type = String::class)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf())
 
@@ -149,12 +151,12 @@ class HandlerMethodTest {
                 "param" to HandlerMethodParameter(
                     annotationMappedName = "param",
                     name = "param",
-                    type = String::class.java),
+                    type = String::class),
                 "query" to HandlerMethodParameter(
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
         val result = handlerMethod.matches("/path/foo/remaining", mapOf("query" to "test"))
 
@@ -178,7 +180,7 @@ class HandlerMethodTest {
             path,
             HttpMethod.GET,
             paramMap,
-            method = HandlerMethodTest::class.java.declaredMethods.first(),
-            controllerClass = HandlerMethodTest::class.java)
+            method = HandlerMethodTest::class.members.first() as KCallable<HttpResponse<*>>,
+            controllerClass = HandlerMethodTest::class)
 
 }

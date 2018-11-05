@@ -23,13 +23,17 @@ class HeaderParamValueInjectorTest {
 
         every { request.headers } returns mapOf(HEADER_NAME to headerValue)
 
+        val headerParameter = TestController::class.members
+            .find { it.name == "endpoint" }!!
+            .parameters.find { it.name == "authorizationHeader" }!!
+
         val result = HeaderParamValueInjector.injectParamValues(
             request,
             mockk(),
-            mapOf(HEADER_NAME to TestController::class.java.declaredMethods[0].parameters[0]))
+            mapOf(HEADER_NAME to headerParameter))
 
         assertThat(result).containsKey(HEADER_NAME)
-        assertThat(result.get(HEADER_NAME)).isEqualTo(headerValue)
+        assertThat(result[HEADER_NAME]).isEqualTo(headerValue)
     }
 
     @Test
@@ -37,13 +41,17 @@ class HeaderParamValueInjectorTest {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.headers } returns mapOf("foo" to "bar")
 
+        val headerParameter = TestController::class.members
+            .find { it.name == "endpoint" }!!
+            .parameters.find { it.name == "authorizationHeader" }!!
+
         val result = HeaderParamValueInjector.injectParamValues(
             request,
             mockk(),
-            mapOf(HEADER_NAME to TestController::class.java.declaredMethods[0].parameters[0]))
+            mapOf(HEADER_NAME to headerParameter))
 
         assertThat(result).containsKey(HEADER_NAME)
-        assertThat(result.get(HEADER_NAME)).isNull()
+        assertThat(result[HEADER_NAME]).isNull()
     }
 
     private class TestController {

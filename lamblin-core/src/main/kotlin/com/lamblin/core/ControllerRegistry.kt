@@ -8,6 +8,7 @@ package com.lamblin.core
 
 import com.lamblin.core.exception.MissingControllerAnnotationException
 import com.lamblin.core.model.annotation.Controller
+import kotlin.reflect.KClass
 
 /**
  * Defines the access point for the controllers registered with the framework.
@@ -25,9 +26,9 @@ class ControllerRegistry(private val controllers: Set<Any>) {
     }
 
     /** Finds the controller frontController of a given class. */
-    fun controllerForClass(controllerClass: Class<*>) = controllers.find { it.javaClass == controllerClass }
+    fun controllerForClass(controllerClass: KClass<*>) = controllers.find { it::class == controllerClass }
 
     /** Retrieves the [Class] for each controller. */
-    fun controllerClasses() = controllers.map { it::class.java }
+    fun controllerClasses() = controllers.map { it::class }
 
 }

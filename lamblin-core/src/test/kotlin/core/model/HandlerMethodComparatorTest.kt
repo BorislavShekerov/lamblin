@@ -6,12 +6,10 @@
 
 package core.model
 
-import com.lamblin.core.model.HandlerMethod
-import com.lamblin.core.model.HandlerMethodComparator
-import com.lamblin.core.model.HandlerMethodParameter
-import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import kotlin.reflect.KCallable
 
 class HandlerMethodComparatorTest {
 
@@ -42,7 +40,7 @@ class HandlerMethodComparatorTest {
                     annotationMappedName = "param1",
                     name = "param1",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
         val handleMethod2 = createHandlerMethod(
             "/path/result?param1=query1&param2=param2",
@@ -51,12 +49,12 @@ class HandlerMethodComparatorTest {
                     annotationMappedName = "param1",
                     name = "param1",
                     required = true,
-                    type = String::class.java),
+                    type = String::class),
                 "param2" to HandlerMethodParameter(
                     annotationMappedName = "param2",
                     name = "param2",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
         assertThat(handlerMethodComparator.compare(handleMethod1, handleMethod2)).isEqualTo(1)
     }
@@ -86,7 +84,7 @@ class HandlerMethodComparatorTest {
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java))
+                    type = String::class))
         )
         val handleMethod2 = createHandlerMethod(
             "/path/{param}?query=query",
@@ -95,7 +93,7 @@ class HandlerMethodComparatorTest {
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
         assertThat(handlerMethodComparator.compare(handleMethod1, handleMethod2)).isEqualTo(0)
     }
@@ -109,7 +107,7 @@ class HandlerMethodComparatorTest {
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
         val handleMethod2 = createHandlerMethod(
             "/path?query=query",
@@ -118,7 +116,7 @@ class HandlerMethodComparatorTest {
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
 
         assertThat(handlerMethodComparator.compare(handleMethod1, handleMethod2)).isEqualTo(0)
@@ -133,7 +131,7 @@ class HandlerMethodComparatorTest {
                     annotationMappedName = "query",
                     name = "query",
                     required = true,
-                    type = String::class.java)))
+                    type = String::class)))
 
         val handleMethod2 = createHandlerMethod("/path/{param}")
 
@@ -148,7 +146,7 @@ class HandlerMethodComparatorTest {
             path,
             HttpMethod.GET,
             params,
-            method = HandlerMethodComparatorTest::class.java.declaredMethods.first(),
-            controllerClass = HandlerMethodComparatorTest::class.java)
+            method = HandlerMethodComparatorTest::class.members.first() as KCallable<HttpResponse<*>>,
+            controllerClass = HandlerMethodComparatorTest::class)
 
 }

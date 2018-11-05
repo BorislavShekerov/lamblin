@@ -8,23 +8,17 @@ package core
 
 import com.lamblin.core.ControllerRegistry
 import com.lamblin.core.Lamblin
-import com.lamblin.core.OBJECT_MAPPER
-import com.lamblin.core.PluginRegistry
 import com.lamblin.core.handler.HandlerMethodFactory
-import com.lamblin.core.handler.RequestHandler
-import com.lamblin.core.handler.RequestHandlerAdapter
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.annotation.Controller
 import com.lamblin.core.model.annotation.Endpoint
-import com.lamblin.plugin.core.model.PluginExecutionResult
-import com.lamblin.plugin.core.model.PluginType
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.io.ByteArrayInputStream
+import kotlin.reflect.KCallable
 
 const val PATH_GET_1 = "path_get_1"
 const val PATH_POST_1 = "path_post_1"
@@ -60,16 +54,16 @@ class LamblinTest {
 
         every {
             handlerMethodFactory.method(
-                TestControllerWithEndpoints1::class.java.declaredMethods[0],
-                TestControllerWithEndpoints1::class.java)
+                TestControllerWithEndpoints1::class.members.find { it.name == "endpoint_get" }!! as KCallable<HttpResponse<*>>,
+                TestControllerWithEndpoints1::class)
         } returns getHandlerMethod
         every {
             handlerMethodFactory.method(
-                TestControllerWithEndpoints1::class.java.declaredMethods[1],
-                TestControllerWithEndpoints1::class.java)
+                TestControllerWithEndpoints1::class.members.find { it.name == "endpoint_post" } as KCallable<HttpResponse<*>>,
+                TestControllerWithEndpoints1::class)
         } returns postHandlerMethod
         every { controllerRegistry.controllerClasses() } returns listOf(
-            TestControllerWithEndpoints1::class.java)
+            TestControllerWithEndpoints1::class)
 
         val lamblin = Lamblin(
             mockk(),
@@ -91,28 +85,28 @@ class LamblinTest {
 
         every {
             handlerMethodFactory.method(
-                TestControllerWithEndpoints1::class.java.declaredMethods[0],
-                TestControllerWithEndpoints1::class.java)
+                TestControllerWithEndpoints1::class.members.find { it.name == "endpoint_get" } as KCallable<HttpResponse<*>>,
+                TestControllerWithEndpoints1::class)
         } returns getHandlerMethod
         every {
             handlerMethodFactory.method(
-                TestControllerWithEndpoints1::class.java.declaredMethods[1],
-                TestControllerWithEndpoints1::class.java)
+                TestControllerWithEndpoints1::class.members.find { it.name == "endpoint_post" } as KCallable<HttpResponse<*>>,
+                TestControllerWithEndpoints1::class)
         } returns postHandlerMethod
 
         every {
             handlerMethodFactory.method(
-                TestControllerWithEndpoints2::class.java.declaredMethods[0],
-                TestControllerWithEndpoints2::class.java)
+                TestControllerWithEndpoints2::class.members.find { it.name == "endpoint_get" } as KCallable<HttpResponse<*>>,
+                TestControllerWithEndpoints2::class)
         } returns getHandlerMethod2
         every {
             handlerMethodFactory.method(
-                TestControllerWithEndpoints2::class.java.declaredMethods[1],
-                TestControllerWithEndpoints2::class.java)
+                TestControllerWithEndpoints2::class.members.find { it.name == "endpoint_post" } as KCallable<HttpResponse<*>>,
+                TestControllerWithEndpoints2::class)
         } returns postHandlerMethod2
         every { controllerRegistry.controllerClasses() } returns listOf(
-            TestControllerWithEndpoints1::class.java,
-            TestControllerWithEndpoints2::class.java)
+            TestControllerWithEndpoints1::class,
+            TestControllerWithEndpoints2::class)
 
         val lamblin = Lamblin(
             mockk(),
@@ -132,7 +126,7 @@ class LamblinTest {
         val controllerRegistry: ControllerRegistry = mockk()
 
         every { controllerRegistry.controllerClasses() } returns listOf(
-            TestControllerNoEndpoints::class.java)
+            TestControllerNoEndpoints::class)
 
         val lamblin = Lamblin(
             mockk(),

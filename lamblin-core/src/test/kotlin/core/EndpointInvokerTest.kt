@@ -21,7 +21,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.reflect.Method
+import kotlin.reflect.KCallable
+import kotlin.reflect.full.valueParameters
 
 class EndpointInvokerTest {
 
@@ -39,9 +40,9 @@ class EndpointInvokerTest {
     fun `should throw IllegalStateException if controller for class not found`() {
         val handlerMethod = createHandlerMethod(
             "/path",
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointNoParams" }!!)
+            TestController::class.members.find { it.name == "testEndpointNoParams" } as KCallable<HttpResponse<*>>)
 
-        every { controllerRegistry.controllerForClass(TestController::class.java) } returns null
+        every { controllerRegistry.controllerForClass(TestController::class) } returns null
 
         assertThrows<IllegalStateException> { endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent()) }
     }
@@ -50,11 +51,11 @@ class EndpointInvokerTest {
     fun `should call method with no parameters if the method does not have any parameters`() {
         val handlerMethod = createHandlerMethod(
             "/path",
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointNoParams" }!!)
+            TestController::class.members.find { it.name == "testEndpointNoParams" } as KCallable<HttpResponse<*>>)
 
         every {
             controllerRegistry.controllerForClass(
-                TestController::class.java)
+                TestController::class)
         } returns TestController()
 
         val result = endpointInvoker.invoke(handlerMethod, APIGatewayProxyRequestEvent())
@@ -64,25 +65,26 @@ class EndpointInvokerTest {
 
     @Test
     fun `should call method with required parameters`() {
-        val methodWithParam = TestController::class.java.declaredMethods.find { it.name === "testEndpointWithParam" }!!
+        print(TestController::class.members.forEach { println(it.name) })
+        val methodWithParam = TestController::class.members.find { it.name == "testEndpointWithParam" }!!
 
         val handlerMethod = createHandlerMethod(
             "/path",
-            methodWithParam,
+            methodWithParam as KCallable<HttpResponse<*>>,
             mapOf(
                 "param" to HandlerMethodParameter(
-                    annotationMappedName = "test", name = "arg0",
-                    type = String::class.java)))
+                    annotationMappedName = "test", name = "param",
+                    type = String::class)))
 
         every {
             controllerRegistry.controllerForClass(
-                TestController::class.java)
+                TestController::class)
         } returns TestController()
 
         val request = APIGatewayProxyRequestEvent()
         val argument = "arg"
 
-        val annotationMappedNameToParam = mapOf("test" to methodWithParam.parameters[0])
+        val annotationMappedNameToParam = mapOf("test" to methodWithParam.valueParameters[0])
 
         every {
             endpointParamValueInjector.injectParamValues(
@@ -98,7 +100,7 @@ class EndpointInvokerTest {
 
     private fun createHandlerMethod(
         path: String,
-        method: Method,
+        method: KCallable<HttpResponse<*>>,
         paramNameToParam: Map<String, HandlerMethodParameter> = mapOf()
     ) =
         HandlerMethod(
@@ -106,7 +108,7 @@ class EndpointInvokerTest {
             HttpMethod.GET,
             paramNameToParam,
             method = method,
-            controllerClass = TestController::class.java)
+            controllerClass = TestController::class)
 
     class TestController {
         fun testEndpointNoParams(): HttpResponse<String> {

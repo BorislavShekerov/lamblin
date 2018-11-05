@@ -20,7 +20,7 @@ import com.lamblin.core.security.RequestAuthorizer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.reflect.Method
+import kotlin.reflect.KCallable
 
 const val QUERY_PARAM_NAME = "queryParam"
 const val PATH_PARAM_NAME = "pathParam"
@@ -31,15 +31,15 @@ class DefaultHandlerMethodFactoryTest {
     fun `method has no endpoint annotation`() {
         assertThrows<IllegalStateException> {
             DefaultHandlerMethodFactory.method(
-                TestController::class.java.declaredMethods.find { it.name === "testEndpointNoAnnotation" }!!,
-                TestController::class.java)
+                TestController::class.members.find { it.name == "testEndpointNoAnnotation" } as KCallable<HttpResponse<*>>,
+                TestController::class)
         }
     }
 
     @Test
     fun `should create GET method handler when endpoint method GET and no params`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointGetAnnotationNoParams" }!!,
+            TestController::class.members.find { it.name == "testEndpointGetAnnotationNoParams" }!!,
             HttpMethod.GET,
             path = "path")
     }
@@ -47,51 +47,51 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create GET method handler when endpoint method GET with path param`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointGetQueryParams" }!!,
+            TestController::class.members.find { it.name == "testEndpointGetPathParams" }!!,
             HttpMethod.GET,
             path = "path/$PATH_PARAM_NAME",
             paramNameToParam = mapOf(
-                "arg0" to HandlerMethodParameter(
+                "pathParam" to HandlerMethodParameter(
                     annotationMappedName = PATH_PARAM_NAME,
-                    name = "arg0",
-                    type = String::class.java)))
+                    name = "pathParam",
+                    type = String::class)))
     }
 
     @Test
     fun `should create GET method handler when endpoint method GET with query param`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointGetPathParams" }!!,
+            TestController::class.members.find { it.name == "testEndpointGetQueryParameters" }!!,
             HttpMethod.GET,
             paramNameToParam = mapOf(
-                "arg0" to HandlerMethodParameter(
+                "queryParam" to HandlerMethodParameter(
                     annotationMappedName = QUERY_PARAM_NAME,
                     required = true,
-                    name = "arg0",
-                    type = String::class.java)))
+                    name = "queryParam",
+                    type = String::class)))
     }
 
     @Test
     fun `should create GET method handler when endpoint method GET with query and path params`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointGetQueryAndPathParams" }!!,
+            TestController::class.members.find { it.name == "testEndpointGetQueryAndPathParams" }!!,
             HttpMethod.GET,
             path = "path/$PATH_PARAM_NAME",
             paramNameToParam = mapOf(
-                "arg0" to HandlerMethodParameter(
+                "pathParam" to HandlerMethodParameter(
                     annotationMappedName = PATH_PARAM_NAME,
-                    name = "arg0",
-                    type = String::class.java),
-                "arg1" to HandlerMethodParameter(
+                    name = "pathParam",
+                    type = String::class),
+                "queryParam" to HandlerMethodParameter(
                     annotationMappedName = QUERY_PARAM_NAME,
                     required = true,
-                    name = "arg1",
-                    type = String::class.java)))
+                    name = "queryParam",
+                    type = String::class)))
     }
 
     @Test
     fun `should create POST method handler when endpoint method POST without body`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointPostNoBody" }!!,
+            TestController::class.members.find { it.name == "testEndpointPostNoBody" }!!,
             HttpMethod.POST
         )
     }
@@ -99,45 +99,45 @@ class DefaultHandlerMethodFactoryTest {
     @Test
     fun `should create POST method handler when endpoint method POST with request body`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointPostWithBody" }!!,
+            TestController::class.members.find { it.name == "testEndpointPostWithBody" }!!,
             HttpMethod.POST,
             path = "path",
             paramNameToParam = mapOf(
-                "arg0" to HandlerMethodParameter.requestBodyParam(
-                    name = "arg0",
-                    type = Any::class.java)))
+                "body" to HandlerMethodParameter.requestBodyParam(
+                    name = "body",
+                    type = Any::class)))
     }
 
     @Test
     fun `should create PATCH method handler when endpoint method PATCH without body`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointPatchNoBody" }!!,
+            TestController::class.members.find { it.name == "testEndpointPatchNoBody" }!!,
             HttpMethod.PATCH)
     }
 
     @Test
     fun `should create PATCH method handler when endpoint method PATCH with request body`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointPatchWithBody" }!!,
+            TestController::class.members.find { it.name == "testEndpointPatchWithBody" }!!,
             HttpMethod.PATCH,
             path = "path",
             paramNameToParam = mapOf(
-                "arg0" to HandlerMethodParameter.requestBodyParam(
-                    name = "arg0",
-                    type = Any::class.java)))
+                "body" to HandlerMethodParameter.requestBodyParam(
+                    name = "body",
+                    type = Any::class)))
     }
 
     @Test
     fun `should create DELETE method handler when endpoint method DELETE`() {
         verifyCorrectMethodHandlerCreated(
-            TestController::class.java.declaredMethods.find { it.name === "testEndpointDelete" }!!,
+            TestController::class.members.find { it.name == "testEndpointDelete" }!!,
             HttpMethod.DELETE)
     }
 
     @Test
     fun `should create set handler AccessControl when @AccessControlPresentOnRequest`() {
         val accessControlMethod =
-            TestController::class.java.declaredMethods.find { it.name === "testAccessControlEndpoint" }!!
+            TestController::class.members.find { it.name == "testAccessControlEndpoint" }!!
 
         verifyCorrectMethodHandlerCreated(
             accessControlMethod,
@@ -146,20 +146,18 @@ class DefaultHandlerMethodFactoryTest {
     }
 
     private fun verifyCorrectMethodHandlerCreated(
-        endpointMethod: Method,
+        endpointMethod: KCallable<*>,
         httpMethod: HttpMethod,
         path: String = "path",
         paramNameToParam: Map<String, HandlerMethodParameter> = mapOf(),
         accessControl: AccessControl? = null) {
 
         val handlerMethod = DefaultHandlerMethodFactory.method(
-            endpointMethod,
-            TestController::class.java
-        )
+            endpointMethod as KCallable<HttpResponse<*>>,
+            TestController::class)
 
-        assertThat(handlerMethod.controllerClass).isEqualTo(
-            TestController::class.java
-        )
+        assertThat(handlerMethod.controllerClass).isEqualTo(TestController::class)
+
         assertThat(handlerMethod.method).isEqualTo(endpointMethod)
         assertThat(handlerMethod.httpMethod).isEqualTo(httpMethod)
         assertThat(handlerMethod.path).isEqualTo(path)
@@ -179,12 +177,12 @@ class DefaultHandlerMethodFactoryTest {
         }
 
         @Endpoint(path = "path/$PATH_PARAM_NAME", method = HttpMethod.GET)
-        fun testEndpointGetQueryParams(@PathParam(PATH_PARAM_NAME) pathParam: String): HttpResponse<String> {
+        fun testEndpointGetPathParams(@PathParam(PATH_PARAM_NAME) pathParam: String): HttpResponse<String> {
             return HttpResponse.ok(pathParam)
         }
 
         @Endpoint(path = "path", method = HttpMethod.GET)
-        fun testEndpointGetPathParams(@QueryParam(QUERY_PARAM_NAME) queryParam: String): HttpResponse<String> {
+        fun testEndpointGetQueryParameters(@QueryParam(QUERY_PARAM_NAME) queryParam: String): HttpResponse<String> {
             return HttpResponse.ok(queryParam)
         }
 

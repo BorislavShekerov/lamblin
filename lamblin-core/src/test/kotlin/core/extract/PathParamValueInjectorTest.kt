@@ -42,7 +42,7 @@ class PathParamValueInjectorTest {
         every { handlerMethod.path } returns PATH_PARAM_ENDPOINT_PATH
         every { request.path } returns "/path/paramValue"
 
-        val pathParamParameter = TestController::class.java.methods[0].parameters[0]
+        val pathParamParameter = TestController::class.members.first().parameters[0]
 
         val result = PathParamValueInjector.injectParamValues(
             request,

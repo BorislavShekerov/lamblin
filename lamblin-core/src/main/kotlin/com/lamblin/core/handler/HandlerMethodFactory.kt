@@ -9,15 +9,18 @@ package com.lamblin.core.handler
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodParameter
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.core.security.AccessControl
 import org.slf4j.LoggerFactory
-import java.lang.reflect.Method
 import kotlin.reflect.KCallable
+import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.valueParameters
 
 /** Defines the mechanism for creating [HandlerMethod]. */
 internal interface HandlerMethodFactory {
-    fun method(method: Method, controllerClass: Class<out Any>): HandlerMethod
+    fun method(method: KCallable<HttpResponse<*>>, controllerClass: KClass<out Any>): HandlerMethod
 
     companion object {
         internal fun default() = DefaultHandlerMethodFactory
@@ -33,8 +36,8 @@ private val LOGGER = LoggerFactory.getLogger(DefaultHandlerMethodFactory::class.
 internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
 
     /** Creates a [HandlerMethod] frontController using the details(annotations and parameters) of the [KCallable]. */
-    override fun method(method: Method, controller: Class<out Any>): HandlerMethod {
-        val endpointAnnotation = method.annotations.find { it is Endpoint } as? Endpoint
+    override fun method(method: KCallable<HttpResponse<*>>, controller: KClass<out Any>): HandlerMethod {
+        val endpointAnnotation = method.findAnnotation<Endpoint>()
 
         return endpointAnnotation?.method?.let {
             createHandlerMethod(it, endpointAnnotation.path, method, controller)
@@ -44,21 +47,21 @@ internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
     private fun createHandlerMethod(
         httpMethod: HttpMethod,
         path: String,
-        method: Method,
-        controllerClass: Class<out Any>
+        method: KCallable<HttpResponse<*>>,
+        controllerClass: KClass<out Any>
     ): HandlerMethod {
 
-        val paramNameToParam = method.parameters.asSequence()
+        val paramNameToParam = method.valueParameters.asSequence()
             .map { parameter ->
                 parameter.name!! to HandlerMethodParameter.of(
                     parameter.name!!,
-                    parameter.type,
+                    parameter.type.classifier as KClass<*>,
                     parameter.annotations.firstOrNull()) }
             .toMap()
 
-        LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.canonicalName, method.name)
+        LOGGER.debug("Handler method created for [{}] in [{}]", controllerClass.simpleName, method.name)
 
-        val accessControl = method.annotations.find { it is AccessControl }
+        val accessControl = method.findAnnotation<AccessControl>()
 
         return HandlerMethod(
             path,
@@ -66,6 +69,6 @@ internal object DefaultHandlerMethodFactory : HandlerMethodFactory {
             paramNameToParam,
             method,
             controllerClass,
-            accessControl as? AccessControl)
+            accessControl)
     }
 }

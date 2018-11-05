@@ -26,12 +26,14 @@ class QueryParamValueInjectorTest {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns mapOf("query1" to "value1")
 
+        val queryParameter = TestController::class.members
+            .find { it.name == "endpoint" }!!
+            .parameters.find { it.name == "queryParam" }!!
+
         val result = QueryParamValueInjector.injectParamValues(
                 request,
                 mockk(),
-                mapOf("query1" to TestController::class.java.declaredMethods
-                        .find { it.name === "endpoint" }!!
-                        .parameters[0]))
+                mapOf("query1" to queryParameter))
 
         assertThat(result).isEqualTo(mapOf("query1" to "value1"))
     }
@@ -41,12 +43,14 @@ class QueryParamValueInjectorTest {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns null
 
+        val queryParameter = TestController::class.members
+            .find { it.name == "endpoint" }!!
+            .parameters.find { it.name == "queryParam" }!!
+
         val result = QueryParamValueInjector.injectParamValues(
                 request,
                 mockk(),
-                mapOf("query1" to TestController::class.java.declaredMethods
-                        .find { it.name === "endpoint" }!!
-                        .parameters[0]))
+                mapOf("query1" to queryParameter))
 
         assertThat(result).isEqualTo(mapOf("query1" to null))
     }
@@ -56,12 +60,14 @@ class QueryParamValueInjectorTest {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns null
 
+        val queryParameter = TestController::class.members
+            .find { it.name == "endpointWithDefaultQueryParam" }!!
+            .parameters.find { it.name == "queryParam" }!!
+
         val result = QueryParamValueInjector.injectParamValues(
                 request,
                 mockk(),
-                mapOf("query1" to TestController::class.java.declaredMethods
-                        .find { it.name === "endpointWithDefaultQueryParam" }!!
-                        .parameters[0]))
+                mapOf("query1" to queryParameter))
 
         assertThat(result).isEqualTo(mapOf("query1" to DEFAULT_PARAM_VALUE))
     }

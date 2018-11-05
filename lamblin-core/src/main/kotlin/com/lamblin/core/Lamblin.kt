@@ -7,20 +7,21 @@
 package com.lamblin.core
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.fasterxml.jackson.core.type.TypeReference
 import com.lamblin.core.handler.HandlerMethodFactory
 import com.lamblin.core.handler.RequestHandler
 import com.lamblin.core.handler.RequestHandlerAdapter
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
+import com.lamblin.core.model.HttpResponse
 import com.lamblin.core.model.annotation.Endpoint
 import com.lamblin.plugin.core.ExecutableLamblinPlugin
-import com.lamblin.plugin.core.model.PluginExecutionResult
-import com.lamblin.plugin.core.model.PluginType
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.HashMap
+import java.util.Objects.nonNull
+import kotlin.reflect.KCallable
+import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
 
 private val LOGGER = LoggerFactory.getLogger(Lamblin::class.java)
 
@@ -71,16 +72,16 @@ class Lamblin internal constructor(
     }
 
     private fun createHttpMethodToHandlerMethodMap(
-        controllerClass: Class<out Any>
+        controllerClass: KClass<out Any>
     ): Map<HttpMethod, Set<HandlerMethod>> {
 
-        LOGGER.debug("Creating handlers for [{}]", controllerClass.canonicalName)
+        LOGGER.debug("Creating handlers for [{}]", controllerClass.simpleName)
 
-        val controllerEndpoints = setOf(*controllerClass.declaredMethods)
-            .filter { it.annotations.any { annotation -> annotation is Endpoint } }
+        val controllerEndpoints = controllerClass.members
+            .filter { nonNull(it.findAnnotation<Endpoint>()) }
 
         return controllerEndpoints.asSequence()
-            .map { handlerMethodFactory.method(it, controllerClass) }
+            .map { handlerMethodFactory.method(it as KCallable<HttpResponse<*>>, controllerClass) }
             .groupBy { it.httpMethod }
             .mapValues { it.value.toSet() }
     }

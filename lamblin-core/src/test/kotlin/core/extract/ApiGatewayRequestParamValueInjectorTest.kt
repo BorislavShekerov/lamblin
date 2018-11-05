@@ -18,31 +18,36 @@ class ApiGatewayRequestParamValueInjectorTest {
             path = "test"
         }
 
-        val annotationMappedName = "arg0"
+        val pathParam = TestController::class.members
+            .find { it.name == "noRequestEventEndpoint" }!!
+            .parameters.find { it.name == "uid" }!!
+
         val result = ApiGatewayRequestParamValueInjector.injectParamValues(
             requestEvent,
             mockk(),
-            mapOf(
-                annotationMappedName to TestController::class.java.methods.find { it.name == "noRequestEventEndpoint" }!!.parameters[0]))
+            mapOf("uid" to pathParam))
 
         assertThat(result).isEmpty()
     }
 
     @Test
-    fun `should inject ApiGatewayRequestParamValue if param present on handler methdo`() {
+    fun `should inject ApiGatewayRequestParamValue if param present on handler method`() {
         val requestEvent = APIGatewayProxyRequestEvent().apply {
             path = "test"
         }
 
-        val annotationMappedName = "arg0"
+        val apiGatewayRequestEventParameter = TestController::class.members
+            .find { it.name == "requestEventEndpoint" }!!
+            .parameters.find { it.name == "apiGatewayProxyRequestEvent" }!!
+
         val result = ApiGatewayRequestParamValueInjector.injectParamValues(
             requestEvent,
             mockk(),
             mapOf(
-                annotationMappedName to TestController::class.java.methods.find { it.name == "requestEventEndpoint" }!!.parameters[0]))
+                "apiGatewayProxyRequestEvent" to apiGatewayRequestEventParameter))
 
         assertThat(result).hasSize(1)
-        assertThat(result[annotationMappedName]).isEqualTo(requestEvent)
+        assertThat(result["apiGatewayProxyRequestEvent"]).isEqualTo(requestEvent)
     }
 
     private class TestController {

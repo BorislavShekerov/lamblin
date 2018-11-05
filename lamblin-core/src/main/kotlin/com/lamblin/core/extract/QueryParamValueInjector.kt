@@ -10,7 +10,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.annotation.QueryParam
 import org.slf4j.LoggerFactory
-import java.lang.reflect.Parameter
+import java.util.Objects.nonNull
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findAnnotation
 
 private val LOGGER = LoggerFactory.getLogger(QueryParamValueInjector::class.java)
 
@@ -20,15 +22,15 @@ internal object QueryParamValueInjector : EndpointParamValueInjector {
     override fun injectParamValues(
             request: APIGatewayProxyRequestEvent,
             handlerMethod: HandlerMethod,
-            paramAnnotationMappedNameToParam: Map<String, Parameter>): Map<String, Any?> {
+            paramAnnotationMappedNameToParam: Map<String, KParameter>): Map<String, Any?> {
 
         LOGGER.debug("Extracting query param values from request ${request.path}")
 
         val queryParamAnnotatedParameters = paramAnnotationMappedNameToParam.values
-                .filter { it.isAnnotationPresent(QueryParam::class.java) }
+                .filter { nonNull(it.findAnnotation<QueryParam>()) }
 
-        return queryParamAnnotatedParameters.map { it.getAnnotation(QueryParam::class.java) }
-                .map { it.value to computeQueryParamValue(request.queryStringParameters, it.value, it.defaultValue) }
+        return queryParamAnnotatedParameters.map { it.findAnnotation<QueryParam>() }
+                .map { it!!.value to computeQueryParamValue(request.queryStringParameters, it.value, it.defaultValue) }
                 .toMap()
     }
 

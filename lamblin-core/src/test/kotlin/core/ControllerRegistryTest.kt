@@ -20,7 +20,7 @@ class ControllerRegistryTest {
         val controller = ValidController()
         val controllerRegistry = ControllerRegistry(setOf(controller))
 
-        val controllerFound = controllerRegistry.controllerForClass(ValidController::class.java)
+        val controllerFound = controllerRegistry.controllerForClass(ValidController::class)
 
         assertThat(controllerFound).isEqualTo(controller)
     }
@@ -29,7 +29,7 @@ class ControllerRegistryTest {
     fun `should return null value when controller instance not found`() {
         val controllerRegistry = ControllerRegistry(setOf())
 
-        val controllerFound = controllerRegistry.controllerForClass(ValidController::class.java)
+        val controllerFound = controllerRegistry.controllerForClass(ValidController::class)
 
         assertThat(controllerFound).isNull()
     }
@@ -41,7 +41,7 @@ class ControllerRegistryTest {
         val controllerClasses = controllerRegistry.controllerClasses()
 
         assertThat(controllerClasses).hasSize(1)
-        assertThat(controllerClasses).contains(ValidController::class.java)
+        assertThat(controllerClasses).contains(ValidController::class)
     }
 
     @Test

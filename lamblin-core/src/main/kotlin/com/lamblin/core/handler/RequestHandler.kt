@@ -72,7 +72,7 @@ internal class RequestHandler(
         LOGGER.debug(
             "Handler method [{}] in [{}] selected",
             requestHandlerMethod.httpMethod.name,
-            requestHandlerMethod.controllerClass.canonicalName)
+            requestHandlerMethod.controllerClass.simpleName)
 
         val requestAuthorized = requestHandlerMethod.accessControl?.let {
             endpointAuthorizationChecker.isRequestAuthorized(request, it)

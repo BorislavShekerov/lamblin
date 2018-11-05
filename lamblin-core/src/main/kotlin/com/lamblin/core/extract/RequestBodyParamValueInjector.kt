@@ -15,7 +15,11 @@ import com.lamblin.core.model.REQUEST_BODY_MAPPED_NAME
 import com.lamblin.core.model.annotation.RequestBody
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.lang.reflect.Parameter
+import java.util.Objects.nonNull
+import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.valueParameters
 
 private val LOGGER = LoggerFactory.getLogger(RequestBodyParamValueInjector::class.java)
 
@@ -28,7 +32,7 @@ internal object RequestBodyParamValueInjector : EndpointParamValueInjector {
     override fun injectParamValues(
         request: APIGatewayProxyRequestEvent,
         handlerMethod: HandlerMethod,
-        paramAnnotationMappedNameToParam: Map<String, Parameter>
+        paramAnnotationMappedNameToParam: Map<String, KParameter>
     ) =
         if (canDeserializeRequestBody(handlerMethod, request)) {
             mapOf(deserializeBodyJson(paramAnnotationMappedNameToParam.values, request.body))
@@ -43,27 +47,24 @@ internal object RequestBodyParamValueInjector : EndpointParamValueInjector {
     ): Boolean {
 
         return handlerMethod.httpMethod in requestBodyEnabledHttpMethods
-                && handlerMethod.method.parameters.isNotEmpty()
-                && handlerMethod.method.parameters.any { parameter -> parameter.annotations.any { it is RequestBody } }
+                && handlerMethod.method.valueParameters.isNotEmpty()
+                && handlerMethod.method.valueParameters.any { parameter -> parameter.annotations.any { it is RequestBody } }
                 && request.body.isNotEmpty()
     }
 
-    private fun deserializeBodyJson(parameters: Iterable<Parameter>, bodyJson: String): Pair<String, Any> {
+    private fun deserializeBodyJson(parameters: Iterable<KParameter>, bodyJson: String): Pair<String, Any> {
         LOGGER.debug("Attempting to deserialize request body")
 
-        return parameters.find {
-            it.annotations.any { annotation -> annotation is RequestBody }
-        }.let {
-            REQUEST_BODY_MAPPED_NAME to deserializeBody(it!!, bodyJson)
-        }
+        return parameters.find { nonNull(it.findAnnotation<RequestBody>()) }
+            .let {
+                REQUEST_BODY_MAPPED_NAME to deserializeBody(it!!, bodyJson)
+            }
     }
 
-    private fun deserializeBody(parameter: Parameter, bodyJson: String): Any {
-        val lastParamType = parameter.type
-
+    private fun deserializeBody(parameter: KParameter, bodyJson: String): Any {
         try {
             LOGGER.debug("Deserializing [{}] into [{}]", bodyJson, parameter.type)
-            return OBJECT_MAPPER.readValue(bodyJson, lastParamType)
+            return OBJECT_MAPPER.readValue(bodyJson, (parameter.type.classifier as KClass<*>).javaObjectType)
         } catch (e: IOException) {
             throw RequestPayloadParseException("Unable to parse request body JSON $bodyJson", e)
         }

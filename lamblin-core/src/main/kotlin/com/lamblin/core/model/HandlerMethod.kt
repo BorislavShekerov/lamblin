@@ -8,28 +8,29 @@ package com.lamblin.core.model
 
 import com.lamblin.core.security.AccessControl
 import org.slf4j.LoggerFactory
-import java.lang.reflect.Method
+import kotlin.reflect.KCallable
+import kotlin.reflect.KClass
 
 private val LOGGER = LoggerFactory.getLogger(HandlerMethod::class.java)
 
 /** Defines the structure of an endpoint handling method. */
 data class HandlerMethod(
-        /** The URL path, i.e /foo/bar. */
+    /** The URL path, i.e /foo/bar. */
         val path: String,
 
-        /** The HTTP method handled. */
+    /** The HTTP method handled. */
         val httpMethod: HttpMethod,
 
-        /** Maps method parameter names to HandlerMethodParameter instances. */
+    /** Maps method parameter names to HandlerMethodParameter instances. */
         val paramNameToParam: Map<String, HandlerMethodParameter> = mapOf(),
 
-        /** The reference to the actual method to be invoked. */
-        val method: Method,
+    /** The reference to the actual method to be invoked. */
+        val method: KCallable<HttpResponse<*>>,
 
-        /** The reference to the method container class. */
-        val controllerClass: Class<out Any>,
+    /** The reference to the method container class. */
+        val controllerClass: KClass<out Any>,
 
-        /** Defines the access control details for the handler. */
+    /** Defines the access control details for the handler. */
         val accessControl: AccessControl? = null) {
 
     companion object {
