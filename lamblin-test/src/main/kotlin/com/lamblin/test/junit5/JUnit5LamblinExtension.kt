@@ -29,7 +29,10 @@ class JUnit5LamblinExtension : BeforeAllCallback, AfterAllCallback {
     private fun createLocalRunner(testClass: Class<*>): LamblinLocalRunner {
         val (port, controllers) = testRunnerConfigExtractor.extractConfigFromTestClass(testClass)
 
-        return LamblinLocalRunner.createRunner(port, 1, *controllers.toTypedArray())
+        return LamblinLocalRunner.createRunner(
+            port,
+            runTimeInMilliseconds = 1,
+            controllers = *controllers.toTypedArray())
     }
 
     override fun afterAll(p0: ExtensionContext) {
