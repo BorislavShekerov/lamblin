@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lamblin-parent</artifactId>
         <groupId>org.lamblin</groupId>
-        <version>0.2.0</version>
+        <version>0.2.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>lamblin-core</artifactId>

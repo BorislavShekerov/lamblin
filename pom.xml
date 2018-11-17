@@ -6,7 +6,7 @@
     <groupId>org.lamblin</groupId>
     <artifactId>lamblin-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.0</version>
+    <version>0.2.4-SNAPSHOT</version>
     <name>lamblin-parent</name>
     <url>http://lamblin.org</url>
     <description>A REST Framework for Kotlin or Java applications deployed as AWS Lambdas.</description>
@@ -234,7 +234,7 @@
                         <version>${dokka-plugin.version}</version>
                         <executions>
                             <execution>
-                                <phase>pre-site</phase>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>dokka</goal>
                                 </goals>
