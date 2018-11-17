@@ -23,7 +23,10 @@ class JUnit4LamblinTestRunner constructor(private val testClass: Class<*>) : Blo
     private fun createLocalRunner(): LamblinLocalRunner {
         val (port, controllers) = testRunnerConfigExtractor.extractConfigFromTestClass(testClass)
 
-        return LamblinLocalRunner.createRunner(port, 1, *controllers.toTypedArray())
+        return LamblinLocalRunner.createRunner(
+            port,
+            runTimeInMilliseconds = 1,
+            controllers = *controllers.toTypedArray())
     }
 
 }
