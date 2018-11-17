@@ -91,7 +91,7 @@ internal class RequestHandler(
         response: HttpResponse<*>
     ): APIGatewayProxyResponseEvent =
 
-        if (response.statusCode === StatusCode.OK) {
+        if (shouldSerializeResponseBodyJson(response.statusCode)) {
             APIGatewayProxyResponseEvent().apply {
                 withStatusCode(response.statusCode.code)
                 withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
@@ -104,4 +104,9 @@ internal class RequestHandler(
                 withHeaders(response.headers)
             }
         }
+
+    private fun shouldSerializeResponseBodyJson(statusCode: StatusCode) = statusCode === StatusCode.OK
+        || statusCode === StatusCode.CREATED
+        || statusCode === StatusCode.ACCEPTED
+
 }
