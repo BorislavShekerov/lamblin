@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import com.lamblin.core.Lamblin
+import io.javalin.Context
 
 internal const val SECONDS_BEFORE_TERMINATING = 1000 * 60 * 60 * 24
 private val LOGGER = LoggerFactory.getLogger(LamblinLocalRunner::class.java)
@@ -29,12 +30,14 @@ class LamblinLocalRunner internal constructor(
         @JvmOverloads
         fun createRunner(
             port: Int,
+            contextPath: String = "",
             runTimeInMilliseconds: Long = SECONDS_BEFORE_TERMINATING.toLong(),
-            vararg controllers: Any
+            vararg controllers: Array<Any>
         ): LamblinLocalRunner {
 
             val server = Javalin.create()
                 .port(port)
+                .contextPath(contextPath)
                 .disableStartupBanner()
                 .enableCaseSensitiveUrls()
                 .enableCorsForOrigin("*")
