@@ -56,7 +56,7 @@ class RequestHandlerTest {
             mapOf(HttpMethod.GET to setOf(handlerMethodMock))
         )
 
-        assertThat(response.statusCode).isEqualTo(404)
+        assertThat(response.statusCode).isEqualTo(StatusCode.NOT_FOUND.code)
     }
 
     @Test
@@ -78,29 +78,23 @@ class RequestHandlerTest {
             apiGatewayProxyRequestEvent,
             mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
 
-        assertThat(response.statusCode).isEqualTo(500)
+        assertThat(response.statusCode).isEqualTo(StatusCode.API_ERROR.code)
     }
 
     @Test
     fun `should return 200 when request handled properly`() {
-        val requestPath = "path"
-        every { apiGatewayProxyRequestEvent.path } returns requestPath
-        every { apiGatewayProxyRequestEvent.queryStringParameters } returns mapOf()
+        mockInvocationResponseAndVerifyResult(StatusCode.OK)
 
-        val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
-        every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
-        every { handlerMethodMock.accessControl } returns null
-        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse(
-            body = Result(true))
+    }
 
-        val response = requestHandler.handle(
-            apiGatewayProxyRequestEvent,
-            mapOf(HttpMethod.GET to setOf(handlerMethodMock))
-        )
+    @Test
+    fun `should serialize result to response body JSON if status code 201 used`() {
+        mockInvocationResponseAndVerifyResult(StatusCode.CREATED)
+    }
 
-        assertThat(response.statusCode).isEqualTo(200)
-        assertThat(response.headers).isEqualTo(mapOf("Content-Type" to "application/json"))
-        assertThat(response.body).isEqualTo("""{"success":true}""")
+    @Test
+    fun `should serialize result to response body JSON if status code 202 used`() {
+        mockInvocationResponseAndVerifyResult(StatusCode.ACCEPTED)
     }
 
     @Test
@@ -118,7 +112,7 @@ class RequestHandlerTest {
             apiGatewayProxyRequestEvent,
             mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
 
-        assertThat(response.statusCode).isEqualTo(401)
+        assertThat(response.statusCode).isEqualTo(StatusCode.UNAUTHORIZED.code)
         assertThat(response.headers).isEmpty()
         assertThat(response.body).isBlank()
     }
@@ -162,9 +156,31 @@ class RequestHandlerTest {
             apiGatewayProxyRequestEvent,
             mapOf(HttpMethod.GET to setOf(handlerMethodMock)))
 
-        assertThat(response.statusCode).isEqualTo(403)
+        assertThat(response.statusCode).isEqualTo(StatusCode.FORBIDDEN.code)
         assertThat(response.headers).isEqualTo(headers)
         assertThat(response.body).isBlank()
+    }
+
+    private fun mockInvocationResponseAndVerifyResult(status: StatusCode) {
+        val requestPath = "path"
+        every { apiGatewayProxyRequestEvent.path } returns requestPath
+        every { apiGatewayProxyRequestEvent.queryStringParameters } returns mapOf()
+
+        val handlerMethodMock: HandlerMethod = mockk(relaxed = true)
+        every { handlerMethodMock.matches(requestPath, mapOf()) } returns true
+        every { handlerMethodMock.accessControl } returns null
+        every { endpointInvoker.invoke(handlerMethodMock, apiGatewayProxyRequestEvent) } returns HttpResponse(
+            statusCode = status,
+            body = Result(true))
+
+        val response = requestHandler.handle(
+            apiGatewayProxyRequestEvent,
+            mapOf(HttpMethod.GET to setOf(handlerMethodMock))
+        )
+
+        assertThat(response.statusCode).isEqualTo(status.code)
+        assertThat(response.headers).isEqualTo(mapOf("Content-Type" to "application/json"))
+        assertThat(response.body).isEqualTo("""{"success":true}""")
     }
 
     data class Result(val success: Boolean = true)
