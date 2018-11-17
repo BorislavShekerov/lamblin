@@ -6,7 +6,7 @@
     <groupId>org.lamblin</groupId>
     <artifactId>lamblin-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.4</version>
     <name>lamblin-parent</name>
     <url>http://lamblin.org</url>
     <description>A REST Framework for Kotlin or Java applications deployed as AWS Lambdas.</description>
@@ -37,7 +37,8 @@
         <connection>scm:git:git://github.com/BorislavShekerov/lamblin.git</connection>
         <developerConnection>scm:git:git@github.com:BorislavShekerov/lamblin.git</developerConnection>
         <url>https://github.com/BorislavShekerov/lamblin</url>
-    </scm>
+      <tag>lamblin-parent-0.2.4</tag>
+  </scm>
 
     <properties>
         <kotlin.version>1.2.71</kotlin.version>
