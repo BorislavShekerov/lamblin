@@ -18,6 +18,20 @@ class EndpointParamValueInjectorTest {
     }
 
     @Test
+    fun `should cast param value to byte`() {
+        val value = endpointParamValueInjector.castParamToRequiredType(Byte::class, "1")
+
+        assertThat(value).isEqualTo(1.toByte())
+    }
+
+    @Test
+    fun `should cast param value to short`() {
+        val value = endpointParamValueInjector.castParamToRequiredType(Short::class, "1")
+
+        assertThat(value).isEqualTo(1.toShort())
+    }
+
+    @Test
     fun `should cast param value to int`() {
         val value = endpointParamValueInjector.castParamToRequiredType(Int::class, "1")
 
@@ -32,10 +46,24 @@ class EndpointParamValueInjectorTest {
     }
 
     @Test
+    fun `should cast param value to float`() {
+        val value = endpointParamValueInjector.castParamToRequiredType(Float::class, "1")
+
+        assertThat(value).isEqualTo(1F)
+    }
+
+    @Test
     fun `should cast param value to long`() {
         val value = endpointParamValueInjector.castParamToRequiredType(Long::class, "1")
 
         assertThat(value).isEqualTo(1L)
+    }
+
+    @Test
+    fun `should cast param value to char`() {
+        val value = endpointParamValueInjector.castParamToRequiredType(Char::class, "1")
+
+        assertThat(value).isEqualTo('1')
     }
 
     @Test

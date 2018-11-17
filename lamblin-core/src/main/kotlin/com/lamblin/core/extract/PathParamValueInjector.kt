@@ -9,6 +9,7 @@ package com.lamblin.core.extract
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethod.Companion.isPathParamSection
+import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
 /** Defines a mechanism for deciding the values of path parameters (i.e. parameters annotated with [PathParam]). */
@@ -28,7 +29,7 @@ internal object PathParamValueInjector : EndpointParamValueInjector {
             .map { it.value.removeSurrounding("{", "}") to requestPathSections[it.index] }
             .map {
                 it.first to castParamToRequiredType(
-                    paramAnnotationMappedNameToParam[it.first]!!::class,
+                    paramAnnotationMappedNameToParam[it.first]!!.type.classifier as KClass<*>,
                     it.second)
             }.toMap()
     }
