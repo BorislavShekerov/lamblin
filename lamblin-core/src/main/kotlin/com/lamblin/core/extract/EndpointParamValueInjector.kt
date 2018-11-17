@@ -25,9 +25,13 @@ internal interface EndpointParamValueInjector {
     ): Map<String, Any?>
 
     fun castParamToRequiredType(paramType: KClass<*>?, paramValue: Any) = when (paramType) {
+        Byte::class -> (paramValue as String).toByte()
+        Short::class -> (paramValue as String).toShort()
         Int::class -> (paramValue as String).toInt()
         Long::class -> (paramValue as String).toLong()
         Double::class -> (paramValue as String).toDouble()
+        Float::class -> (paramValue as String).toFloat()
+        Char::class -> (paramValue as String)[0]
         Boolean::class -> (paramValue as String).toBoolean()
         else -> paramValue
     }

@@ -17,7 +17,8 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-const val DEFAULT_PARAM_VALUE = "default"
+private const val DEFAULT_PARAM_VALUE = "default"
+private const val DEFAULT_NON_STRING_PARAM_VALUE = "10"
 
 class QueryParamValueInjectorTest {
 
@@ -56,7 +57,7 @@ class QueryParamValueInjectorTest {
     }
 
     @Test
-    fun `should return default value if query param not present and default value defined in @QuaryParam`() {
+    fun `should return default value if query param not present and default value defined in @QueryParam`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.queryStringParameters } returns null
 
@@ -72,6 +73,23 @@ class QueryParamValueInjectorTest {
         assertThat(result).isEqualTo(mapOf("query1" to DEFAULT_PARAM_VALUE))
     }
 
+    @Test
+    fun `should be able to handle default values of non-string type defined in @QueryParam`() {
+        val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
+        every { request.queryStringParameters } returns null
+
+        val queryParameter = TestController::class.members
+            .find { it.name == "endpointWithDefaultNonStringQueryParam" }!!
+            .parameters.find { it.name == "queryParam" }!!
+
+        val result = QueryParamValueInjector.injectParamValues(
+            request,
+            mockk(),
+            mapOf("query1" to queryParameter))
+
+        assertThat(result).isEqualTo(mapOf("query1" to DEFAULT_NON_STRING_PARAM_VALUE.toInt()))
+    }
+
     private class TestController {
 
         @Endpoint("test", method = HttpMethod.GET)
@@ -82,6 +100,11 @@ class QueryParamValueInjectorTest {
         @Endpoint("test", method = HttpMethod.GET)
         fun endpointWithDefaultQueryParam(@QueryParam("query1", defaultValue = DEFAULT_PARAM_VALUE) queryParam: String): HttpResponse<String> {
             return HttpResponse.ok(queryParam)
+        }
+
+        @Endpoint("test", method = HttpMethod.GET)
+        fun endpointWithDefaultNonStringQueryParam(@QueryParam("query1", defaultValue = DEFAULT_NON_STRING_PARAM_VALUE) queryParam: Int): HttpResponse<String> {
+            return HttpResponse.ok("$queryParam")
         }
     }
 }
