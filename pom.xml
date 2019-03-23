@@ -45,7 +45,7 @@
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <main.class>com.lamblin.core.Lamblin</main.class>
 
-        <aws-lambda-java-events.version>2.2.2</aws-lambda-java-events.version>
+        <aws-lambda-java-events.version>2.2.6</aws-lambda-java-events.version>
         <aws-lambda-java-sdk.version>1.11.405</aws-lambda-java-sdk.version>
         <jackson-databind.version>2.9.6</jackson-databind.version>
         <logback-classic.version>1.2.3</logback-classic.version>

@@ -41,6 +41,14 @@ class GetController {
         return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_GET_ENDPOINT-$queryParam1,$queryParam2"))
     }
 
+    @Endpoint(QUERY_PARAM_MULTI_KEY_GET_ENDPOINT, method = HttpMethod.GET)
+    fun multipleQueryParamTest(
+        @QueryParam(QUERY_PARAM_1) queryParamValues: Array<String>): HttpResponse<ResponseEntity> {
+
+        return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT-${queryParamValues[0]},${queryParamValues[1]}"))
+    }
+
+
     @Endpoint(SINGLE_PATH_PARAM_GET_ENDPOINT, method = HttpMethod.GET)
     fun singlePathParamPath(
         @PathParam(PATH_PARAM_1) pathParam: String

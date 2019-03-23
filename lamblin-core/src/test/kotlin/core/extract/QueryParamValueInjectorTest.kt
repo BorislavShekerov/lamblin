@@ -25,7 +25,7 @@ class QueryParamValueInjectorTest {
     @Test
     fun `should return the value for each query param`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
-        every { request.queryStringParameters } returns mapOf("query1" to "value1")
+        every { request.multiValueQueryStringParameters } returns mapOf("query1" to listOf("value1"))
 
         val queryParameter = TestController::class.members
             .find { it.name == "endpoint" }!!
@@ -36,13 +36,13 @@ class QueryParamValueInjectorTest {
                 mockk(),
                 mapOf("query1" to queryParameter))
 
-        assertThat(result).isEqualTo(mapOf("query1" to "value1"))
+        assertThat(result["query1"]).isEqualTo("value1")
     }
 
     @Test
     fun `should return empty map if no query string params and default value not defined in @QueryParam`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
-        every { request.queryStringParameters } returns null
+        every { request.multiValueQueryStringParameters } returns null
 
         val queryParameter = TestController::class.members
             .find { it.name == "endpoint" }!!
@@ -59,7 +59,7 @@ class QueryParamValueInjectorTest {
     @Test
     fun `should return default value if query param not present and default value defined in @QueryParam`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
-        every { request.queryStringParameters } returns null
+        every { request.multiValueQueryStringParameters } returns null
 
         val queryParameter = TestController::class.members
             .find { it.name == "endpointWithDefaultQueryParam" }!!
@@ -90,6 +90,25 @@ class QueryParamValueInjectorTest {
         assertThat(result).isEqualTo(mapOf("query1" to DEFAULT_NON_STRING_PARAM_VALUE.toInt()))
     }
 
+    @Test
+    fun `should be able to handle array @QueryParam parameters`() {
+        val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
+        val queryParamValues = listOf("value1", "value2")
+        every { request.multiValueQueryStringParameters } returns mapOf("query1" to queryParamValues)
+
+        val queryParameter = TestController::class.members
+            .find { it.name == "endpointWithArrayQueryParam" }!!
+            .parameters.find { it.name == "queryParam" }!!
+
+        val result = QueryParamValueInjector.injectParamValues(
+            request,
+            mockk(),
+            mapOf("query1" to queryParameter))
+
+        assertThat(result["query1"]).isEqualTo(queryParamValues.toTypedArray())
+    }
+
+
     private class TestController {
 
         @Endpoint("test", method = HttpMethod.GET)
@@ -105,6 +124,11 @@ class QueryParamValueInjectorTest {
         @Endpoint("test", method = HttpMethod.GET)
         fun endpointWithDefaultNonStringQueryParam(@QueryParam("query1", defaultValue = DEFAULT_NON_STRING_PARAM_VALUE) queryParam: Int): HttpResponse<String> {
             return HttpResponse.ok("$queryParam")
+        }
+
+        @Endpoint("test", method = HttpMethod.GET)
+        fun endpointWithArrayQueryParam(@QueryParam("query1") queryParam: Array<String>): HttpResponse<Array<String>> {
+            return HttpResponse.ok(queryParam)
         }
     }
 }
