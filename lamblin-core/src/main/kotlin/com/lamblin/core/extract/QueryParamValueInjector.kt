@@ -17,7 +17,7 @@ import kotlin.reflect.full.findAnnotation
 
 private val LOGGER = LoggerFactory.getLogger(QueryParamValueInjector::class.java)
 
-/** Defines a mechanismQueryEndpointParamValueInjector for deciding the values of query parameters. */
+/** Defines a mechanism for extracting the values of query parameters. */
 internal object QueryParamValueInjector : EndpointParamValueInjector {
 
     override fun injectParamValues(
@@ -33,7 +33,7 @@ internal object QueryParamValueInjector : EndpointParamValueInjector {
         return queryParamAnnotatedParameters.map { it.findAnnotation<QueryParam>() }
             .map {
                 it!!.value to computeQueryParamValue(
-                    request.queryStringParameters,
+                    request.multiValueQueryStringParameters,
                     it.value,
                     it.defaultValue,
                     paramAnnotationMappedNameToParam[it.value]!!)
@@ -42,13 +42,15 @@ internal object QueryParamValueInjector : EndpointParamValueInjector {
     }
 
     private fun computeQueryParamValue(
-        requestQueryStringParameters: Map<String, String>?,
+        requestQueryStringParameters: Map<String, List<String>>?,
         paramName: String,
         paramDefaultValue: String,
         parameter: KParameter) =
 
         if (requestQueryStringParameters?.containsKey(paramName) == true) {
-            requestQueryStringParameters[paramName]
+            castParamToRequiredType(
+                parameter.type.classifier as KClass<*>,
+                requestQueryStringParameters[paramName]!!.toTypedArray())
         } else {
             if (paramDefaultValue.isNotBlank()) {
                 castParamToRequiredType(parameter.type.classifier as KClass<*>, paramDefaultValue)

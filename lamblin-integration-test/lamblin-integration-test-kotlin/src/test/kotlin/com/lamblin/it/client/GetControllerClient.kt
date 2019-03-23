@@ -14,6 +14,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 import java.util.concurrent.TimeUnit
 
 object GetControllerClient {
@@ -42,6 +43,10 @@ object GetControllerClient {
     fun callMultiQueryParamEndpoint(queryParam1: String, queryParam2: String) =
         client.callMultiQueryParamEndpoint(queryParam1, queryParam2).execute()
 
+    fun callMultiKeyQueryParamEndpoint(queryParamValue1: String, queryParamValue2: String) =
+        client.callMultiKeyQueryParamEndpoint(
+            "${getServerBaseUrl()}$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT?$QUERY_PARAM_1=$queryParamValue1&$QUERY_PARAM_1=$queryParamValue2").execute()
+
     fun callSinglePathParamEndpoint(pathParam: String) = client.callSinglePathParamEndpoint(pathParam).execute()
 
     fun callMultiPathParamEndpoint(pathParam1: String, pathParam2: String) =
@@ -69,6 +74,10 @@ object GetControllerClient {
         fun callMultiQueryParamEndpoint(
             @Query(QUERY_PARAM_1) queryParam1: String,
             @Query(QUERY_PARAM_2) queryParam2: String): Call<ResponseEntity>
+
+        @GET
+        fun callMultiKeyQueryParamEndpoint(
+            @Url url:String): Call<ResponseEntity>
 
         @GET(QUERY_PARAM_DEFAULT_VALUE_GET_ENDPOINT)
         fun callQueryParamDefaultValueEndpoint(): Call<ResponseEntity>

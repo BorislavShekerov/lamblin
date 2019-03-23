@@ -111,6 +111,7 @@ class TodoListController {
 `@QueryParam` allows injection of query parameter in your endpoint handler methods.
 `@QueryParam` parameters are required by default, meaning that if an `@Endpoint` method expects a given
  `@QueryParam` and the request received does not contain the query param expected, the handler will not be triggered.
+ Supports all the primitive Kotlin types + Arrays.
 
  In the example below, if a `GET /todo-lists` request is received without the expected _name_ query param
 `fetchTodoListForName` will not be triggered and Lamblin will return a _404_.

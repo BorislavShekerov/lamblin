@@ -49,7 +49,8 @@ class LamblinDelegator(
     private fun createRequestEvent(context: Context) = APIGatewayProxyRequestEvent().apply {
         httpMethod = context.method()
         path = context.path()
-        queryStringParameters = context.queryParamMap().mapValues { it.value[0] }
+        queryStringParameters = context.queryParamMap().mapValues { it.value.first() }
+        multiValueQueryStringParameters = context.queryParamMap()
         body = context.body()
         headers = context.headerMap()
     }

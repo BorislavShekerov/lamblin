@@ -49,6 +49,16 @@ class GetControllerIntegrationTest {
     }
 
     @Test
+    fun `should handle GET requests with multiple query params which have the same key`() {
+        val queryParamValue1 = "value1"
+        val queryParamValue2 = "value2"
+
+        runRequestAndVerifyResponse(
+            { GetControllerClient.callMultiKeyQueryParamEndpoint(queryParamValue1, queryParamValue2) },
+            "$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT-$queryParamValue1,$queryParamValue2")
+    }
+
+    @Test
     fun `should handle GET requests with single path param`() {
         val pathParamValue = "value"
 
