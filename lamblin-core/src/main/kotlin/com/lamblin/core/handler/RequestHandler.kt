@@ -66,7 +66,7 @@ internal class RequestHandler(
 
         val requestHandlerMethod = handlersForHttpMethod.asSequence()
             .sortedWith(HandlerMethodComparator())
-            .find { it.matches(request.path, request.queryStringParameters) }
+            .find { it.matches(request.path, request.getAllQueryParams()) }
             ?: return APIGatewayProxyResponseEvent().withStatusCode(StatusCode.NOT_FOUND.code)
 
         LOGGER.debug(
@@ -106,7 +106,11 @@ internal class RequestHandler(
         }
 
     private fun shouldSerializeResponseBodyJson(statusCode: StatusCode) = statusCode === StatusCode.OK
-        || statusCode === StatusCode.CREATED
-        || statusCode === StatusCode.ACCEPTED
+            || statusCode === StatusCode.CREATED
+            || statusCode === StatusCode.ACCEPTED
 
 }
+
+// Retrieves the map of all query parameters (single-key + multi-key)
+fun APIGatewayProxyRequestEvent.getAllQueryParams() =
+    (queryStringParameters ?: mapOf()) + (multiValueQueryStringParameters ?: mapOf())

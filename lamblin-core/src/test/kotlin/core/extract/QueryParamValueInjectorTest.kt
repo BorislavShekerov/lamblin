@@ -25,16 +25,17 @@ class QueryParamValueInjectorTest {
     @Test
     fun `should return the value for each query param`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
-        every { request.multiValueQueryStringParameters } returns mapOf("query1" to listOf("value1"))
+        every { request.multiValueQueryStringParameters } returns null
+        every { request.queryStringParameters } returns mapOf("query1" to "value1")
 
         val queryParameter = TestController::class.members
             .find { it.name == "endpoint" }!!
             .parameters.find { it.name == "queryParam" }!!
 
         val result = QueryParamValueInjector.injectParamValues(
-                request,
-                mockk(),
-                mapOf("query1" to queryParameter))
+            request,
+            mockk(),
+            mapOf("query1" to queryParameter))
 
         assertThat(result["query1"]).isEqualTo("value1")
     }
@@ -43,15 +44,16 @@ class QueryParamValueInjectorTest {
     fun `should return empty map if no query string params and default value not defined in @QueryParam`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.multiValueQueryStringParameters } returns null
+        every { request.queryStringParameters } returns null
 
         val queryParameter = TestController::class.members
             .find { it.name == "endpoint" }!!
             .parameters.find { it.name == "queryParam" }!!
 
         val result = QueryParamValueInjector.injectParamValues(
-                request,
-                mockk(),
-                mapOf("query1" to queryParameter))
+            request,
+            mockk(),
+            mapOf("query1" to queryParameter))
 
         assertThat(result).isEqualTo(mapOf("query1" to null))
     }
@@ -60,15 +62,16 @@ class QueryParamValueInjectorTest {
     fun `should return default value if query param not present and default value defined in @QueryParam`() {
         val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
         every { request.multiValueQueryStringParameters } returns null
+        every { request.queryStringParameters } returns null
 
         val queryParameter = TestController::class.members
             .find { it.name == "endpointWithDefaultQueryParam" }!!
             .parameters.find { it.name == "queryParam" }!!
 
         val result = QueryParamValueInjector.injectParamValues(
-                request,
-                mockk(),
-                mapOf("query1" to queryParameter))
+            request,
+            mockk(),
+            mapOf("query1" to queryParameter))
 
         assertThat(result).isEqualTo(mapOf("query1" to DEFAULT_PARAM_VALUE))
     }
@@ -97,7 +100,7 @@ class QueryParamValueInjectorTest {
         every { request.multiValueQueryStringParameters } returns mapOf("query1" to queryParamValues)
 
         val queryParameter = TestController::class.members
-            .find { it.name == "endpointWithArrayQueryParam" }!!
+            .find { it.name == "endpointWithMultiKeyQueryParam" }!!
             .parameters.find { it.name == "queryParam" }!!
 
         val result = QueryParamValueInjector.injectParamValues(
@@ -109,6 +112,34 @@ class QueryParamValueInjectorTest {
     }
 
 
+    @Test
+    fun `should merge single and multi key query params`() {
+        val request: APIGatewayProxyRequestEvent = mockk(relaxed = true)
+        val multiKeyQueryParamValues = listOf("value1", "value2")
+        every { request.multiValueQueryStringParameters } returns mapOf("query1" to multiKeyQueryParamValues)
+
+        val singleKeyQueryParamValue = "singleKeyValud"
+        every { request.queryStringParameters } returns mapOf("query2" to singleKeyQueryParamValue)
+
+        val multiKeyQueryParameter = TestController::class.members
+            .find { it.name == "endpointWithSingleAndMultiKeyQueryParam" }!!
+            .parameters.find { it.name == "queryParam" }!!
+
+        val singleKeyQueryParameter = TestController::class.members
+            .find { it.name == "endpointWithSingleAndMultiKeyQueryParam" }!!
+            .parameters.find { it.name == "queryParam2" }!!
+
+        val result = QueryParamValueInjector.injectParamValues(
+            request,
+            mockk(),
+            mapOf("query1" to multiKeyQueryParameter, "query2" to singleKeyQueryParameter))
+
+        assertThat(result["query1"]).isEqualTo(multiKeyQueryParamValues.toTypedArray())
+        assertThat(result["query2"]).isEqualTo(singleKeyQueryParamValue)
+
+    }
+
+
     private class TestController {
 
         @Endpoint("test", method = HttpMethod.GET)
@@ -117,17 +148,30 @@ class QueryParamValueInjectorTest {
         }
 
         @Endpoint("test", method = HttpMethod.GET)
-        fun endpointWithDefaultQueryParam(@QueryParam("query1", defaultValue = DEFAULT_PARAM_VALUE) queryParam: String): HttpResponse<String> {
+        fun endpointWithDefaultQueryParam(
+            @QueryParam(
+                "query1",
+                defaultValue = DEFAULT_PARAM_VALUE) queryParam: String): HttpResponse<String> {
             return HttpResponse.ok(queryParam)
         }
 
         @Endpoint("test", method = HttpMethod.GET)
-        fun endpointWithDefaultNonStringQueryParam(@QueryParam("query1", defaultValue = DEFAULT_NON_STRING_PARAM_VALUE) queryParam: Int): HttpResponse<String> {
+        fun endpointWithDefaultNonStringQueryParam(
+            @QueryParam(
+                "query1",
+                defaultValue = DEFAULT_NON_STRING_PARAM_VALUE) queryParam: Int): HttpResponse<String> {
             return HttpResponse.ok("$queryParam")
         }
 
         @Endpoint("test", method = HttpMethod.GET)
-        fun endpointWithArrayQueryParam(@QueryParam("query1") queryParam: Array<String>): HttpResponse<Array<String>> {
+        fun endpointWithMultiKeyQueryParam(@QueryParam("query1") queryParam: Array<String>): HttpResponse<Array<String>> {
+            return HttpResponse.ok(queryParam)
+        }
+
+        @Endpoint("test", method = HttpMethod.GET)
+        fun endpointWithSingleAndMultiKeyQueryParam(
+            @QueryParam("query1") queryParam: Array<String>,
+            @QueryParam("query2") queryParam2: String): HttpResponse<Array<String>> {
             return HttpResponse.ok(queryParam)
         }
     }

@@ -30,16 +30,23 @@ internal object QueryParamValueInjector : EndpointParamValueInjector {
         val queryParamAnnotatedParameters = paramAnnotationMappedNameToParam.values
             .filter { nonNull(it.findAnnotation<QueryParam>()) }
 
+        val requestQueryParams = mergeSingleAndMultiKeyQueryParams(request)
+
         return queryParamAnnotatedParameters.map { it.findAnnotation<QueryParam>() }
             .map {
                 it!!.value to computeQueryParamValue(
-                    request.multiValueQueryStringParameters,
+                    requestQueryParams,
                     it.value,
                     it.defaultValue,
                     paramAnnotationMappedNameToParam[it.value]!!)
             }
             .toMap()
     }
+
+    private fun mergeSingleAndMultiKeyQueryParams(request: APIGatewayProxyRequestEvent): Map<String, List<String>> =
+        (request.queryStringParameters?.map {
+            it.key to listOf(it.value)
+        }?.toMap() ?: mapOf()) + (request.multiValueQueryStringParameters ?: mapOf<String, List<String>>())
 
     private fun computeQueryParamValue(
         requestQueryStringParameters: Map<String, List<String>>?,
@@ -56,4 +63,5 @@ internal object QueryParamValueInjector : EndpointParamValueInjector {
                 castParamToRequiredType(parameter.type.classifier as KClass<*>, paramDefaultValue)
             } else null
         }
+
 }

@@ -16,22 +16,22 @@ private val LOGGER = LoggerFactory.getLogger(HandlerMethod::class.java)
 /** Defines the structure of an endpoint handling method. */
 data class HandlerMethod(
     /** The URL path, i.e /foo/bar. */
-        val path: String,
+    val path: String,
 
     /** The HTTP method handled. */
-        val httpMethod: HttpMethod,
+    val httpMethod: HttpMethod,
 
     /** Maps method parameter names to HandlerMethodParameter instances. */
-        val paramNameToParam: Map<String, HandlerMethodParameter> = mapOf(),
+    val paramNameToParam: Map<String, HandlerMethodParameter> = mapOf(),
 
     /** The reference to the actual method to be invoked. */
-        val method: KCallable<HttpResponse<*>>,
+    val method: KCallable<HttpResponse<*>>,
 
     /** The reference to the method container class. */
-        val controllerClass: KClass<out Any>,
+    val controllerClass: KClass<out Any>,
 
     /** Defines the access control details for the handler. */
-        val accessControl: AccessControl? = null) {
+    val accessControl: AccessControl? = null) {
 
     companion object {
 
@@ -49,7 +49,10 @@ data class HandlerMethod(
      * @param requestPath the request path to check
      * @return true if request path matches the handler path
      */
-    fun matches(requestPath: String, queryParams: Map<String, String>?): Boolean {
+    fun matches(
+        requestPath: String,
+        queryParams: Map<String, Any>?): Boolean {
+
         LOGGER.debug("Matching path [{}] against request handler [{}]", requestPath, path)
 
         val requestPathEntries = requestPath.split("/")
@@ -65,19 +68,19 @@ data class HandlerMethod(
 
     // Checks if the request path matches the endpoint handled path, ignoring path params
     private fun requestPathMatchesEndpointPath(
-            requestPathEntries: List<String>,
-            expectedPathEntries: List<String>
+        requestPathEntries: List<String>,
+        expectedPathEntries: List<String>
     ) =
-            requestPathEntries.size == expectedPathEntries.size
-                    && expectedPathEntries.asSequence().withIndex()
-                    .filter { !isPathParamSection(it.value) }
-                    .all { it.value == requestPathEntries[it.index] }
+        requestPathEntries.size == expectedPathEntries.size
+                && expectedPathEntries.asSequence().withIndex()
+            .filter { !isPathParamSection(it.value) }
+            .all { it.value == requestPathEntries[it.index] }
 
     // Checks if the required query params (without default values) are present
-    private fun requiredQueryParamsPresent(queryParams: Map<String, String>?): Boolean {
+    private fun requiredQueryParamsPresent(queryParams: Map<String, Any>?): Boolean {
         return paramNameToParam.values
-                .filter { it.required && it.defaultValue == null }
-                .all { queryParams?.containsKey(it.annotationMappedName) ?: false }
+            .filter { it.required && it.defaultValue == null }
+            .all { queryParams?.containsKey(it.annotationMappedName) ?: false }
     }
 
 }
