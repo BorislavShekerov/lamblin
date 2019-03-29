@@ -43,9 +43,13 @@ object GetControllerClient {
     fun callMultiQueryParamEndpoint(queryParam1: String, queryParam2: String) =
         client.callMultiQueryParamEndpoint(queryParam1, queryParam2).execute()
 
-    fun callMultiKeyQueryParamEndpoint(queryParamValue1: String, queryParamValue2: String) =
-        client.callMultiKeyQueryParamEndpoint(
-            "${getServerBaseUrl()}$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT?$QUERY_PARAM_1=$queryParamValue1&$QUERY_PARAM_1=$queryParamValue2").execute()
+    fun callMultiKeyQueryParamEndpoint(queryParamValue1: String, queryParamValue2: String? = null) =
+        queryParamValue2?.let {
+            client.callMultiKeyQueryParamEndpoint(
+                "${getServerBaseUrl()}$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT?$QUERY_PARAM_1=$queryParamValue1&$QUERY_PARAM_1=$queryParamValue2").execute()
+        } ?: client.callMultiKeyQueryParamEndpoint(
+            "${getServerBaseUrl()}$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT?$QUERY_PARAM_1=$queryParamValue1").execute()
+
 
     fun callSinglePathParamEndpoint(pathParam: String) = client.callSinglePathParamEndpoint(pathParam).execute()
 

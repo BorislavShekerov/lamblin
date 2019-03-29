@@ -8,7 +8,7 @@ package com.lamblin.core.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.fasterxml.jackson.databind.JsonMappingException
-import com.lamblin.core.OBJECT_MAPPER
+import com.lamblin.core.jsonMapperRegistry
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import org.slf4j.LoggerFactory
@@ -35,13 +35,13 @@ internal class RequestHandlerAdapter internal constructor(private val requestHan
 
         request?.let {
             val response = requestHandler.handle(request, httpMethodToHandlers)
-            output.write(OBJECT_MAPPER.writeValueAsBytes(response))
+            output.write(jsonMapperRegistry.jsonMapper.writeValueAsBytes(response))
         }
     }
 
     private fun transformRequestContentsToAwsProxyRequest(eventInputStream: InputStream) =
         try {
-            OBJECT_MAPPER.readValue(eventInputStream, APIGatewayProxyRequestEvent::class.java)
+            jsonMapperRegistry.jsonMapper.readValue(eventInputStream, APIGatewayProxyRequestEvent::class.java)
         } catch (e: JsonMappingException) {
             LOGGER.warn("Event received not a valid API Gateway proxy request.")
             null

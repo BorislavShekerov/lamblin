@@ -7,8 +7,8 @@
 package com.lamblin.core.extract
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
-import com.lamblin.core.OBJECT_MAPPER
 import com.lamblin.core.exception.RequestPayloadParseException
+import com.lamblin.core.jsonMapperRegistry
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HttpMethod
 import com.lamblin.core.model.REQUEST_BODY_MAPPED_NAME
@@ -64,7 +64,7 @@ internal object RequestBodyParamValueInjector : EndpointParamValueInjector {
     private fun deserializeBody(parameter: KParameter, bodyJson: String): Any {
         try {
             LOGGER.debug("Deserializing [{}] into [{}]", bodyJson, parameter.type)
-            return OBJECT_MAPPER.readValue(bodyJson, (parameter.type.classifier as KClass<*>).javaObjectType)
+            return jsonMapperRegistry.jsonMapper.readValue(bodyJson, (parameter.type.classifier as KClass<*>).javaObjectType)
         } catch (e: IOException) {
             throw RequestPayloadParseException("Unable to parse request body JSON $bodyJson", e)
         }

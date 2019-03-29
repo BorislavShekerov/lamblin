@@ -45,6 +45,10 @@ class GetController {
     fun multipleQueryParamTest(
         @QueryParam(QUERY_PARAM_1) queryParamValues: Array<String>): HttpResponse<ResponseEntity> {
 
+        if (queryParamValues.size == 1) {
+            return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT-${queryParamValues[0]}"))
+        }
+
         return HttpResponse.ok(ResponseEntity("$QUERY_PARAM_MULTI_KEY_GET_ENDPOINT-${queryParamValues[0]},${queryParamValues[1]}"))
     }
 

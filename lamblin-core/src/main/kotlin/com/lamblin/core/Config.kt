@@ -17,3 +17,21 @@ internal val OBJECT_MAPPER = ObjectMapper().apply {
     registerModule(JavaTimeModule())
     registerModule(KotlinModule())
 }
+
+internal val jsonMapperRegistry = JsonMapperRegistry()
+
+/** Allows for a custom ObjectMapper to be provided. */
+class JsonMapperRegistry(internal var jsonMapper: ObjectMapper = OBJECT_MAPPER) {
+
+    /** Specifies the object mapper to be used. */
+    fun registerObjectMapper(objectMapperToUse: ObjectMapper) {
+        this.jsonMapper = objectMapperToUse
+    }
+}
+
+/** Injects the custom object mapper to be used accross Lamblin. */
+fun Lamblin.withObjectMapper(objectMapper: ObjectMapper): Lamblin {
+    jsonMapperRegistry.registerObjectMapper(objectMapper)
+
+    return this
+}

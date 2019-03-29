@@ -10,8 +10,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.lamblin.core.ControllerRegistry
 import com.lamblin.core.EndpointInvoker
-import com.lamblin.core.OBJECT_MAPPER
 import com.lamblin.core.extract.CompositeParamValueInjector
+import com.lamblin.core.jsonMapperRegistry
 import com.lamblin.core.model.HandlerMethod
 import com.lamblin.core.model.HandlerMethodComparator
 import com.lamblin.core.model.HttpMethod
@@ -96,7 +96,7 @@ internal class RequestHandler(
                 withStatusCode(response.statusCode.code)
                 withHeaders(response.headers + mapOf("Content-Type" to "application/json"))
 
-                response.body?.let { withBody(OBJECT_MAPPER.writeValueAsString(response.body)) }
+                response.body?.let { withBody(jsonMapperRegistry.jsonMapper.writeValueAsString(response.body)) }
             }
         } else {
             APIGatewayProxyResponseEvent().apply {
